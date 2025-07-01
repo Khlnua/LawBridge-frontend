@@ -40,10 +40,15 @@ export default function LoginForm({
         typeof err === "object" &&
         err !== null &&
         "errors" in err &&
-        Array.isArray((err as any).errors) &&
-        (err as any).errors[0]?.message
+        Array.isArray(
+          (err as unknown as { errors: { message: string }[] }).errors
+        ) &&
+        (err as unknown as { errors: { message: string }[] }).errors[0]?.message
       ) {
-        setError((err as any).errors[0].message);
+        setError(
+          (err as unknown as { errors: { message: string }[] }).errors[0]
+            .message
+        );
       } else {
         setError("Код илгээхэд алдаа гарлаа.");
       }
@@ -70,10 +75,15 @@ export default function LoginForm({
         typeof err === "object" &&
         err !== null &&
         "errors" in err &&
-        Array.isArray((err as any).errors) &&
-        (err as any).errors[0]?.message
+        Array.isArray(
+          (err as unknown as { errors: { message: string }[] }).errors
+        ) &&
+        (err as unknown as { errors: { message: string }[] }).errors[0]?.message
       ) {
-        setError((err as any).errors[0].message);
+        setError(
+          (err as unknown as { errors: { message: string }[] }).errors[0]
+            .message
+        );
       } else {
         setError("OTP код буруу байна.");
       }
