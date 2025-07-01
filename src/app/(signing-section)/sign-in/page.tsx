@@ -9,7 +9,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import OtpInput from "@/components/OtpInput";
 
-export default function LoginForm({
+export default function Page({
   className,
   ...props
 }: React.ComponentProps<"div">) {
