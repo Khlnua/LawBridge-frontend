@@ -9,10 +9,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import OtpInput from "@/components/OtpInput";
 
-export default function Page({
-  className,
-  ...props
-}: React.ComponentProps<"div">) {
+const LoginPage = ({ className, ...props }: React.ComponentProps<"div">) => {
   const { signIn, isLoaded, setActive } = useSignIn();
   const [identifier, setIdentifier] = useState("");
   const [otpCode, setOtpCode] = useState("");
@@ -168,4 +165,6 @@ export default function Page({
       </Card>
     </div>
   );
-}
+};
+
+export default LoginPage;
