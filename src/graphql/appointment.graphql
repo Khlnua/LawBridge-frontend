@@ -1,0 +1,8 @@
+mutation CreateAppointment($input: CreateAppointmentInput!) {
+  createAppointment(input: $input) {
+    lawyerId
+    schedule
+    status
+    chatRoomId
+  }
+}
