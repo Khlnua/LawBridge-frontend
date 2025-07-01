@@ -1,4 +1,4 @@
-export const LawyerPendingPage = () => {
+const LawyerPendingPage = () => {
   return <div>LawyerPendingPage</div>;
 };
 
