@@ -1,6 +1,11 @@
 "use client";
 
-import { ApolloClient, InMemoryCache, ApolloProvider, createHttpLink } from "@apollo/client";
+import {
+  ApolloClient,
+  InMemoryCache,
+  ApolloProvider,
+  createHttpLink,
+} from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
 import { ReactNode } from "react";
 import { useAuth } from "@clerk/nextjs";
@@ -10,18 +15,17 @@ const httpLink = createHttpLink({
 });
 
 export const ApolloWrapper = ({ children }: { children: ReactNode }) => {
+  const { getToken } = useAuth();
 
-    const {getToken} = useAuth()
-
-  const authLink = setContext(async(_, { headers }) =>{
+  const authLink = setContext(async (_, { headers }) => {
     const clerkToken = await getToken();
 
     return {
       headers: {
-        ...headers, 
-        Authorization : clerkToken,
-      }
-    }
+        ...headers,
+        Authorization: clerkToken,
+      },
+    };
   });
 
   const client = new ApolloClient({
@@ -30,4 +34,4 @@ export const ApolloWrapper = ({ children }: { children: ReactNode }) => {
   });
 
   return <ApolloProvider client={client}>{children}</ApolloProvider>;
-}
+};

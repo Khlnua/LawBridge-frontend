@@ -6,10 +6,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
 import OtpInput from "@/components/OtpInput";
 
-const LoginPage = ({ className, ...props }: React.ComponentProps<"div">) => {
+export default function LoginPage() {
   const { signIn, isLoaded, setActive } = useSignIn();
   const [identifier, setIdentifier] = useState("");
   const [otpCode, setOtpCode] = useState("");
@@ -32,23 +31,8 @@ const LoginPage = ({ className, ...props }: React.ComponentProps<"div">) => {
       if (res.status === "needs_first_factor") {
         setPending(true);
       }
-    } catch (err: unknown) {
-      if (
-        typeof err === "object" &&
-        err !== null &&
-        "errors" in err &&
-        Array.isArray(
-          (err as unknown as { errors: { message: string }[] }).errors
-        ) &&
-        (err as unknown as { errors: { message: string }[] }).errors[0]?.message
-      ) {
-        setError(
-          (err as unknown as { errors: { message: string }[] }).errors[0]
-            .message
-        );
-      } else {
-        setError("Код илгээхэд алдаа гарлаа.");
-      }
+    } catch (err: any) {
+      setError(err?.errors?.[0]?.message || "Код илгээхэд алдаа гарлаа.");
     }
   };
 
@@ -67,31 +51,13 @@ const LoginPage = ({ className, ...props }: React.ComponentProps<"div">) => {
         await setActive({ session: res.createdSessionId });
         window.location.href = "/";
       }
-    } catch (err: unknown) {
-      if (
-        typeof err === "object" &&
-        err !== null &&
-        "errors" in err &&
-        Array.isArray(
-          (err as unknown as { errors: { message: string }[] }).errors
-        ) &&
-        (err as unknown as { errors: { message: string }[] }).errors[0]?.message
-      ) {
-        setError(
-          (err as unknown as { errors: { message: string }[] }).errors[0]
-            .message
-        );
-      } else {
-        setError("OTP код буруу байна.");
-      }
+    } catch (err: any) {
+      setError(err?.errors?.[0]?.message || "OTP код буруу байна.");
     }
   };
 
   return (
-    <div
-      className={cn("flex flex-col gap-6 w-200 h-120 mt-40 mx-10", className)}
-      {...props}
-    >
+    <div className="flex flex-col gap-6 w-200 h-120 mt-40 mx-10">
       <Card className="overflow-hidden p-0 border-[#dbeafe]">
         <CardContent className="grid p-0 md:grid-cols-2">
           <div className="bg-muted relative hidden md:block">
@@ -165,6 +131,4 @@ const LoginPage = ({ className, ...props }: React.ComponentProps<"div">) => {
       </Card>
     </div>
   );
-};
-
-export default LoginPage;
+}

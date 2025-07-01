@@ -1,5 +1,10 @@
-const LawyerPendingPage = () => {
-  return <div>LawyerPendingPage</div>;
+import { currentUser } from "@clerk/nextjs/server";
+
+const LawyerPendingPage = async () => {
+  const user = await currentUser();
+  const userId = user?.id;
+
+  return <div>User ID: {userId}</div>;
 };
 
 export default LawyerPendingPage;
