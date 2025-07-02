@@ -1,34 +1,14 @@
 "use client";
 
 import React from "react";
-import { Button } from "@/components/ui";
-import { useRouter } from "next/navigation";
 import FooterPage from "@/components/landing-page/FooterPage";
 import { MessageCircleMore } from "lucide-react";
 import HeroSection from "../../components/landing-page/HeroSection";
 import RecommendLawyers from "../../components/landing-page/RecommendLawyers";
 import ShowArticleFromLawyers from "../../components/landing-page/ShowArticleFromLawyers";
 const MainPage = () => {
-  const { push } = useRouter();
-
   return (
     <div className="">
-      <div className="grid grid-cols-2 gap-4 py-2  text-[18px] px-100 border border-dashed">
-        <div>
-          <h1 className="font-bold text-2xl items-center justify-center">
-            LawBridge
-          </h1>
-        </div>
-
-        <div className="flex items-center justify-center">
-          <Button onClick={() => push("/sign-in")} className="text-2xl">
-            login
-          </Button>
-          <Button onClick={() => push("/sign-up")} className="text-2xl">
-            sign up
-          </Button>
-        </div>
-      </div>
       <HeroSection />
       <RecommendLawyers />
       <ShowArticleFromLawyers />

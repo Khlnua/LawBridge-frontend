@@ -8,3 +8,9 @@
 // };
 
 // export default LawyerPendingPage;
+
+const PendingPage = () => {
+  return <div> PendingPage</div>;
+};
+
+export default PendingPage;
