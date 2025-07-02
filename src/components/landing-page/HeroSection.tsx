@@ -4,52 +4,154 @@ import { Button, Input } from "@/components/ui";
 
 const HeroSection = () => {
   return (
-    <div className=" h-170 p-50 bg-linear-to-t to-[#003366] from-[#1453b4] flex flex-col items-center justify-center space-y-10 text-center text-[#f8f8f8]">
-      <div>
-        <h1 className="text-5xl font-bold font-mont mt-10">Монголын хууль зүйн шийдлүүдэд хүрэх таны гүүр.</h1>
-        <h2 className="mt-5 text-2xl font-semibold font-opensans">
-          LawBridge нь хууль зүйн туслалцаа хайж буй хувь хүмүүсийг чадварлаг хуульчидтай холбож, хялбар цаг товлох
-          болон үнэ цэнэтэй мэдээлэл өгдөг.
+    <header
+      className="
+    relative                   
+    w-full                     
+    min-h-[300px] sm:min-h-[400px] md:min-h-[500px] lg:min-h-[600px] 
+    p-6 sm:p-8 md:p-10 lg:p-12
+    bg-gradient-to-t from-[#1453b4] to-[#003366] 
+    flex flex-col items-center justify-center
+    space-y-6 sm:space-y-8 md:space-y-10 
+    text-center text-[#f8f8f8]
+  "
+    >
+      <div
+        className="max-w-4xl mx-auto px-4 sm:px-0             
+  "
+      >
+        <h1
+          className="
+      text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold
+      mt-6 sm:mt-8 md:mt-10   
+      leading-tight           
+    "
+        >
+          Монголын хууль зүйн шийдлүүдэд хүрэх таны гүүр.
+        </h1>
+        <h2
+          className="
+      mt-3 sm:mt-4 md:mt-5
+      text-base sm:text-lg md:text-xl lg:text-2xl font-semibold
+      leading-relaxed        
+    "
+        >
+          LawBridge нь хууль зүйн туслалцаа хайж буй хувь хүмүүсийг чадварлаг
+          хуульчидтай холбож, хялбар цаг товлох болон үнэ цэнэтэй мэдээлэл
+          өгдөг.
         </h2>
       </div>
 
-      <div className="space-y-5 mt-10 mb-20 ">
-        <div className="flex flex-row space-x-5">
-          <Button className="bg-[#D4AF37] text-[#333333] text-[20px] p-6 hover:cursor-pointer hover:opacity-85">
+      <div
+        className="
+    w-full max-w-xl           
+    space-y-4 sm:space-y-5    
+    mt-6 sm:mt-8 md:mt-10 mb-8 sm:mb-10 md:mb-12 
+    px-4 sm:px-0              
+  "
+      >
+        <div
+          className="
+      flex
+      flex-col sm:flex-row   
+      justify-center items-center
+      space-y-3 sm:space-y-0 sm:space-x-4 
+    "
+        >
+          <Button
+            className="
+        w-full sm:w-auto        
+        bg-[#D4AF37] text-[#333333]
+        text-base sm:text-lg md:text-xl
+        p-4 sm:p-5 md:p-6      
+        hover:cursor-pointer hover:opacity-85
+      "
+          >
             Өмгөөлөгчдийг харах
           </Button>
-          <Button className="bg-[#f8f8f8] text-[#0a2342] text-[20px] p-6 hover:cursor-pointer hover:opacity-85">
+          <Button
+            className="
+        w-full sm:w-auto       
+        bg-[#f8f8f8] text-[#0a2342]
+        text-base sm:text-lg md:text-xl
+        p-4 sm:p-5 md:p-6    
+        hover:cursor-pointer hover:opacity-85
+      "
+          >
             Хууль зүйн туслалцаа авах
           </Button>
         </div>
+
         <div className="relative w-full">
-          <Input placeholder="Хууль зүйн талбар эсвэл өмгөөлөгч хайх" className="bg-[#eee] text-[#333333] p-6" />
-          <Button className="absolute top-1/2 -translate-y-1/2 right-2 text-[#eee] bg-[#003366] text-[16px] p-5 hover:cursor-pointer hover:opacity-85">
+          <Input
+            placeholder="Хууль зүйн талбар эсвэл өмгөөлөгч хайх"
+            className="
+          w-full
+          bg-[#eee] text-[#333333]
+          p-5 md:p-6   
+          pr-16 md:pr-32
+          text-base sm:text-lg  
+          rounded-md            
+        "
+          />
+          <Button
+            className="
+          absolute top-1/2 -translate-y-1/2
+          right-1 sm:right-2     
+          text-[#f8f8f8] bg-[#003366]
+          text-sm sm:text-base   
+          px-3 py-1 sm:px-4 sm:py-2 
+          rounded-md             
+          hover:cursor-pointer hover:opacity-85
+        "
+          >
             Хайх
           </Button>
         </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-10 text-2xl text-[#f8f8f8] mx-40">
-        <div className="flex flex-col">
-          <Shield className="w-full h-20 mb-5 opacity-80" />
-          <h3>Verified Lawyers</h3>
-          <p className="opacity-70 text-[16px]">All lawyers are licensed and verified for your peace of mind</p>
+      <div
+        className="
+    grid
+    grid-cols-1 sm:grid-cols-2 md:grid-cols-3 
+    gap-6 sm:gap-8 md:gap-10     
+    text-base sm:text-lg md:text-xl lg:text-2xl 
+    text-[#f8f8f8]
+    mx-4 sm:mx-8 md:mx-16 lg:mx-20 
+    max-w-5xl                   
+    pb-6 sm:pb-8 md:pb-10       
+  "
+      >
+        <div className="flex flex-col items-center p-4">
+          <Shield className="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 mb-3 sm:mb-4 opacity-80" />
+
+          <h3 className="font-semibold text-lg sm:text-xl md:text-2xl">
+            Аюулгүй байдал
+          </h3>
+          <p className="opacity-70 text-sm sm:text-base mt-2">
+            Манай бүх өмгөөлөгчид хуулиар хүлээн зөвшөөрөгдсөн
+          </p>
         </div>
-        <div className="flex flex-col">
-          <Clock8 className="w-full h-20 mb-5 opacity-80" />
-          <h3>24/7 Availability</h3>
-          <p className="opacity-70 text-[16px]">Get legal help when you need it, day or night</p>
+        <div className="flex flex-col items-center p-4">
+          <Clock8 className="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 mb-3 sm:mb-4 opacity-80" />
+          <h3 className="font-semibold text-lg sm:text-xl md:text-2xl">
+            24/7 Идэвхитэй
+          </h3>
+          <p className="opacity-70 text-sm sm:text-base mt-2">
+            Өдөр, шөнө үл хамааран хуулийн туслалцаа хүртээрэй
+          </p>
         </div>
-        <div className="flex flex-col">
-          <Users className="w-full h-20 mb-5 opacity-80" />
-          <h3>Expert Network</h3>
-          <p className="opacity-70 text-[16px]">Access thousands of specialized legal professionals</p>
+        <div className="flex flex-col items-center p-4">
+          <Users className="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 mb-3 sm:mb-4 opacity-80" />
+          <h3 className="font-semibold text-lg sm:text-xl md:text-2xl">
+            Мэргэжилтнүүд
+          </h3>
+          <p className="opacity-70 text-sm sm:text-base mt-2">
+            Хүссэн хуулийн мэргэжилтнүүдтэйгээ холбогдоорой
+          </p>
         </div>
       </div>
-
-      <div></div>
-    </div>
+    </header>
   );
 };
 

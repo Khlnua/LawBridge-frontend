@@ -29,33 +29,42 @@ const LawyerCard = ({
   yearsExperience,
 }: LawyerCardProps) => {
   return (
-    <div className="bg-[#eee] rounded-xl shadow-lg p-8 flex flex-col items-center text-center transition-transform duration-200 hover:-translate-y-1 hover:shadow-xl">
-      <div className="mb-5">
-        <div className="w-24 h-24 bg-[#8bc34a] rounded-full mx-auto mb-4">{/* Avatar Placeholder */}</div>
-        <h3 className="text-2xl font-semibold text-[#333333] mb-1">{name}</h3>
-        <p className="text-primary-blue font-medium">{specialty}</p>
+    <div
+      className="
+    bg-[#eee] rounded-xl shadow-lg
+    p-5 sm:p-6                
+    flex flex-col items-center text-center
+    transition-transform duration-200 hover:-translate-y-1 hover:shadow-xl
+    w-full max-w-sm
+    mx-auto
+  "
+    >
+      <div className="mb-4">
+        <div className="w-20 h-20 bg-[#8bc34a] rounded-full mx-auto mb-3"></div>
+        <h3 className="text-xl font-semibold text-[#333333] mb-0.5">{name}</h3>
+        <p className="text-blue-600 font-medium text-base">{specialty}</p>
       </div>
-      <div className="w-full mb-6 text-left pl-5">
-        <p className="flex items-center text-gray-700 text-base mb-2">
-          <span className="mr-2 text-xl text-gray-600">📍{location}</span>
+      <div className="w-full mb-5 text-left pl-4">
+        <p className="flex items-center text-gray-700 text-sm mb-1.5">
+          <span className="mr-1.5 text-lg text-gray-600">￼{location}</span>
         </p>
-
-        <p className="flex items-center text-gray-700 text-base mb-2">
-          <span className="mr-2 text-xl text-yellow-500">
-            ⭐{rating} ({reviewCount})
+        <p className="flex items-center text-gray-700 text-sm mb-1.5">
+          <span className="mr-1.5 text-lg text-yellow-500">
+            ￼{rating} ({reviewCount})
           </span>
         </p>
-
-        <p className="text-lg font-semibold text-gray-800 mt-4">${hourlyRate}/цаг</p>
-        <p className="text-accent-green font-medium mt-2">
-          <span className="mr-2">{statusText}</span>
+        <p className="text-lg font-semibold text-gray-800 mt-3">
+          ${hourlyRate}/цаг
+        </p>
+        <p className="text-green-600 font-medium text-sm mt-1.5">
+          <span className="mr-1.5">{statusText}</span>
         </p>
       </div>
-      <div className="flex flex-wrap justify-center gap-2 mb-8">
+      <div className="flex flex-wrap justify-center gap-1.5 mb-6">
         {hasQuickResponse && (
           <Badge
             variant="destructive"
-            className="bg-[#D4AF37] border px-3 py-1 rounded-full text-sm font-medium whitespace-nowrap"
+            className="bg-[#D4AF37] border px-2 py-0.5 rounded-full text-xs font-medium whitespace-nowrap"
           >
             Quick Response
           </Badge>
@@ -63,7 +72,7 @@ const LawyerCard = ({
         {hasEmergencyCases && (
           <Badge
             variant="outline"
-            className="bg-[#D4AF37] border px-3 py-1 rounded-full text-sm font-medium whitespace-nowrap"
+            className="bg-[#D4AF37] border px-2 py-0.5 rounded-full text-xs font-medium whitespace-nowrap"
           >
             Emergency Cases
           </Badge>
@@ -71,7 +80,7 @@ const LawyerCard = ({
         {hasCertified && (
           <Badge
             variant="destructive"
-            className="bg-[#D4AF37] border px-3 py-1 rounded-full text-sm font-medium whitespace-nowrap"
+            className="bg-[#D4AF37] border px-2 py-0.5 rounded-full text-xs font-medium whitespace-nowrap"
           >
             Certified
           </Badge>
@@ -79,17 +88,17 @@ const LawyerCard = ({
         {yearsExperience && (
           <Badge
             variant="destructive"
-            className="bg-[#D4AF37] border px-3 py-1 rounded-full text-sm font-medium whitespace-nowrap"
+            className="bg-[#D4AF37] border px-2 py-0.5 rounded-full text-xs font-medium whitespace-nowrap"
           >
             {yearsExperience}+ Years
           </Badge>
         )}
       </div>
-      <div className="w-full flex flex-col gap-3">
-        <Button className="w-full bg-[#003366] text-white py-3 rounded-lg font-semibold hover:opacity-90 transition-colors duration-200">
+      <div className="w-full flex flex-col gap-2.5">
+        <Button className="w-full bg-[#003366] text-white py-2.5 rounded-lg font-semibold hover:opacity-90 transition-colors duration-200 text-base">
           Цаг авах
         </Button>
-        <Button className="w-full bg-gray-100 text-gray-700 py-3 rounded-lg font-semibold border border-gray-300 hover:bg-gray-200 transition-colors duration-200">
+        <Button className="w-full bg-gray-100 text-gray-700 py-2.5 rounded-lg font-semibold border border-gray-300 hover:bg-gray-200 transition-colors duration-200 text-base">
           Мэдээлэл харах
         </Button>
       </div>

@@ -37,27 +37,59 @@ export default function RootLayout({
             className={`min-h-screen bg-background font-sans antialiased ${geistSans.variable} ${geistMono.variable}`}
           >
             <SignedOut>
-              <header className="flex justify-between items-center px-6 h-16 ">
-                <Button className="text-lg font-bold text-[#0930a5] flex  justify-center items-center">
-                  <p> LawBridge</p>
-                  <img src="./LOGO.png" alt="" width={35} height={35} />
-                </Button>
-                <div className="flex gap-2">
-                  <a
-                    href="/sign-in"
-                    className="text-sm font-medium text-muted-foreground hover:text-primary transition flex justify-center items-center"
+              <header
+                className="
+                flex
+                justify-between
+                items-center
+                py-3 sm:py-4 md:py-5   
+                px-4 sm:px-6 md:px-8 lg:px-10 
+                h-auto               
+                border-b border-gray-200 
+              "
+              >
+                <div
+                  className="
+                    text-xl sm:text-2xl font-bold text-[#003366] 
+                  "
+                >
+                  LawBridge
+                </div>
+                <div
+                  className=" flex flex-row gap-2 sm:gap-4        
+                  "
+                >
+                  <Button
+                    asChild
+                    className="
+                      w-auto       
+                      text-base sm:text-lg      
+                      px-4 py-2 sm:px-6 sm:py-2.5  
+                      bg-[#eee] hover:bg-gray-100 border border-transparent hover:border-gray-300 
+                    "
                   >
-                    Log In
-                  </a>
-                  <a
-                    href="/sign-up"
-                    className="text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 px-4 py-1.5 rounded-md transition flex justify-center items-center"
+                    <a
+                      href="/sign-in"
+                      className="text-muted-foreground hover:text-primary transition"
+                    >
+                      Log In
+                    </a>
+                  </Button>
+                  <Button
+                    asChild
+                    className="
+                      w-auto        
+                      text-base sm:text-lg     
+                      px-4 py-2 sm:px-6 sm:py-2.5 
+                      bg-[#003366] hover:bg-blue-700 text-white rounded-md transition 
+                    "
                   >
-                    Sign Up
-                  </a>
+                    <a href="/sign-up">Sign Up</a>
+                  </Button>
                 </div>
               </header>
             </SignedOut>
+
             <SignedIn>
               <header className="flex justify-between items-center px-6 h-16">
                 <div className="text-lg font-bold text-blue-600">LawBridge</div>
