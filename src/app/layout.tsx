@@ -4,6 +4,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { ApolloWrapper } from "@/providers/ApolloWrapper";
 import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 import { type Metadata } from "next";
+import { Button } from "@/components";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -37,7 +38,10 @@ export default function RootLayout({
           >
             <SignedOut>
               <header className="flex justify-between items-center px-6 h-16 ">
-                <div className="text-lg font-bold text-blue-600">LawBridge</div>
+                <Button className="text-lg font-bold text-[#0930a5] flex  justify-center items-center">
+                  <p> LawBridge</p>
+                  <img src="./LOGO.png" alt="" width={35} height={35} />
+                </Button>
                 <div className="flex gap-2">
                   <a
                     href="/sign-in"
