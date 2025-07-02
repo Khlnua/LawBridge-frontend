@@ -1,20 +1,33 @@
-import { currentUser } from "@clerk/nextjs/server";
-import { useGetSpecializationsQuery } from "@/generated";
-import { useAuth } from "@clerk/nextjs";
+// "use client";
 
-const LawyerPendingPage = async () => {
-  const user = await currentUser();
-  const userId = user?.id;
-  const { getToken } = useAuth();
-  const clerkToken = await getToken();
-  console.log(clerkToken);
+// import { useGetSpecializationsQuery } from "@/generated";
+// import { useAuth } from "@clerk/nextjs";
 
-  const { data } = useGetSpecializationsQuery();
+// const LawyerPendingPage = async () => {
+//   const { getToken } = useAuth();
+//   const clerkToken = await getToken();
+//   console.log(clerkToken);
 
-  console.log("dvsv", data);
-  console.log();
+//   const { data } = useGetSpecializationsQuery();
 
-  return <div>User ID: {userId}</div>;
+//   console.log("dvsv", data);
+
+//   return <div></div>;
+// };
+
+// export default LawyerPendingPage;
+
+import { SignedOut } from "@clerk/nextjs";
+import MainPage from "./(landing-page)/MainPage";
+
+const homepage = () => {
+  return (
+    <div>
+      <SignedOut>
+        <MainPage />
+      </SignedOut>
+    </div>
+  );
 };
 
-export default LawyerPendingPage;
+export default homepage;

@@ -1,10 +1,10 @@
-import { currentUser } from "@clerk/nextjs/server";
+// import { currentUser } from "@clerk/nextjs/server";
 
-const LawyerPendingPage = async () => {
-  const user = await currentUser();
-  const userId = user?.id;
+// const LawyerPendingPage = async () => {
+//   const user = await currentUser();
+//   const userId = user?.id;
 
-  return <div>User ID: {userId}</div>;
-};
+//   return <div>User ID: {userId}</div>;
+// };
 
-export default LawyerPendingPage;
+// export default LawyerPendingPage;
