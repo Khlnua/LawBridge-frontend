@@ -32,9 +32,7 @@ export default function RootLayout({
           <body
             className={`min-h-screen bg-background font-sans antialiased ${geistSans.variable} ${geistMono.variable}`}
           >
-
             <Header />
-
 
             <main className="flex justify-center items-center min-h-[calc(100vh-4rem)]">{children}</main>
           </body>
