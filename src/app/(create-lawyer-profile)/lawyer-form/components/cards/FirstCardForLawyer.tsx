@@ -16,28 +16,15 @@ type Props = {
   setValue: UseFormSetValue<FormData>;
 };
 
-const FirstCardForLawyer = ({
-  register,
-  errors,
-  goToNextStep,
-  setValue,
-}: Props) => {
+const FirstCardForLawyer = ({ register, errors, goToNextStep, setValue }: Props) => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [localPreview, setLocalPreview] = useState<string | null>(null);
 
   const handleUploadSuccess = (url: string) => {
     setValue("avatar", url);
   };
-  const {
-    fileInputRef,
-    previewLink,
-    uploading,
-    isDragging,
-    openBrowse,
-    deleteImage,
-    setIsDragging,
-    uploadToServer,
-  } = useUploadAvatar({ onUpload: handleUploadSuccess });
+  const { fileInputRef, previewLink, uploading, isDragging, openBrowse, deleteImage, setIsDragging, uploadToServer } =
+    useUploadAvatar({ onUpload: handleUploadSuccess });
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -58,12 +45,11 @@ const FirstCardForLawyer = ({
   };
 
   const handleNextStep = async () => {
-    if (selectedFile) {
-      await uploadToServer(selectedFile);
+    if (errors.firstName?.message || errors.lastName?.message || errors.email?.message) {
+      return;
     }
-    if (goToNextStep) {
-      goToNextStep();
-    }
+    if (selectedFile) await uploadToServer(selectedFile);
+    if (goToNextStep) goToNextStep();
   };
 
   useEffect(() => {
@@ -82,11 +68,7 @@ const FirstCardForLawyer = ({
             Нэр
           </label>
           <Input id="firstName" {...register("firstName")} />
-          <ZodErrors
-            error={
-              errors.firstName?.message ? [errors.firstName.message] : undefined
-            }
-          />
+          <ZodErrors error={errors.firstName?.message ? [errors.firstName.message] : undefined} />
         </div>
 
         <div>
@@ -94,32 +76,20 @@ const FirstCardForLawyer = ({
             Овог
           </label>
           <Input id="lastName" {...register("lastName")} />
-          <ZodErrors
-            error={
-              errors.lastName?.message ? [errors.lastName.message] : undefined
-            }
-          />
+          <ZodErrors error={errors.lastName?.message ? [errors.lastName.message] : undefined} />
         </div>
       </div>
-
       <div>
         <label htmlFor="eMail" className="block text-sm font-medium mb-1">
           Email
         </label>
         <Input id="eMail" {...register("email")} />
-        <ZodErrors
-          error={errors.email?.message ? [errors.email.message] : undefined}
-        />
+        <ZodErrors error={errors.email?.message ? [errors.email.message] : undefined} />
       </div>
-
       {/* <Avatar errors={errors} setValue={setValue} /> */}
-
       <div className="grid grid-cols-2">
         <div>
-          <label
-            htmlFor="profileImage"
-            className="block text-sm font-medium mb-1"
-          >
+          <label htmlFor="profileImage" className="block text-sm font-medium mb-1">
             Нүүр зураг оруулах
           </label>
           {(localPreview || previewLink) && (
@@ -133,12 +103,10 @@ const FirstCardForLawyer = ({
               }}
               className="mt-2 text-sm text-red-500 hover:underline cursor-pointer"
             >
-              Зураг устгах
+              Зураг арилгах
             </button>
           )}
-          {uploading && (
-            <div className="text-sm text-blue-500 mt-2">Илгээж байна...</div>
-          )}
+          {uploading && <div className="text-sm text-blue-500 mt-2">Илгээж байна...</div>}
         </div>
 
         <Input
@@ -165,20 +133,12 @@ const FirstCardForLawyer = ({
           ) : previewLink ? (
             <img src={previewLink} alt="" className="size-full rounded-full" />
           ) : (
-            <span className="text-gray-500 text-center">
-              Click or drag an image here
-            </span>
+            <span className="text-gray-500 text-center">Click or drag an image here</span>
           )}
         </div>
-        <ZodErrors
-          error={errors.avatar?.message ? [errors.avatar.message] : undefined}
-        />
+        <ZodErrors error={errors.avatar?.message ? [errors.avatar.message] : undefined} />
       </div>
-
-      <Button
-        onClick={handleNextStep}
-        className="w-full bg-blue-500 hover:bg-blue-400 cursor-pointer text-white"
-      >
+      <Button onClick={handleNextStep} className="w-full bg-blue-500 hover:bg-blue-400 cursor-pointer text-white">
         Дараачийн
       </Button>
     </div>

@@ -1,5 +1,5 @@
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui";
+import { Button, Badge } from "@/components/ui";
+import { Star, MapPinned } from "lucide-react";
 
 type LawyerCardProps = {
   name: string;
@@ -46,16 +46,18 @@ const LawyerCard = ({
       </div>
       <div className="w-full mb-5 text-left pl-4">
         <p className="flex items-center text-gray-700 text-sm mb-1.5">
-          <span className="mr-1.5 text-lg text-gray-600">￼{location}</span>
-        </p>
-        <p className="flex items-center text-gray-700 text-sm mb-1.5">
-          <span className="mr-1.5 text-lg text-yellow-500">
-            ￼{rating} ({reviewCount})
+          <span className="mr-1.5 text-lg text-gray-600 flex">
+            <MapPinned />
+            {location}
           </span>
         </p>
-        <p className="text-lg font-semibold text-gray-800 mt-3">
-          ${hourlyRate}/цаг
+        <p className="flex items-center text-gray-700 text-sm mb-1.5">
+          <span className="mr-1.5 text-lg text-yellow-500 flex">
+            <Star />
+            {rating} ({reviewCount})
+          </span>
         </p>
+        <p className="text-lg font-semibold text-gray-800 mt-3">${hourlyRate}/цаг</p>
         <p className="text-green-600 font-medium text-sm mt-1.5">
           <span className="mr-1.5">{statusText}</span>
         </p>

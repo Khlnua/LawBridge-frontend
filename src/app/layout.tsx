@@ -29,10 +29,7 @@ export default function RootLayout({
   return (
     <ClerkProvider signInUrl="/sign-in" signUpUrl="/sign-up">
       <ApolloWrapper>
-        <html
-          lang="en"
-          className={`${geistSans.variable} ${geistMono.variable}`}
-        >
+        <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
           <body
             className={`min-h-screen bg-background font-sans antialiased ${geistSans.variable} ${geistMono.variable}`}
           >
@@ -48,17 +45,8 @@ export default function RootLayout({
                 border-b border-gray-200 
               "
               >
-                <div
-                  className="
-                    text-xl sm:text-2xl font-bold text-[#003366] 
-                  "
-                >
-                  LawBridge
-                </div>
-                <div
-                  className=" flex flex-row gap-2 sm:gap-4        
-                  "
-                >
+                <div className="text-xl sm:text-2xl font-bold text-[#003366] cursor-pointer">LawBridge</div>
+                <div className=" flex flex-row gap-2 sm:gap-4">
                   <Button
                     asChild
                     className="
@@ -68,10 +56,7 @@ export default function RootLayout({
                       bg-[#eee] hover:bg-gray-100 border border-transparent hover:border-gray-300 
                     "
                   >
-                    <a
-                      href="/sign-in"
-                      className="text-muted-foreground hover:text-primary transition"
-                    >
+                    <a href="/sign-in" className="text-muted-foreground hover:text-primary transition">
                       Log In
                     </a>
                   </Button>
@@ -97,9 +82,7 @@ export default function RootLayout({
               </header>
             </SignedIn>
 
-            <main className="flex justify-center items-center min-h-[calc(100vh-4rem)]">
-              {children}
-            </main>
+            <main className="flex justify-center items-center min-h-[calc(100vh-4rem)]">{children}</main>
           </body>
         </html>
       </ApolloWrapper>
