@@ -1,12 +1,13 @@
 "use client";
 
 import { useSignIn } from "@clerk/nextjs";
-import { useState } from "react";
+import { useState, FormEvent } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import OtpInput from "@/components/OtpInput";
+import { ClerkAPIError } from "@clerk/types";
 
 export default function LoginPage() {
   const { signIn, isLoaded, setActive } = useSignIn();
@@ -17,7 +18,7 @@ export default function LoginPage() {
   const isPhone = /^\+?[0-9]{8,15}$/.test(identifier);
   const strategy = isPhone ? "phone_code" : "email_code";
 
-  const handleIdentifierSubmit = async (e: React.FormEvent) => {
+  const handleIdentifierSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!isLoaded) return;
     setError("");
@@ -31,12 +32,13 @@ export default function LoginPage() {
       if (res.status === "needs_first_factor") {
         setPending(true);
       }
-    } catch (err: any) {
-      setError(err?.errors?.[0]?.message || "Код илгээхэд алдаа гарлаа.");
+    } catch (err) {
+      const error = err as ClerkAPIError;
+      setError(error?.message || "Код илгээхэд алдаа гарлаа.");
     }
   };
 
-  const handleOTPSubmit = async (e: React.FormEvent) => {
+  const handleOTPSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!isLoaded) return;
     setError("");
@@ -51,8 +53,9 @@ export default function LoginPage() {
         await setActive({ session: res.createdSessionId });
         window.location.href = "/";
       }
-    } catch (err: any) {
-      setError(err?.errors?.[0]?.message || "OTP код буруу байна.");
+    } catch (err) {
+      const error = err as ClerkAPIError;
+      setError(error?.message || "OTP код буруу байна.");
     }
   };
 
