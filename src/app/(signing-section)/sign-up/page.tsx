@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { UserIcon, GavelIcon } from "lucide-react";
 
-export const RoleSelectPage = () => {
+export default function SignUpPage() {
   const { push } = useRouter();
 
   const selectRole = (role: "user" | "lawyer") => {
@@ -45,6 +45,4 @@ export const RoleSelectPage = () => {
       </div>
     </div>
   );
-};
-
-export default RoleSelectPage;
+}
