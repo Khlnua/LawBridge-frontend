@@ -30,7 +30,10 @@ const Avatar = ({ errors, setValue }: Props) => {
   return (
     <div className="grid grid-cols-2">
       <div>
-        <label htmlFor="profileImage" className="block text-sm font-medium mb-1">
+        <label
+          htmlFor="profileImage"
+          className="block text-sm font-medium mb-1"
+        >
           Нүүр зураг оруулах
         </label>
         {previewLink && (
@@ -42,7 +45,9 @@ const Avatar = ({ errors, setValue }: Props) => {
             Зураг устгах
           </button>
         )}
-        {uploading && <div className="text-sm text-blue-500 mt-2">Илгээж байна...</div>}
+        {uploading && (
+          <div className="text-sm text-blue-500 mt-2">Илгээж байна...</div>
+        )}
       </div>
 
       <Input
@@ -54,7 +59,7 @@ const Avatar = ({ errors, setValue }: Props) => {
         style={{ display: "none" }}
       />
       <div
-        className={`flex items-center justify-center bg-orange-200 size-full max-h-50 min-h-30 rounded-md border-dashed border-2 mb-2 cursor-pointer 
+        className={`flex items-center justify-center bg-[#eee] w-40 h-40 rounded-full border-dashed border-2 mb-2 ml-auto mr-20 cursor-pointer 
           ${isDragging ? "border-blue-500 bg-blue-50" : "border-gray-400"}  `}
         onClick={openBrowse}
         onDrop={handleDrop}
@@ -65,12 +70,16 @@ const Avatar = ({ errors, setValue }: Props) => {
         onDragLeave={() => setIsDragging(false)}
       >
         {previewLink ? (
-          <img src={previewLink} alt="" className="h-full" />
+          <img src={previewLink} alt="" className="size-full rounded-full" />
         ) : (
-          <span className="text-gray-500">Click or drag an image here</span>
+          <span className="text-gray-500 text-center">
+            Click or drag an image here
+          </span>
         )}
       </div>
-      <ZodErrors error={errors.avatar?.message ? [errors.avatar.message] : undefined} />
+      <ZodErrors
+        error={errors.avatar?.message ? [errors.avatar.message] : undefined}
+      />
     </div>
   );
 };

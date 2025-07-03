@@ -72,7 +72,7 @@ const LawyerRegistrationForm = () => {
   ][currentStep];
 
   return (
-    <div className="w-screen min-h-screen flex justify-center items-center p-4">
+    <div className="w-screen max-h-screen flex justify-center items-center p-4">
       <form
         onSubmit={handleSubmit(onSubmit)} //
         className="w-full max-w-2xl border-2 border-blue-400 shadow-2xl p-8 rounded-lg space-y-6 "
