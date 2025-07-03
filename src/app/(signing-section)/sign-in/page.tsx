@@ -57,7 +57,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex flex-col gap-6 w-200 h-120 mt-40 mx-10">
+    <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-blue-100">
       <Card className="overflow-hidden p-0 border-[#dbeafe]">
         <CardContent className="grid p-0 md:grid-cols-2">
           <div className="bg-muted relative hidden md:block">
