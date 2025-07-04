@@ -1,26 +1,47 @@
-import { NextResponse } from "next/server";
-import twilioClient from "@/lib/twilio";
+import { NextRequest, NextResponse } from "next/server";
+import twilio from "twilio";
+import { clerkClient } from "@clerk/nextjs/server";
 
-export async function POST(req: Request) {
-  const { phone, otp } = await req.json();
+const accountSid = process.env.TWILIO_ACCOUNT_SID!;
+const authToken = process.env.TWILIO_AUTH_TOKEN!;
+const serviceSid = process.env.TWILIO_VERIFY_SERVICE_SID!;
 
-  const sanitizedPhone = phone.startsWith("+") ? phone : `+${phone.trim()}`;
+const client = twilio(accountSid, authToken);
 
+export async function POST(req: NextRequest) {
   try {
-    const verification = await twilioClient.verify.v2
-      .services(process.env.TWILIO_VERIFY_SERVICE_SID!)
+    const { phone, otp } = await req.json();
+
+    if (!phone || !otp) {
+      return NextResponse.json(
+        { message: "Утасны дугаар болон OTP шаардлагатай" },
+        { status: 400 }
+      );
+    }
+
+    const verificationCheck = await client.verify
+      .services(serviceSid)
       .verificationChecks.create({
-        to: sanitizedPhone,
+        to: phone,
         code: otp,
       });
 
-    if (verification.status === "approved") {
-      return NextResponse.json({ success: true });
-    } else {
-      return NextResponse.json({ success: false, error: "OTP буруу байна" }, { status: 400 });
+    if (verificationCheck.status !== "approved") {
+      return NextResponse.json({ message: "OTP буруу байна" }, { status: 400 });
     }
-  } catch (error) {
-    console.error("OTP шалгах үед алдаа:", error);
-    return NextResponse.json({ success: false, error }, { status: 500 });
+
+    
+    const user = await clerkClient.users.createUser({
+      primaryPhoneNumber: phone,
+      password: Math.random().toString(36).slice(-8),
+    });
+
+    return NextResponse.json({ success: true, userId: user.id });
+  } catch (error: any) {
+    console.error("verify-otp error:", error);
+    return NextResponse.json(
+      { message: error.message || "OTP шалгалт алдаа гарлаа" },
+      { status: 500 }
+    );
   }
 }

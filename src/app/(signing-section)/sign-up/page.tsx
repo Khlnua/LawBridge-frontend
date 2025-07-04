@@ -10,7 +10,7 @@ export const RoleSelectPage = () => {
     localStorage.setItem("selected_role", role);
 
     if (role === "user") {
-      push("/sign-up/user/otp-form");
+      push("/sign-up/user/phone-form");
     } else {
       push("/sign-up/lawyer");
     }
