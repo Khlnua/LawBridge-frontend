@@ -10,9 +10,10 @@ const r2 = new S3Client({
   },
 });
 
-export async function POST(req: NextRequest) {
+export async function PUT(req: NextRequest) {
   const formData = await req.formData();
   const file = formData.get("file") as File;
+  const existingKey = formData.get("existingKey") as string | null;
 
   if (!file) {
     return NextResponse.json({ error: "No file provided" }, { status: 400 });
@@ -20,7 +21,10 @@ export async function POST(req: NextRequest) {
 
   const arrayBuffer = await file.arrayBuffer();
   const buffer = Buffer.from(arrayBuffer);
-  const key = `uploads/${Date.now()}-${file.name}`;
+
+  const key = existingKey?.trim()
+    ? existingKey
+    : `uploads/${crypto.randomUUID()}_${file.name}`;
 
   await r2.send(
     new PutObjectCommand({

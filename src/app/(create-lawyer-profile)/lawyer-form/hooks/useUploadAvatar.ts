@@ -6,7 +6,11 @@ const LOCALSTORAGE_KEY = "avatar_image_key";
 const LOCALSTORAGE_EXP = "avatar_image_key_exp";
 const CACHE_MINUTES = 15;
 
-export const useUploadAvatar = ({ onUpload }: { onUpload: (key: string) => void }) => {
+export const useUploadAvatar = ({
+  onUpload,
+}: {
+  onUpload: (key: string) => void;
+}) => {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [imageKey, setImageKey] = useState<string>("");
 
@@ -31,7 +35,10 @@ export const useUploadAvatar = ({ onUpload }: { onUpload: (key: string) => void 
   const [uploading, setUploading] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
 
-  const getPreviewLink = (key: string) => (key ? `/lawyer-form/api/get?key=${encodeURIComponent(key)}` : "");
+  const getPreviewLink = (key: string) =>
+    key
+      ? `/lawyer-form/api/get?key=${encodeURIComponent(key)}&t=${Date.now()}`
+      : "";
 
   const openBrowse = () => fileInputRef.current?.click();
 
@@ -40,14 +47,16 @@ export const useUploadAvatar = ({ onUpload }: { onUpload: (key: string) => void 
     const formData = new FormData();
     formData.append("file", file);
 
+    if (imageKey) formData.append("existingKey", imageKey);
+
     try {
       const res = await fetch("/lawyer-form/api/upload", {
-        method: "POST",
+        method: "PUT",
         body: formData,
       });
       if (!res.ok) throw new Error("Upload failed");
       const data = await res.json();
-      const key = data.key || "";
+      const key = data.key || imageKey;
       setImageKey(key);
       onUpload(key);
       const exp = Date.now() + CACHE_MINUTES * 60 * 1000;
@@ -69,14 +78,18 @@ export const useUploadAvatar = ({ onUpload }: { onUpload: (key: string) => void 
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (file) uploadToServer(file);
+    // if (file) uploadToServer(file);
   };
 
   const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
     event.preventDefault();
     setIsDragging(false);
     const file = event.dataTransfer.files?.[0];
-    if (file) uploadToServer(file);
+    // if (file) uploadToServer(file);
+  };
+
+  const handleuploadToServer = () => {
+    return;
   };
 
   const deleteImage = async () => {
@@ -108,5 +121,6 @@ export const useUploadAvatar = ({ onUpload }: { onUpload: (key: string) => void 
     handleDrop,
     deleteImage,
     setIsDragging,
+    uploadToServer,
   };
 };

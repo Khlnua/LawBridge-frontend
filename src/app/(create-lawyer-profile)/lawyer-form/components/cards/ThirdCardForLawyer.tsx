@@ -65,10 +65,12 @@ const ThirdCardForLawyer = ({
   };
 
   return (
-    <div className="space-y-10">
+    <div className="space-y-10 ">
       <div>
-        <label className="block font-medium mb-4 text-[16px]">Талбар</label>
-        <div className="grid grid-cols-2 gap-2">
+        <label className="block font-medium mb-4 text-[16px]">
+          Ажиллах талбараа сонгоно уу
+        </label>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
           {specializations.map((spec) => (
             <div key={spec} className="flex items-center space-x-2">
               <Checkbox
@@ -136,7 +138,7 @@ const ThirdCardForLawyer = ({
                 />
                 <label
                   htmlFor={`recommend-paid-${spec}`}
-                  className="text-sm cursor-pointer"
+                  className="text-sm cursor-pointer text-[14px]"
                 >
                   {`${spec} ${
                     isChecked ? "" : "талбарт төлбөртэй үйлчилгээ үзүүлнэ"
@@ -145,7 +147,7 @@ const ThirdCardForLawyer = ({
                 <div className={`${!isChecked ? "hidden" : "ml-auto"}`}>
                   <Input
                     placeholder="Таны цагийн үнэлэмж?"
-                    className="w-60 bg-white"
+                    className="w-34 sm:w-60 bg-white text-[10px]"
                     value={hourlyRates[spec] || ""}
                     onChange={(e) => {
                       const raw = e.target.value.replace(/[^0-9]/g, "");
@@ -165,7 +167,7 @@ const ThirdCardForLawyer = ({
       <div className="grid grid-cols-2 mt-6 gap-10">
         <Button
           onClick={handlePreviousStep}
-          className="bg-black text-white cursor-pointer hover:bg-gray-800"
+          className="bg-[#333333] text-white cursor-pointer hover:bg-gray-800"
         >
           Буцах
         </Button>

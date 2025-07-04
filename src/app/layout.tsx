@@ -28,18 +28,13 @@ export default function RootLayout({
   return (
     <ClerkProvider signInUrl="/sign-in" signUpUrl="/sign-up">
       <ApolloWrapper>
-        <html
-          lang="en"
-          className={`${geistSans.variable} ${geistMono.variable}`}
-        >
+        <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
           <body
             className={`min-h-screen bg-background font-sans antialiased ${geistSans.variable} ${geistMono.variable}`}
           >
             <Header />
 
-            <main className="flex justify-center items-center min-h-[calc(100vh-4rem)]">
-              {children}
-            </main>
+            <main className="flex justify-center items-center min-h-[calc(100vh-4rem)]">{children}</main>
           </body>
         </html>
       </ApolloWrapper>

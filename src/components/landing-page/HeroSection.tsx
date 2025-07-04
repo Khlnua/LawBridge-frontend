@@ -36,9 +36,8 @@ const HeroSection = () => {
       leading-relaxed        
     "
         >
-          LawBridge нь хууль зүйн туслалцаа хайж буй хувь хүмүүсийг чадварлаг
-          хуульчидтай холбож, хялбар цаг товлох болон үнэ цэнэтэй мэдээлэл
-          өгдөг.
+          LawBridge нь хууль зүйн туслалцаа хайж буй хувь хүмүүсийг чадварлаг хуульчидтай холбож, хялбар цаг товлох
+          болон үнэ цэнэтэй мэдээлэл өгдөг.
         </h2>
       </div>
 
@@ -125,30 +124,18 @@ const HeroSection = () => {
         <div className="flex flex-col items-center p-4">
           <Shield className="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 mb-3 sm:mb-4 opacity-80" />
 
-          <h3 className="font-semibold text-lg sm:text-xl md:text-2xl">
-            Аюулгүй байдал
-          </h3>
-          <p className="opacity-70 text-sm sm:text-base mt-2">
-            Манай бүх өмгөөлөгчид хуулиар хүлээн зөвшөөрөгдсөн
-          </p>
+          <h3 className="font-semibold text-lg sm:text-xl md:text-2xl">Аюулгүй байдал</h3>
+          <p className="opacity-70 text-sm sm:text-base mt-2">Хэрэглэгчийн итгэл даасан, эрх зүйн орчин</p>
         </div>
         <div className="flex flex-col items-center p-4">
           <Clock8 className="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 mb-3 sm:mb-4 opacity-80" />
-          <h3 className="font-semibold text-lg sm:text-xl md:text-2xl">
-            24/7 Идэвхитэй
-          </h3>
-          <p className="opacity-70 text-sm sm:text-base mt-2">
-            Өдөр, шөнө үл хамааран хуулийн туслалцаа хүртээрэй
-          </p>
+          <h3 className="font-semibold text-lg sm:text-xl md:text-2xl">24/7 Идэвхитэй</h3>
+          <p className="opacity-70 text-sm sm:text-base mt-2">Өдөр, шөнө үл хамааран хуулийн туслалцаа хүртээрэй</p>
         </div>
         <div className="flex flex-col items-center p-4">
           <Users className="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 mb-3 sm:mb-4 opacity-80" />
-          <h3 className="font-semibold text-lg sm:text-xl md:text-2xl">
-            Мэргэжилтнүүд
-          </h3>
-          <p className="opacity-70 text-sm sm:text-base mt-2">
-            Хүссэн хуулийн мэргэжилтнүүдтэйгээ холбогдоорой
-          </p>
+          <h3 className="font-semibold text-lg sm:text-xl md:text-2xl">Мэргэжилтнүүд</h3>
+          <p className="opacity-70 text-sm sm:text-base mt-2">Хүссэн хуулийн мэргэжилтнүүдтэйгээ холбогдоорой</p>
         </div>
       </div>
     </header>

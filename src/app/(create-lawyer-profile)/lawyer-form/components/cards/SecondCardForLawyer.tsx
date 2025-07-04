@@ -83,7 +83,7 @@ const SecondCardForLawyer = ({
       <div className="w-full grid grid-cols-2 justify-between gap-5 mt-4">
         <Button
           onClick={handlePreviousStep}
-          className="bg-black text-white cursor-pointer hover:bg-gray-800 "
+          className="bg-[#333333] text-white cursor-pointer hover:bg-gray-800 "
         >
           Буцах
         </Button>

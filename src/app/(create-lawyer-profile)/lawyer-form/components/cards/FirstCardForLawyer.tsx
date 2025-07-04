@@ -1,8 +1,12 @@
+"use client";
+
+import React, { useState, useEffect } from "react";
 import { UseFormRegister, FieldErrors, UseFormSetValue } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ZodErrors } from "../ZodError";
 import { FormData } from "../../page";
+import { useUploadAvatar } from "../../hooks/useUploadAvatar";
 import Avatar from "../Avatar";
 
 type Props = {
@@ -18,11 +22,61 @@ const FirstCardForLawyer = ({
   goToNextStep,
   setValue,
 }: Props) => {
-  const handleNextStep = () => {
-    if (goToNextStep) {
-      goToNextStep();
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [localPreview, setLocalPreview] = useState<string | null>(null);
+
+  const handleUploadSuccess = (url: string) => {
+    setValue("avatar", url);
+  };
+
+  const {
+    fileInputRef,
+    previewLink,
+    uploading,
+    isDragging,
+    openBrowse,
+    deleteImage,
+    setIsDragging,
+    uploadToServer,
+  } = useUploadAvatar({ onUpload: handleUploadSuccess });
+
+  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setSelectedFile(file);
+      setLocalPreview(URL.createObjectURL(file));
     }
   };
+
+  const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    setIsDragging(false);
+    const file = event.dataTransfer.files?.[0];
+    if (file) {
+      setSelectedFile(file);
+      setLocalPreview(URL.createObjectURL(file));
+    }
+  };
+
+  const handleNextStep = async () => {
+    if (
+      errors.firstName?.message ||
+      errors.lastName?.message ||
+      errors.email?.message
+    ) {
+      return;
+    }
+    if (selectedFile) await uploadToServer(selectedFile);
+    if (goToNextStep) goToNextStep();
+  };
+
+  useEffect(() => {
+    return () => {
+      if (localPreview) {
+        URL.revokeObjectURL(localPreview);
+      }
+    };
+  }, [localPreview]);
 
   return (
     <div className="space-y-6">
@@ -51,7 +105,6 @@ const FirstCardForLawyer = ({
           />
         </div>
       </div>
-
       <div>
         <label htmlFor="eMail" className="block text-sm font-medium mb-1">
           Email
@@ -62,7 +115,22 @@ const FirstCardForLawyer = ({
         />
       </div>
 
-      <Avatar errors={errors} setValue={setValue} />
+      <Avatar
+        errors={errors}
+        setValue={setValue}
+        localPreview={localPreview}
+        previewLink={previewLink}
+        uploading={uploading}
+        isDragging={isDragging}
+        openBrowse={openBrowse}
+        handleFileSelect={handleFileSelect}
+        handleDrop={handleDrop}
+        setSelectedFile={setSelectedFile}
+        setLocalPreview={setLocalPreview}
+        deleteImage={deleteImage}
+        fileInputRef={fileInputRef}
+        setIsDragging={setIsDragging}
+      />
 
       <Button
         onClick={handleNextStep}
