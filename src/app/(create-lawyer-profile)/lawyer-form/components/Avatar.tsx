@@ -1,32 +1,43 @@
 "use client";
 
-import { Input } from "@/components/ui/input";
-import { useUploadAvatar } from "../hooks/useUploadAvatar";
-import { ZodErrors } from "./ZodError";
-import type { FieldErrors, UseFormSetValue } from "react-hook-form";
 import { FormData } from "../page";
+import { ZodErrors } from "./ZodError";
+import { Input } from "@/components/ui/input";
+import type { FieldErrors, UseFormSetValue } from "react-hook-form";
 
 type Props = {
   errors: FieldErrors<FormData>;
   setValue: UseFormSetValue<FormData>;
+  localPreview?: string | null;
+  previewLink?: string | null;
+  uploading?: boolean;
+  isDragging?: boolean;
+  openBrowse?: () => void;
+  handleFileSelect?: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  handleDrop?: (event: React.DragEvent<HTMLDivElement>) => void;
+  setSelectedFile?: (file: File | null) => void;
+  setLocalPreview?: (url: string | null) => void;
+  deleteImage?: () => void;
+  fileInputRef: React.RefObject<HTMLInputElement | null>;
+  setIsDragging?: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-const Avatar = ({ errors, setValue }: Props) => {
-  const handleUploadSuccess = (url: string) => {
-    setValue("avatar", url);
-  };
-  const {
-    fileInputRef,
-    previewLink,
-    uploading,
-    isDragging,
-    openBrowse,
-    handleFileSelect,
-    handleDrop,
-    deleteImage,
-    setIsDragging,
-  } = useUploadAvatar({ onUpload: handleUploadSuccess });
-
+const Avatar = ({
+  errors,
+  setValue,
+  localPreview,
+  previewLink,
+  uploading,
+  isDragging,
+  openBrowse,
+  handleFileSelect,
+  handleDrop,
+  setSelectedFile,
+  setLocalPreview,
+  deleteImage,
+  fileInputRef,
+  setIsDragging,
+}: Props) => {
   return (
     <div className="grid grid-cols-2">
       <div>
@@ -36,17 +47,27 @@ const Avatar = ({ errors, setValue }: Props) => {
         >
           Нүүр зураг оруулах
         </label>
-        {previewLink && (
+
+        {(localPreview || previewLink) && (
           <button
             type="button"
-            onClick={deleteImage}
+            onClick={() => {
+              setSelectedFile?.(null);
+              setLocalPreview?.(null);
+              setValue("avatar", "");
+              deleteImage?.();
+            }}
             className="mt-2 text-sm text-red-500 hover:underline cursor-pointer"
           >
-            Зураг устгах
+            Зураг арилгах
           </button>
         )}
-        {uploading && (
-          <div className="text-sm text-blue-500 mt-2">Илгээж байна...</div>
+        {uploading ? (
+          <div className="text-sm text-blue-500 mt-2 ">Илгээж байна...</div>
+        ) : (
+          <ZodErrors
+            error={errors.avatar?.message ? [errors.avatar.message] : undefined}
+          />
         )}
       </div>
 
@@ -65,21 +86,20 @@ const Avatar = ({ errors, setValue }: Props) => {
         onDrop={handleDrop}
         onDragOver={(e) => {
           e.preventDefault();
-          setIsDragging(true);
+          setIsDragging?.(true);
         }}
-        onDragLeave={() => setIsDragging(false)}
+        onDragLeave={() => setIsDragging?.(false)}
       >
-        {previewLink ? (
+        {localPreview ? (
+          <img src={localPreview} alt="" className="size-full rounded-full" />
+        ) : previewLink ? (
           <img src={previewLink} alt="" className="size-full rounded-full" />
         ) : (
           <span className="text-gray-500 text-center">
-            Click or drag an image here
+            Зураг оруулах талбар
           </span>
         )}
       </div>
-      <ZodErrors
-        error={errors.avatar?.message ? [errors.avatar.message] : undefined}
-      />
     </div>
   );
 };
