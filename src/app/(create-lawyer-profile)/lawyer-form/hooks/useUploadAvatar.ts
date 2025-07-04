@@ -76,7 +76,7 @@ export const useUploadAvatar = ({
     }
   };
 
-  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {};
+  const handleFileSelect = () => {};
 
   const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
     event.preventDefault();
