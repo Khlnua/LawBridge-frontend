@@ -76,20 +76,11 @@ export const useUploadAvatar = ({
     }
   };
 
-  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    // if (file) uploadToServer(file);
-  };
+  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {};
 
   const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
     event.preventDefault();
     setIsDragging(false);
-    const file = event.dataTransfer.files?.[0];
-    // if (file) uploadToServer(file);
-  };
-
-  const handleuploadToServer = () => {
-    return;
   };
 
   const deleteImage = async () => {
