@@ -1,12 +1,13 @@
+import { createClerkClient } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
 import twilio from "twilio";
-import { clerkClient } from "@clerk/nextjs/server";
 
 const accountSid = process.env.TWILIO_ACCOUNT_SID!;
 const authToken = process.env.TWILIO_AUTH_TOKEN!;
 const serviceSid = process.env.TWILIO_VERIFY_SERVICE_SID!;
 
 const client = twilio(accountSid, authToken);
+const clerkClient = createClerkClient({ secretKey: process.env.CLERK_SECRET_KEY })
 
 export async function POST(req: NextRequest) {
   try {
@@ -32,7 +33,7 @@ export async function POST(req: NextRequest) {
 
 
     const user = await clerkClient.users.createUser({
-      primaryPhoneNumber: phone,
+      emailAddress: [`${phone}@gmail.com`],
       password: Math.random().toString(36).slice(-8),
     });
 

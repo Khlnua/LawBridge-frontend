@@ -33,6 +33,9 @@ export default function OtpFormPage() {
         body: JSON.stringify({ phone, otp }),
       });
 
+      console.log("res",res);
+      
+
       if (!res.ok) {
         const data = await res.json();
         setError(data.message || "OTP шалгалт амжилтгүй боллоо");
