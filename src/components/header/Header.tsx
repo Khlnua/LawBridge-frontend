@@ -2,15 +2,14 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Menu, X } from "lucide-react";
+import { Menu, Search, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
+import { Input } from "../ui";
 
 const navLinks = [
-  { label: "Find Lawyers", href: "/find-lawyers" },
-  { label: "Legal Articles", href: "/legal-articles" },
-  { label: "About", href: "/about" },
-  { label: "Contact", href: "/contact" },
+  { label: "Өмгөөлөгчид", href: "/find-lawyers" },
+  { label: "Нийтлэл унших", href: "/legal-articles" },
 ];
 
 export default function Header() {
@@ -22,6 +21,32 @@ export default function Header() {
         <Link href="/" className="text-xl font-bold text-[#003366]">
           LawBridge
         </Link>
+
+         <div className="hidden md:block relative">
+          <Input
+            placeholder=" Өмгөөлөгч хайх"
+            className=" w-full
+            border-[#003366] border
+          bg-white text-gray-600
+          p-5 md:p-6   
+          pr-16 md:pr-32
+          text-base sm:text-lg  
+          rounded-md   "
+          />
+          <Button
+            className="
+          absolute top-1/2 -translate-y-1/2
+          right-1 sm:right-2     
+          text-[#003366]
+          text-sm sm:text-base   
+          px-3 py-1 sm:px-4 sm:py-2 
+          rounded-md             
+          hover:cursor-pointer hover:opacity-85
+        "
+          >
+            <Search/>
+          </Button>
+        </div>
         <nav className="hidden md:flex gap-6 items-center">
           {navLinks.map((link) => (
             <Link
@@ -33,6 +58,8 @@ export default function Header() {
             </Link>
           ))}
         </nav>
+
+       
 
         <div className="hidden md:flex gap-6 items-center">
           <SignedOut>
@@ -55,6 +82,8 @@ export default function Header() {
             <UserButton afterSignOutUrl="/sign-in" />
           </SignedIn>
         </div>
+
+        
 
         <button className="md:hidden text-gray-600">
           {isOpen ? (
@@ -84,6 +113,8 @@ export default function Header() {
               {link.label}
             </Link>
           ))}
+
+          
 
           <SignedOut>
             <div className="flex flex-col gap-2">
