@@ -8,11 +8,7 @@ const RoleSelectPage = () => {
 
   const selectRole = (role: "user" | "lawyer") => {
     localStorage.setItem("selected_role", role);
-    if (role === "user") {
-      push("/sign-up/user/phone-form");
-    } else {
-      push("/sign-up/lawyer");
-    }
+    push(`/sign-up/${role}`)
   };
 
   return (
