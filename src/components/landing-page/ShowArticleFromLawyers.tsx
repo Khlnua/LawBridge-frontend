@@ -1,7 +1,12 @@
+"use client"
+
 import React from "react";
 import { Button } from "@/components/ui";
+import { useRouter } from "next/navigation";
+
 
 const ShowArticleFromLawyers = () => {
+  const {push} = useRouter()
   const articles = [
     {
       category: "Criminal Law",
@@ -66,7 +71,7 @@ const ShowArticleFromLawyers = () => {
         </article>
 
         <div className="mt-8 sm:mt-10 md:mt-12">
-          <Button className="px-6 py-2.5 sm:px-8 sm:py-3 bg-[#003366] text-white font-medium rounded-md hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 text-base sm:text-lg">
+          <Button onClick={()=>(push("/legal-articles"))} className="px-6 py-2.5 sm:px-8 sm:py-3 bg-[#003366] text-white font-medium rounded-md hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 text-base sm:text-lg">
             Бүх нийтлэлийг унших
           </Button>
         </div>

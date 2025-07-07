@@ -1,7 +1,11 @@
+"use client"
+
 import LawyerCard from "./LawyerCard";
 import { Button } from "@/components/ui";
+import { useRouter } from "next/navigation";
 
 const RecommendLawyers = () => {
+  const {push} = useRouter()
   return (
     <div className="container mx-auto px-4 py-8 sm:px-6 md:px-8 lg:px-10 text-center flex flex-col items-center">
       <header className="mb-8 sm:mb-10 md:mb-12 w-full max-w-4xl">
@@ -47,7 +51,7 @@ const RecommendLawyers = () => {
         />
       </div>
       <div className="sm:mt-4">
-        <Button className="bg-[#003366] text-[#f8f8f8] text-base sm:text-lg font-medium px-5 py-2.5 sm:px-6 sm:py-3 rounded-lg hover:opacity-90 transition-colors duration-200">
+        <Button onClick={()=>(push("/find-lawyers"))} className="bg-[#003366] text-[#f8f8f8] text-base sm:text-lg font-medium px-5 py-2.5 sm:px-6 sm:py-3 rounded-lg hover:opacity-90 transition-colors duration-200">
           Бусад өмгөөлөгчдийг харах
         </Button>
       </div>
