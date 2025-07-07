@@ -46,7 +46,7 @@ export default function UserSignUpPage() {
             path="/sign-up/user"
             routing="path"
             signInUrl="/sign-in"
-            afterSignUpUrl="/dashboard"
+            afterSignUpUrl="/sign-up/user/otp-form"
             appearance={{
               elements: {
                 formButtonPrimary:
