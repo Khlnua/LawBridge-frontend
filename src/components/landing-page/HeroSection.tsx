@@ -1,8 +1,11 @@
-import React from "react";
+"use client"
+
 import { Users, Clock8, Shield } from "lucide-react";
 import { Button, Input } from "@/components/ui";
+import { useRouter } from "next/navigation";
 
 const HeroSection = () => {
+  const {push} = useRouter()
   return (
     <header
       className="
@@ -57,14 +60,14 @@ const HeroSection = () => {
       space-y-3 sm:space-y-0 sm:space-x-4 
     "
         >
-          <Button
+          <Button onClick={()=>(push("/find-lawyers"))}
             className="
         w-full sm:w-auto        
         bg-[#D4AF37] text-[#333333]
         text-base sm:text-lg md:text-xl
         p-4 sm:p-5 md:p-6      
         hover:cursor-pointer hover:opacity-85
-      "
+      " 
           >
             Өмгөөлөгчдийг харах
           </Button>
