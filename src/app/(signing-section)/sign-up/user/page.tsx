@@ -9,7 +9,7 @@ export default function UserSignUpPage() {
         path="/sign-up/user"
         routing="path"
         signInUrl="/sign-in"
-        afterSignUpUrl="/sign-up/user/otp-form"
+        afterSignUpUrl="/sign-up/role"
         appearance={{
           elements: {
             formButtonPrimary: "bg-blue-600 hover:bg-blue-700",
