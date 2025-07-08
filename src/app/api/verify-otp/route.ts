@@ -38,10 +38,14 @@ export async function POST(req: NextRequest) {
     });
 
     return NextResponse.json({ success: true, userId: user.id });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("verify-otp error:", error);
+    const message =
+      error instanceof Error
+        ? error.message
+        : "OTP шалгалт алдаа гарлаа";
     return NextResponse.json(
-      { message: error.message || "OTP шалгалт алдаа гарлаа" },
+      { message },
       { status: 500 }
     );
   }

@@ -22,8 +22,12 @@ export async function POST(req: NextRequest) {
     });
 
     return NextResponse.json({ success: true });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("send-otp error:", error);
-    return NextResponse.json({ message: error.message || "OTP илгээхэд алдаа гарлаа" }, { status: 500 });
+    const message =
+      typeof error === "object" && error !== null && "message" in error
+        ? (error as { message?: string }).message
+        : "OTP илгээхэд алдаа гарлаа";
+    return NextResponse.json({ message }, { status: 500 });
   }
 }
