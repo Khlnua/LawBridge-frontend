@@ -40,7 +40,7 @@ export default function UserSignUpPage() {
       }
 
       router.push(`/sign-up/user/otp-form?phone=${encodeURIComponent(fullPhone)}`);
-    } catch (e) {
+    } catch {
       setError("Сервертэй холбогдож чадсангүй");
     } finally {
       setLoading(false);

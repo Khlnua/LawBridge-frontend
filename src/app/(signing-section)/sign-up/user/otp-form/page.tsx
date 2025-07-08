@@ -38,7 +38,7 @@ export default function OtpFormPage() {
       } else {
         router.push("/");
       }
-    } catch (e) {
+    } catch {
       setError("Сервертэй холбогдож чадсангүй");
     } finally {
       setLoading(false);

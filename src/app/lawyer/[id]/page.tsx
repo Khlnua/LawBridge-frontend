@@ -34,10 +34,10 @@ const LawyerProfile = () => {
           <div className="space-y-4 text-center">
             <h3 className="font-semibold text-lg">Үйлчлүүлэгчдийн сэтгэгдэл</h3>
             <div className="bg-green-50 p-4 rounded-lg shadow">
-              ⭐⭐⭐⭐⭐ — "Маш найдвартай, үр дүнтэй зөвлөгөө өгсөн. Баярлалаа!"
+              ⭐⭐⭐⭐⭐ — &quot;Маш найдвартай, үр дүнтэй зөвлөгөө өгсөн. Баярлалаа!&quot;
             </div>
             <div className="bg-green-50 p-4 rounded-lg shadow">
-              ⭐⭐⭐⭐ — "Тодорхой тайлбарлаж, хурдан шийдсэн."
+              ⭐⭐⭐⭐ — &quot;Тодорхой тайлбарлаж, хурдан шийдсэн.&quot;
             </div>
           </div>
         );
@@ -67,10 +67,7 @@ const LawyerProfile = () => {
         <p className="text-green-700 font-medium text-center">{lawyer.specialization}</p>
 
         <div className="text-sm text-gray-500 text-center">
-          <div className="flex items-center justify-center gap-2">
-            <MapPin size={16} />
-            <span>{lawyer.location}</span>
-          </div>
+          
           <div className="flex items-center justify-center gap-2">
             <Mail size={16} />
             <span>{lawyer.email}</span>

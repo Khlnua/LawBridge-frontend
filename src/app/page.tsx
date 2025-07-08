@@ -1,4 +1,3 @@
-import { SignedOut, SignIn } from "@clerk/nextjs";
 import MainPage from "./(landing-page)/MainPage";
 
 const homepage = () => {
