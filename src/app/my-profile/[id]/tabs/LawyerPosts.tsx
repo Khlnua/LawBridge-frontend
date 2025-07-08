@@ -91,7 +91,7 @@ export const LawyerPosts = () => {
               id="mediaType"
               className="w-full border rounded-md p-2 text-sm"
               value={newMediaType}
-              onChange={(e) => setNewMediaType(e.target.value as any)}
+              onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setNewMediaType(e.target.value as "image" | "video" | "")}
             >
               <option value="">Сонгох</option>
               <option value="image">Зураг</option>

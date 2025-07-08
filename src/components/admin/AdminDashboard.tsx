@@ -6,7 +6,6 @@ import { DashboardCharts } from "./DashBoardCharts";
 import { RecentActivity } from "./RecentActivity";
 import { UserTable } from "./UserTable";
 import { useState } from "react";
-import { PendingUsersTable } from "./PendingUsersTable"; 
 import { LawyerApprovalDashboard } from "./LawyerApprovalDashboard";
  
 export function AdminDashboard() {
