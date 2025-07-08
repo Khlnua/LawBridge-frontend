@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 
+
 export function DashboardHeader() {
   return (
     <div className="flex items-center justify-between bg-white rounded-lg p-6 shadow-sm border">

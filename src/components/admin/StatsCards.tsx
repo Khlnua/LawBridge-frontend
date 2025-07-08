@@ -1,6 +1,7 @@
 import { TrendingUp, TrendingDown, Users, ShoppingCart, DollarSign, Activity } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 
+
 const stats = [
   {
     title: "Нийт Орлого",

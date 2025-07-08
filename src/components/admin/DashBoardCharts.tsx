@@ -1,6 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell } from "recharts";
 
+
 const barData = [
   { name: "Нэг сар", revenue: 4000, orders: 240 },
   { name: "Хоёр сар", revenue: 3000, orders: 139 },

@@ -2,6 +2,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 
+
 type StatusType = "Амжилттай" | "Мэдээлэл" | "Анхааруулга";
 
 type Activity = {

@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Scale, Users, Clock, CheckCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast"; 
 
+
 // Mock data for demonstration
 const mockLawyers = [
   {
@@ -111,15 +112,14 @@ export function LawyerApprovalDashboard() {
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center gap-3 mb-2">
             <Scale className="h-8 w-8" />
-            <h1 className="text-3xl font-bold">Legal Admin Approval Hub</h1>
           </div>
           <p className="text-primary-foreground/80 text-lg">
-            Review and approve lawyer registration applications
+            Хуульч Өмгөөлөгчийн хүсэлтүүдийг хянах, батлах
           </p>
         </div>
       </header>
 
-      <div className="max-w-7xl mx-auto p-6">
+      <div className="max-w-7xl mx-auto p-6"> 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
           <Card className="bg-[var(--gradient-card)] border border-border shadow-[var(--shadow-card)]">

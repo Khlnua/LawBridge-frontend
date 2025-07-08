@@ -6,9 +6,8 @@ import { DashboardCharts } from "./DashBoardCharts";
 import { RecentActivity } from "./RecentActivity";
 import { UserTable } from "./UserTable";
 import { useState } from "react";
-import { PendingUsersTable } from "./PendingUsersTable"; 
 import { LawyerApprovalDashboard } from "./LawyerApprovalDashboard";
- 
+
 export function AdminDashboard() {
   const [activeSection, setActiveSection] = useState ("dashboard");
 
@@ -40,7 +39,7 @@ export function AdminDashboard() {
           )}
           {activeSection === "lawyeraprroval" && (
             <div>
-              <h2 className="text-2xl font-bold mb-4">Хүлээгдэж буй Хуульчид</h2>
+              <h2 className="text-2xl font-bold mb-4"></h2>
               <LawyerApprovalDashboard />
             </div>
           )}
