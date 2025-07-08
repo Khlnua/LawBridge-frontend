@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Mail, Phone, Star, MapPin, Clock, FileText } from "lucide-react";
+import { Mail, Phone, Star, Clock, FileText } from "lucide-react";
 
 const LawyerProfile = () => {
   const [activeTab, setActiveTab] = useState<"posts" | "reviews" | "book">("posts");
