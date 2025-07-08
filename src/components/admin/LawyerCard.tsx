@@ -2,7 +2,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Check, X, User, Scale, MapPin, Calendar, Mail, Phone } from "lucide-react";
+import { Check, X, Scale, MapPin, Calendar, Mail, Phone } from "lucide-react";
 
 interface LawyerCardProps {
   lawyer: {

@@ -29,7 +29,7 @@ export const LawyerReviews = () => {
   // Badge logic
   let badge = "";
   let nextLevel = "";
-  let current = totalClients;
+  const current = totalClients;
   let max = 50;
 
   if (totalClients >= 50) {
