@@ -1,14 +1,8 @@
 "use client";
 import { useEffect, useState } from "react";
 
-type LawyerRequest = {
-  userId: string;
-  name: string;
-  license: string;
-};
-
 export default function AdminLawyerRequestsPage() {
-  const [requests, setRequests] = useState<LawyerRequest[]>([]);
+  const [requests, setRequests] = useState<any[]>([]);
 
   useEffect(() => {
     fetch("/api/lawyer/lawyer-request")
