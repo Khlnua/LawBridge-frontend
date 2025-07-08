@@ -5,8 +5,9 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import OtpInput from "@/components/OtpInput";
 import { BriefcaseBusiness, Globe, Star, Users } from "lucide-react";
+import { Suspense } from "react";
 
-export default function OtpFormPage() {
+function OtpFormPageInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const phone = searchParams.get("phone") || "";
@@ -109,3 +110,12 @@ export default function OtpFormPage() {
     </div>
   );
 }
+
+export default function OtpFormPage() {
+  return (
+    <Suspense>
+      <OtpFormPageInner />
+    </Suspense>
+  );
+}
+ 
