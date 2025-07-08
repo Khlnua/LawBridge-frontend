@@ -1,6 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
+import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
 
 interface Post {
   id: number;
@@ -55,91 +61,96 @@ export const LawyerPosts = () => {
 
   return (
     <div className="space-y-6">
-      {/* New Post Form */}
-      <div className="space-y-4">
-        <h2 className="text-xl font-semibold text-center">Шинэ нийтлэл бичих</h2>
-        <textarea
-          className="w-full border rounded-md p-3 text-sm"
-          placeholder="Юу бичих вэ?"
-          value={newContent}
-          onChange={(e) => setNewContent(e.target.value)}
-        />
-        <input
-          type="text"
-          className="w-full border rounded-md p-2 text-sm"
-          placeholder="Image эсвэл YouTube линк (заавал биш)"
-          value={newMediaUrl}
-          onChange={(e) => setNewMediaUrl(e.target.value)}
-        />
-        <select
-          className="w-full border rounded-md p-2 text-sm"
-          value={newMediaType}
-          onChange={(e) =>
-            setNewMediaType(e.target.value as "image" | "video" | "")
-          }
-        >
-          <option value="">Media төрөл сонгоно уу</option>
-          <option value="image">Зураг</option>
-          <option value="video">Видео (YouTube embed)</option>
-        </select>
-        <button
-          className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition"
-          onClick={handlePostSubmit}
-        >
-          Нийтлэх
-        </button>
-      </div>
+      {/* Post Form */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg">Шинэ нийтлэл бичих</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div>
+            <Label htmlFor="content">Юу бичих вэ?</Label>
+            <Textarea
+              id="content"
+              value={newContent}
+              onChange={(e) => setNewContent(e.target.value)}
+              placeholder="Юу бичих вэ?"
+            />
+          </div>
+          <div>
+            <Label htmlFor="mediaUrl">Image эсвэл YouTube линк</Label>
+            <Input
+              id="mediaUrl"
+              value={newMediaUrl}
+              onChange={(e) => setNewMediaUrl(e.target.value)}
+              placeholder="https://example.com/media.jpg"
+            />
+          </div>
+          <div>
+            <Label htmlFor="mediaType">Media төрөл сонгоно уу</Label>
+            <select
+              id="mediaType"
+              className="w-full border rounded-md p-2 text-sm"
+              value={newMediaType}
+              onChange={(e) => setNewMediaType(e.target.value as any)}
+            >
+              <option value="">Сонгох</option>
+              <option value="image">Зураг</option>
+              <option value="video">Видео</option>
+            </select>
+          </div>
+        </CardContent>
+        <CardFooter className="justify-end">
+          <Button onClick={handlePostSubmit} className="bg-green-600 text-white hover:bg-green-700">
+            Нийтлэх
+          </Button>
+        </CardFooter>
+      </Card>
 
-      <hr />
+      <Separator />
 
-      {/* Existing Posts */}
+      {/* Post List */}
       <div className="space-y-6">
         <h2 className="text-xl font-semibold text-center">Таны нийтлэлүүд</h2>
         {posts.map((post) => (
-          <div
-            key={post.id}
-            className="bg-gray-50 border rounded-lg p-4 space-y-2"
-          >
-            <div className="text-sm text-gray-500 text-right">
+          <Card key={post.id}>
+            <CardHeader className="flex items-center justify-between text-sm text-muted-foreground">
               {post.createdAt}
-            </div>
-            <p>{post.content}</p>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              <p>{post.content}</p>
 
-            {post.mediaUrl && post.mediaType === "image" && (
-              <img
-                src={post.mediaUrl}
-                alt="post-media"
-                className="rounded-lg max-h-96 object-cover mx-auto"
-              />
-            )}
-            {post.mediaUrl && post.mediaType === "video" && (
-              <div className="aspect-video w-full">
-                <iframe
-                  className="w-full h-full rounded-lg"
-                  src={post.mediaUrl}
-                  frameBorder="0"
-                  allow="autoplay; encrypted-media"
-                  allowFullScreen
-                />
-              </div>
-            )}
-
-            {/* Comments */}
-            <div className="pt-2 space-y-1">
-              <h4 className="text-sm font-medium">Сэтгэгдлүүд</h4>
-              {post.comments.length > 0 ? (
-                post.comments.map((comment, idx) => (
-                  <div key={idx} className="text-sm text-gray-600 pl-2">
-                    - {comment}
-                  </div>
-                ))
-              ) : (
-                <div className="text-sm text-gray-400">Сэтгэгдэл алга</div>
+              {post.mediaUrl && post.mediaType === "image" && (
+                <img src={post.mediaUrl} alt="post" className="rounded-lg w-full max-h-96 object-cover" />
               )}
-            </div>
-          </div>
+
+              {post.mediaUrl && post.mediaType === "video" && (
+                <div className="aspect-video w-full">
+                  <iframe
+                    className="w-full h-full rounded-lg"
+                    src={post.mediaUrl}
+                    frameBorder="0"
+                    allow="autoplay; encrypted-media"
+                    allowFullScreen
+                  />
+                </div>
+              )}
+
+              <div className="pt-2">
+                <h4 className="text-sm font-semibold">Сэтгэгдлүүд</h4>
+                {post.comments.length > 0 ? (
+                  post.comments.map((comment, i) => (
+                    <p key={i} className="text-sm text-gray-600 pl-2">
+                      • {comment}
+                    </p>
+                  ))
+                ) : (
+                  <p className="text-sm text-gray-400">Сэтгэгдэл алга</p>
+                )}
+              </div>
+            </CardContent>
+          </Card>
         ))}
       </div>
     </div>
   );
-}
+};

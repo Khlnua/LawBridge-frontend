@@ -2,9 +2,29 @@
 
 import { useState } from "react";
 import { Pencil, Save, X } from "lucide-react";
+import { useUploadAvatar } from "@/app/(create-lawyer-profile)/lawyer-form/hooks";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@/components/ui/avatar";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+  CardFooter,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Separator } from "@/components/ui/separator";
 
-export const LawyerProfileHeader= () => {
+export const LawyerProfileHeader = () => {
   const [isEditing, setIsEditing] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [localPreview, setLocalPreview] = useState<string | null>(null);
 
   const [form, setForm] = useState({
     avatar: "/lawyer-avatar.jpg",
@@ -12,132 +32,186 @@ export const LawyerProfileHeader= () => {
     lastName: "Батболд",
     email: "nomin@example.com",
     phone: "99112233",
-    location: "Улаанбаатар",
     specialization: "Эрүүгийн эрх зүй, Гэр бүлийн эрх зүй",
     bio: "10 жилийн туршлагатай, хууль зүйн салбарт үр дүнтэй зөвлөгөө өгдөг өмгөөлөгч.",
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const {
+    fileInputRef,
+    uploading,
+    openBrowse,
+    uploadToServer,
+  } = useUploadAvatar({
+    onUpload: (url) => {
+      setForm((prev) => ({ ...prev, avatar: url }));
+    },
+  });
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSave = () => {
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setSelectedFile(file);
+      setLocalPreview(URL.createObjectURL(file));
+    }
+  };
+
+  const handleSave = async () => {
+    if (selectedFile) {
+      await uploadToServer(selectedFile);
+    }
     setIsEditing(false);
+    setLocalPreview(null);
     console.log("Хадгалсан мэдээлэл:", form);
-    // 🎯 Backend руу PATCH хүсэлт явуулж болно
+    // 🎯 Backend руу PATCH хийх
   };
 
   return (
-    <div className="w-full max-w-4xl bg-white border shadow rounded-xl p-6 space-y-4 flex flex-col items-center text-center">
-      {/* Profile image */}
-      <div className="relative">
-        <img
-          src={form.avatar}
-          alt="Profile"
-          className="w-32 h-32 rounded-full object-cover border"
-        />
-        {/* Future: Upload image feature */}
-      </div>
+    <Card className="w-full max-w-4xl mx-auto p-6 space-y-4">
+      <CardHeader className="flex flex-col items-center text-center gap-4">
+        <div className="relative group">
+          <Avatar className="w-28 h-28 border">
+            <AvatarImage
+              src={localPreview || form.avatar}
+              alt="Avatar"
+              className="object-cover border-none"
+            />
+            <AvatarFallback>NB</AvatarFallback>
+          </Avatar>
 
-      {isEditing ? (
+          {isEditing && (
+            <>
+              <button
+                type="button"
+                onClick={openBrowse}
+                className="absolute bottom-0 right-0 p-2 bg-white rounded-full shadow group-hover:opacity-100 opacity-0 transition"
+                disabled={uploading}
+              >
+                <Pencil size={16} />
+              </button>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleFileSelect}
+                hidden
+              />
+            </>
+          )}
+        </div>
+
+        <CardTitle className="text-xl font-semibold">
+          {form.lastName} {form.firstName}
+        </CardTitle>
+        {!isEditing && (
+          <>
+            <p className="text-green-700">{form.specialization}</p>
+            <div className="text-sm text-gray-500">
+              <div>📞 {form.phone}</div>
+              <div>✉️ {form.email}</div>
+            </div>
+            <p className="text-sm text-muted-foreground mt-2">{form.bio}</p>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setIsEditing(true)}
+              className="mt-2"
+            >
+              <Pencil size={14} className="mr-1" />
+              Засварлах
+            </Button>
+          </>
+        )}
+      </CardHeader>
+
+      {isEditing && (
         <>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
-            <input
-              type="text"
-              name="firstName"
-              value={form.firstName}
-              onChange={handleChange}
-              placeholder="Нэр"
-              className="border rounded-md p-2 text-sm"
-            />
-            <input
-              type="text"
-              name="lastName"
-              value={form.lastName}
-              onChange={handleChange}
-              placeholder="Овог"
-              className="border rounded-md p-2 text-sm"
-            />
-            <input
-              type="email"
-              name="email"
-              value={form.email}
-              onChange={handleChange}
-              placeholder="Имэйл"
-              className="border rounded-md p-2 text-sm"
-            />
-            <input
-              type="text"
-              name="phone"
-              value={form.phone}
-              onChange={handleChange}
-              placeholder="Утас"
-              className="border rounded-md p-2 text-sm"
-            />
-            <input
-              type="text"
-              name="location"
-              value={form.location}
-              onChange={handleChange}
-              placeholder="Байршил"
-              className="border rounded-md p-2 text-sm"
-            />
-            <input
-              type="text"
-              name="specialization"
-              value={form.specialization}
-              onChange={handleChange}
-              placeholder="Мэргэжлийн чиглэл"
-              className="border rounded-md p-2 text-sm"
-            />
-            <textarea
-              name="bio"
-              value={form.bio}
-              onChange={handleChange}
-              placeholder="Танилцуулга"
-              className="col-span-full border rounded-md p-2 text-sm min-h-[80px]"
-            />
-          </div>
+          <Separator />
+          <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <Label>Нэр</Label>
+              <Input
+                name="firstName"
+                value={form.firstName}
+                onChange={handleChange}
+                className="border-gray-200"
+              />
+            </div>
+            <div>
+              <Label>Овог</Label>
+              <Input
+                name="lastName"
+                value={form.lastName}
+                onChange={handleChange}
+                className="border-gray-200"
+              />
+            </div>
+            <div>
+              <Label>Имэйл</Label>
+              <Input
+                name="email"
+                value={form.email}
+                onChange={handleChange}
+                className="border-gray-200"
+              />
+            </div>
+            <div>
+              <Label>Утас</Label>
+              <Input
+                name="phone"
+                value={form.phone}
+                onChange={handleChange}
+                className="border-gray-200"
+              />
+            </div>
+            <div className="md:col-span-2">
+              <Label>Мэргэжлийн чиглэл</Label>
+              <Input
+                name="specialization"
+                value={form.specialization}
+                onChange={handleChange}
+                className="border-gray-200"
+              />
+            </div>
+            <div className="md:col-span-2">
+              <Label>Танилцуулга</Label>
+              <Textarea
+                name="bio"
+                value={form.bio}
+                onChange={handleChange}
+                className="border-gray-200"
+              />
+            </div>
+          </CardContent>
 
-          <div className="flex gap-3 justify-center mt-4">
-            <button
+          <CardFooter className="flex justify-end gap-2">
+            <Button
               onClick={handleSave}
-              className="flex items-center gap-1 bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700"
+              disabled={uploading}
+              className="bg-green-600 hover:bg-green-700 text-white"
             >
-              <Save size={16} />
+              <Save size={16} className="mr-1" />
               Хадгалах
-            </button>
-            <button
-              onClick={() => setIsEditing(false)}
-              className="flex items-center gap-1 bg-gray-300 text-gray-800 px-4 py-2 rounded-md hover:bg-gray-400"
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setIsEditing(false);
+                setLocalPreview(null);
+              }}
             >
-              <X size={16} />
+              <X size={16} className="mr-1" />
               Болих
-            </button>
-          </div>
-        </>
-      ) : (
-        <>
-          <h2 className="text-xl font-bold">
-            {form.lastName} {form.firstName}
-          </h2>
-          <p className="text-green-700 font-medium">{form.specialization}</p>
-          <div className="text-sm text-gray-500 space-y-1">
-            <div>📍 {form.location}</div>
-            <div>📞 {form.phone}</div>
-            <div>✉️ {form.email}</div>
-          </div>
-          <p className="text-sm text-gray-700 max-w-xl mt-2">{form.bio}</p>
-          <button
-            onClick={() => setIsEditing(true)}
-            className="mt-4 flex items-center gap-1 text-sm px-4 py-2 border rounded-md hover:bg-gray-100 transition"
-          >
-            <Pencil size={16} />
-            Засварлах
-          </button>
+            </Button>
+          </CardFooter>
         </>
       )}
-    </div>
+    </Card>
   );
-}
+};

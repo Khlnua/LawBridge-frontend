@@ -1,6 +1,6 @@
 "use client";
 
-import * as React from "react";
+import { useEffect, useState } from "react";
 import { Calendar } from "@/components/ui/calendar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
@@ -23,8 +23,8 @@ const generateTimeSlots = () => {
 };
 
 export const LawyerSchedule = () => {
-  const [date, setDate] = React.useState<Date | undefined>(new Date());
-  const [availability, setAvailability] = React.useState<
+  const [date, setDate] = useState<Date | undefined>(new Date());
+  const [availability, setAvailability] = useState<
     Record<string, string[]>
   >({});
 
@@ -32,7 +32,7 @@ export const LawyerSchedule = () => {
   const selectedTimeSlots = availability[selectedDateKey] || [];
 
   // Автоматаар хуучирсан огноог устгах (анхны render үед)
-  React.useEffect(() => {
+ useEffect(() => {
     const now = new Date();
     const cutoff = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
     const weekLater = new Date(
