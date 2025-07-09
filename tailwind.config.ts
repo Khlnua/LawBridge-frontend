@@ -8,7 +8,6 @@ export default {
 		"./app/**/*.{ts,tsx}",
 		"./src/**/*.{ts,tsx}",
 	],
-	prefix: "",
 	theme: {
 		container: {
 			center: true,
@@ -19,56 +18,56 @@ export default {
 		},
 		extend: {
 			colors: {
-				border: 'oklch(var(--border))',
-				input: 'oklch(var(--input))',
-				ring: 'oklch(var(--ring))',
-				background: 'oklch(var(--background))',
-				foreground: 'oklch(var(--foreground))',
+				border: 'var(--border)',
+				input: 'var(--input)',
+				ring: '(var(--ring))',
+				background: 'var(--background)',
+				foreground: 'var(--foreground)',
 				primary: {
-					DEFAULT: 'oklch(var(--primary))',
-					foreground: 'oklch(var(--primary-foreground))'
+					DEFAULT: 'var(--primary)',
+					'foreground': 'var(--primary-foreground)',
 				},
 				secondary: {
-					DEFAULT: 'oklch(var(--secondary))',
-					foreground: 'oklch(var(--secondary-foreground))'
+					DEFAULT: 'var(--secondary)',
+					'foreground': 'var(--secondary-foreground)',
 				},
 				destructive: {
-					DEFAULT: 'oklch(var(--destructive))',
-					foreground: 'oklch(var(--destructive-foreground))'
+					DEFAULT: 'var(--destructive)',
+					'foreground': 'var(--destructive-foreground)',
 				},
 				success: {
-					DEFAULT: 'oklch(var(--success))',
-					foreground: 'oklch(var(--success-foreground))'
+					DEFAULT: 'var(--success)',
+					'foreground': 'var(--success-foreground)',
 				},
 				warning: {
-					DEFAULT: 'oklch(var(--warning))',
-					foreground: 'oklch(var(--warning-foreground))'
+					DEFAULT: 'var(--warning)',
+					'foreground': 'var(--warning-foreground)',
 				},
 				muted: {
-					DEFAULT: 'oklch(var(--muted))',
-					foreground: 'oklch(var(--muted-foreground))'
+					DEFAULT: 'var(--muted)',
+					'foreground': 'var(--muted-foreground)',
 				},
 				accent: {
-					DEFAULT: 'oklch(var(--accent))',
-					foreground: 'oklch(var(--accent-foreground))'
+					DEFAULT: 'var(--accent)',
+					'foreground': 'var(--accent-foreground)',
 				},
 				popover: {
-					DEFAULT: 'oklch(var(--popover))',
-					foreground: 'oklch(var(--popover-foreground))'
+					DEFAULT: 'var(--popover)',
+					'foreground': 'var(--popover-foreground)',
 				},
 				card: {
-					DEFAULT: 'oklch(var(--card))',
-					foreground: 'oklch(var(--card-foreground))'
+					DEFAULT: 'var(--card)',
+					'foreground': 'var(--card-foreground)',
 				},
 				sidebar: {
-					DEFAULT: 'oklch(var(--sidebar-background))',
-					foreground: 'oklch(var(--sidebar-foreground))',
-					primary: 'oklch(var(--sidebar-primary))',
-					'primary-foreground': 'oklch(var(--sidebar-primary-foreground))',
-					accent: 'oklch(var(--sidebar-accent))',
-					'accent-foreground': 'oklch(var(--sidebar-accent-foreground))',
-					border: 'oklch(var(--sidebar-border))',
-					ring: 'oklch(var(--sidebar-ring))'
+					DEFAULT: 'var(--sidebar)',
+					foreground: 'var(--sidebar-foreground)',
+					primary: 'var(--sidebar-primary)',
+					'primary-foreground': 'var(--sidebar-primary-foreground)',
+					accent: 'var(--sidebar-accent)',
+					'accent-foreground': 'var(--sidebar-accent-foreground)',
+					border: 'var(--sidebar-border)',
+					ring: 'var(--sidebar-ring)'
 				}
 			},
 			borderRadius: {
@@ -102,14 +101,3 @@ export default {
 	},
 	plugins: [require("tailwindcss-animate")],
 } satisfies Config;
-
-module.exports = {
-  content: [
-    "./src/**/*.{js,ts,jsx,tsx}",
-    "./src/styles/globals.css"
-  ],
-  theme: {
-    extend: {},
-  },
-  plugins: [],
-}
