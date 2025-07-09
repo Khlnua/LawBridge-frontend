@@ -1,3 +1,4 @@
+"use client"
 import { useState } from "react";
 import { Check, X, Eye, Mail, Calendar, MapPin, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -32,7 +33,7 @@ const mockUsers: User[] = [
   {
     id: "2",
     name: "Michael Chen",
-    email: "michael.chen@company.com",
+    email: "michael.chen@comp.com",
     role: "Software Engineer",
     department: "Engineering",
     registrationDate: "2024-01-14",
