@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { FileText, Star, Clock } from "lucide-react";
-import { LawyerPosts,LawyerReviews, LawyerSchedule , LawyerProfileHeader  } from "./tabs"; 
+import {LawyerReviews, LawyerSchedule , LawyerProfileHeader  } from "./tabs"; 
+import LawyerPosts from "./tabs/LawyerPosts";
 
 
 const LawyerProfilePageForLawyers = () => {

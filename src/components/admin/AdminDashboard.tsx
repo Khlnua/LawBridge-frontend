@@ -1,3 +1,4 @@
+"use client"
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AdminSidebar } from "@/components/admin/AdminSidebar";
 import { DashboardHeader } from "./DashboardHeader";
