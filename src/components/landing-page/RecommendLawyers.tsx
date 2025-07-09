@@ -3,7 +3,7 @@
 import LawyerCard from "./LawyerCard";
 import { Button } from "@/components/ui";
 import { useRouter } from "next/navigation";
-import { TestingFakeLawyers } from "@/app/find-lawyers/utils/fake-lawyers";
+import { TestingFakeLawyers } from "@/app/utils/fake-lawyers";
 
 const RecommendLawyers = () => {
   const { push } = useRouter();
