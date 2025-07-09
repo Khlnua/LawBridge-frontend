@@ -1,11 +1,7 @@
-import React from 'react'
+import FilteredByCategories from "@/components/find-lawyers/FilteredByCategories";
 
 const FindLawyersPage = () => {
-  return (
-    <div>
-      Өмгөөлөгчдийг олох filter хэсэг
-    </div>
-  )
-}
+  return <FilteredByCategories />;
+};
 
-export default FindLawyersPage
+export default FindLawyersPage;

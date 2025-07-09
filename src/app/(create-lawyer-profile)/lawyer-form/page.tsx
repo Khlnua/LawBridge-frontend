@@ -3,7 +3,7 @@
 import { z } from "zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { schemaLawyerProfile } from "./utils/schema";
+import { schemaLawyerProfile } from "./actions/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AnimatePresence, motion } from "framer-motion";
 import FirstCardForLawyer from "./components/cards/FirstCardForLawyer";

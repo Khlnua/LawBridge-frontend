@@ -3,8 +3,8 @@ import { ZodErrors } from "../ZodError";
 import { useState, useEffect } from "react";
 import { Button, Checkbox, Input } from "@/components/ui/index";
 import { FieldErrors, UseFormSetValue } from "react-hook-form";
-import { specializations } from "../../utils/specializations";
-import { formatMoneyDigits } from "../../utils/numberFormat";
+import { specializations } from "../../../../utils/specializations";
+import { formatMoneyDigits } from "../../../../utils/numberFormat";
 import { useRouter } from "next/navigation";
 
 type Props = {
@@ -15,22 +15,14 @@ type Props = {
   goToPreviousStep?: () => void;
 };
 
-const ThirdCardForLawyer = ({
-  errors,
-  isSubmitting,
-  goToPreviousStep,
-  watchedSpecializations,
-  setValue,
-}: Props) => {
+const ThirdCardForLawyer = ({ errors, isSubmitting, goToPreviousStep, watchedSpecializations, setValue }: Props) => {
   const handlePreviousStep = goToPreviousStep;
   const { push } = useRouter();
 
   const [recommendPaid, setRecommendPaid] = useState<{
     [spec: string]: boolean;
   }>({});
-  const [hourlyRates, setHourlyRates] = useState<{ [spec: string]: string }>(
-    {}
-  );
+  const [hourlyRates, setHourlyRates] = useState<{ [spec: string]: string }>({});
 
   useEffect(() => {
     setRecommendPaid((prev) => {
@@ -42,10 +34,7 @@ const ThirdCardForLawyer = ({
     });
   }, [watchedSpecializations]);
 
-  const handleRecommendPaidChange = (
-    spec: string,
-    checked: boolean | string
-  ) => {
+  const handleRecommendPaidChange = (spec: string, checked: boolean | string) => {
     setRecommendPaid((prev) => ({ ...prev, [spec]: Boolean(checked) }));
   };
 
@@ -67,52 +56,35 @@ const ThirdCardForLawyer = ({
   return (
     <div className="space-y-10 ">
       <div>
-        <label className="block font-medium mb-4 text-[16px]">
-          Ажиллах талбараа сонгоно уу
-        </label>
+        <label className="block font-medium mb-4 text-[16px]">Ажиллах талбараа сонгоно уу</label>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
           {specializations.map((spec) => (
             <div key={spec} className="flex items-center space-x-2">
               <Checkbox
                 id={`spec-${spec}`}
                 checked={watchedSpecializations.includes(spec)}
-                onCheckedChange={(checked) =>
-                  handleCheckboxChange(checked, spec)
-                }
+                onCheckedChange={(checked) => handleCheckboxChange(checked, spec)}
                 className="cursor-pointer  hover:bg-gray-100"
               />
-              <label
-                htmlFor={`spec-${spec}`}
-                className="text-sm cursor-pointer"
-              >
+              <label htmlFor={`spec-${spec}`} className="text-sm cursor-pointer">
                 {spec}
               </label>
             </div>
           ))}
         </div>
-        <ZodErrors
-          error={
-            errors.specializations?.message
-              ? [errors.specializations.message]
-              : undefined
-          }
-        />
+        <ZodErrors error={errors.specializations?.message ? [errors.specializations.message] : undefined} />
       </div>
 
       {watchedSpecializations.length > 0 && (
         <div className="space-y-4 relative">
-          <label className="block font-medium mb-4 text-[16px]">
-            Та төлбөртэй үйлчилгээ санал болгох уу?
-          </label>
+          <label className="block font-medium mb-4 text-[16px]">Та төлбөртэй үйлчилгээ санал болгох уу?</label>
           {watchedSpecializations.map((spec) => {
             const isChecked = recommendPaid[spec] || false;
             return (
               <div
                 key={spec}
                 className={`relative flex w-full items-center space-x-2 p-3 border rounded-lg transition-colors ${
-                  isChecked
-                    ? "bg-green-200 border-green-500"
-                    : "border-blue-300 hover:bg-gray-100"
+                  isChecked ? "bg-green-200 border-green-500" : "border-blue-300 hover:bg-gray-100"
                 } cursor-pointer`}
                 onClick={(e) => {
                   if ((e.target as HTMLElement).tagName !== "INPUT") {
@@ -131,18 +103,11 @@ const ThirdCardForLawyer = ({
                 <Checkbox
                   id={`recommend-paid-${spec}`}
                   checked={isChecked}
-                  onCheckedChange={(checked) =>
-                    handleRecommendPaidChange(spec, checked)
-                  }
+                  onCheckedChange={(checked) => handleRecommendPaidChange(spec, checked)}
                   className="cursor-pointer"
                 />
-                <label
-                  htmlFor={`recommend-paid-${spec}`}
-                  className="text-sm cursor-pointer text-[14px]"
-                >
-                  {`${spec} ${
-                    isChecked ? "" : "талбарт төлбөртэй үйлчилгээ үзүүлнэ"
-                  }`}
+                <label htmlFor={`recommend-paid-${spec}`} className="text-sm cursor-pointer text-[14px]">
+                  {`${spec} ${isChecked ? "" : "талбарт төлбөртэй үйлчилгээ үзүүлнэ"}`}
                 </label>
                 <div className={`${!isChecked ? "hidden" : "ml-auto"}`}>
                   <Input
@@ -165,10 +130,7 @@ const ThirdCardForLawyer = ({
       )}
 
       <div className="grid grid-cols-2 mt-6 gap-10">
-        <Button
-          onClick={handlePreviousStep}
-          className="bg-[#333333] text-white cursor-pointer hover:bg-gray-800"
-        >
+        <Button onClick={handlePreviousStep} className="bg-[#333333] text-white cursor-pointer hover:bg-gray-800">
           Буцах
         </Button>
         <Button
