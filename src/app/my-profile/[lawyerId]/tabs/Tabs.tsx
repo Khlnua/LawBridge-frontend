@@ -2,11 +2,11 @@
 
 import { useState } from "react";
 import { FileText, Star, Clock } from "lucide-react";
-import {LawyerReviews, LawyerSchedule , LawyerProfileHeader  } from "./tabs"; 
-import LawyerPosts from "./tabs/LawyerPosts";
+import LawyerPosts from "./LawyerPosts"; 
+import { LawyerReviews } from "./LawyerReviews"; 
+import { LawyerSchedule } from "./LawyerSchedule";
 
-
-const LawyerProfilePageForLawyers = () => {
+const Tabs = () => {
   const [activeTab, setActiveTab] = useState<"posts" | "reviews" | "schedule">("posts");
 
   const renderTab = () => {
@@ -19,9 +19,9 @@ const LawyerProfilePageForLawyers = () => {
         return <LawyerSchedule />;
     }
   };
+
   return (
-     <div className="w-full px-4 py-8 flex flex-col items-center space-y-6">
-      <LawyerProfileHeader/>
+    <>
       <div className="flex gap-4 flex-wrap justify-center">
         <button
           onClick={() => setActiveTab("posts")}
@@ -53,11 +53,8 @@ const LawyerProfilePageForLawyers = () => {
       </div>
 
       <div className="w-full max-w-4xl bg-white shadow rounded-xl p-6">{renderTab()}</div>
-    </div>
-  )
-}
+    </>
+  );
+};
 
-export default LawyerProfilePageForLawyers
-
-
-
+export default Tabs;

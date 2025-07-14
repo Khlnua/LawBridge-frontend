@@ -4,3 +4,4 @@ export * from "./ui";
 export * from "./admin"
 export * from "./post"
 export * from "./comment"
+export * from "./role-check"
