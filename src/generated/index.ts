@@ -15,7 +15,7 @@ export type Scalars = {
   Boolean: { input: boolean; output: boolean; }
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
-  Date: { input: string; output: string; }
+  Date: { input: any; output: any; }
 };
 
 export type Achievement = {
@@ -25,6 +25,16 @@ export type Achievement = {
   icon?: Maybe<Scalars['String']['output']>;
   threshold: Scalars['Int']['output'];
   title: Scalars['String']['output'];
+};
+
+export type AdminCreateSpecializationInput = {
+  categoryName: Scalars['String']['input'];
+};
+
+export type AdminSpecialization = {
+  __typename?: 'AdminSpecialization';
+  categoryName: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
 };
 
 export enum AllowedMediaEnum {
@@ -39,16 +49,17 @@ export type Appointment = {
   chatRoomId?: Maybe<Scalars['String']['output']>;
   clientId: Scalars['String']['output'];
   createdAt?: Maybe<Scalars['String']['output']>;
+  endedAt?: Maybe<Scalars['String']['output']>;
+  isFree: Scalars['Boolean']['output'];
   lawyerId: Scalars['String']['output'];
+  price?: Maybe<Scalars['Int']['output']>;
   schedule: Scalars['String']['output'];
+  specializationId: Scalars['String']['output'];
   status: AppointmentStatus;
-  updatedAt?: Maybe<Scalars['String']['output']>;
 };
 
 export enum AppointmentStatus {
-  Cancelled = 'CANCELLED',
   Completed = 'COMPLETED',
-  Confirmed = 'CONFIRMED',
   Pending = 'PENDING'
 }
 
@@ -87,6 +98,8 @@ export type CreateAchievementInput = {
 
 export type CreateAppointmentInput = {
   clientId: Scalars['String']['input'];
+  createdAt: Scalars['String']['input'];
+  endedAt: Scalars['String']['input'];
   lawyerId: Scalars['String']['input'];
   schedule: Scalars['String']['input'];
 };
@@ -120,7 +133,6 @@ export type CreateLawyerInput = {
   licenseNumber: Scalars['String']['input'];
   profilePicture: Scalars['String']['input'];
   rating?: InputMaybe<Scalars['Int']['input']>;
-  specialization: Array<Scalars['ID']['input']>;
   university?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -142,8 +154,9 @@ export type CreateReviewInput = {
 };
 
 export type CreateSpecializationInput = {
-  categoryName: SpecializationCategory;
+  lawyerId: Scalars['ID']['input'];
   pricePerHour?: InputMaybe<Scalars['Int']['input']>;
+  specializationId: Scalars['ID']['input'];
   subscription: Scalars['Boolean']['input'];
 };
 
@@ -196,7 +209,6 @@ export type Lawyer = {
   licenseNumber: Scalars['String']['output'];
   profilePicture: Scalars['String']['output'];
   rating?: Maybe<Scalars['Int']['output']>;
-  specialization: Array<Specialization>;
   status?: Maybe<LawyerRequestStatus>;
   university?: Maybe<Scalars['String']['output']>;
   updatedAt?: Maybe<Scalars['Date']['output']>;
@@ -207,6 +219,12 @@ export enum LawyerRequestStatus {
   Rejected = 'REJECTED',
   Verified = 'VERIFIED'
 }
+
+export type LawyerSpecializationInput = {
+  categoryId: Scalars['ID']['input'];
+  pricePerHour?: InputMaybe<Scalars['Int']['input']>;
+  subscription?: InputMaybe<Scalars['Boolean']['input']>;
+};
 
 export type ManageLawyerRequestInput = {
   lawyerId: Scalars['ID']['input'];
@@ -238,6 +256,7 @@ export type Message = {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  adminCreateSpecialization: AdminSpecialization;
   createAchievement: Achievement;
   createAppointment?: Maybe<Appointment>;
   createChatRoom?: Maybe<Scalars['String']['output']>;
@@ -249,7 +268,7 @@ export type Mutation = {
   createNotification: Notification;
   createPost: Post;
   createReview: Review;
-  createSpecialization: Specialization;
+  createSpecialization: Array<Maybe<Specialization>>;
   deleteAchievement: Scalars['Boolean']['output'];
   deleteComment: Scalars['Boolean']['output'];
   deleteLawyer: Scalars['Boolean']['output'];
@@ -268,6 +287,11 @@ export type Mutation = {
   updatePost: Post;
   updateReview: Review;
   updateSpecialization: Specialization;
+};
+
+
+export type MutationAdminCreateSpecializationArgs = {
+  input: AdminCreateSpecializationInput;
 };
 
 
@@ -330,7 +354,7 @@ export type MutationCreateReviewArgs = {
 
 
 export type MutationCreateSpecializationArgs = {
-  input: CreateSpecializationInput;
+  input?: InputMaybe<SpecializationInput>;
 };
 
 
@@ -360,7 +384,7 @@ export type MutationDeleteReviewArgs = {
 
 
 export type MutationDeleteSpecializationArgs = {
-  categoryName: SpecializationCategory;
+  specializationId: Scalars['ID']['input'];
 };
 
 
@@ -421,8 +445,8 @@ export type MutationUpdateReviewArgs = {
 
 
 export type MutationUpdateSpecializationArgs = {
-  categoryName: SpecializationCategory;
   input: UpdateSpecializationInput;
+  specializationId: Scalars['ID']['input'];
 };
 
 export type Notification = {
@@ -436,13 +460,11 @@ export type Notification = {
 };
 
 export enum NotificationType {
-  AppointmentCancellation = 'APPOINTMENT_CANCELLATION',
-  AppointmentConfirmation = 'APPOINTMENT_CONFIRMATION',
+  AppointmentCreated = 'APPOINTMENT_CREATED',
   AppointmentReminder = 'APPOINTMENT_REMINDER',
-  AppointmentRequest = 'APPOINTMENT_REQUEST',
   AppointmentStarted = 'APPOINTMENT_STARTED',
-  ReviewReceived = 'REVIEW_RECEIVED',
-  SpecializationUpdate = 'SPECIALIZATION_UPDATE'
+  LawyerApproved = 'LAWYER_APPROVED',
+  ReviewReceived = 'REVIEW_RECEIVED'
 }
 
 export type Post = {
@@ -476,6 +498,7 @@ export type PostContentInput = {
 export type Query = {
   __typename?: 'Query';
   getAchievements?: Maybe<Array<Maybe<Achievement>>>;
+  getAdminSpecializations: Array<AdminSpecialization>;
   getAppointmentById?: Maybe<Appointment>;
   getAppointments?: Maybe<Array<Maybe<Appointment>>>;
   getAppointmentsByLawyer?: Maybe<Array<Maybe<Appointment>>>;
@@ -497,8 +520,6 @@ export type Query = {
   getPostsBySpecializationId: Array<Post>;
   getReviewsByLawyer: Array<Review>;
   getReviewsByUser: Array<Review>;
-  getSpecializationByCategory?: Maybe<Specialization>;
-  getSpecializations: Array<Specialization>;
   getSpecializationsByLawyer: Array<Specialization>;
   myNotifications: Array<Notification>;
   searchPosts: Array<Post>;
@@ -606,14 +627,8 @@ export type QueryGetReviewsByUserArgs = {
 };
 
 
-export type QueryGetSpecializationByCategoryArgs = {
-  categoryName: SpecializationCategory;
-};
-
-
 export type QueryGetSpecializationsByLawyerArgs = {
   lawyerId: Scalars['ID']['input'];
-  subscription?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 
@@ -646,25 +661,16 @@ export enum ReviewStatus {
 
 export type Specialization = {
   __typename?: 'Specialization';
-  categoryName: SpecializationCategory;
-  id: Scalars['ID']['output'];
+  _id: Scalars['ID']['output'];
+  lawyerId: Scalars['ID']['output'];
   pricePerHour?: Maybe<Scalars['Int']['output']>;
+  specializationId: Scalars['ID']['output'];
   subscription: Scalars['Boolean']['output'];
 };
 
-export enum SpecializationCategory {
-  Administrative = 'Administrative',
-  Civil = 'Civil',
-  Constitutional = 'Constitutional',
-  Criminal = 'Criminal',
-  Environmental = 'Environmental',
-  Family = 'Family',
-  Immigration = 'Immigration',
-  IntellectualProperty = 'IntellectualProperty',
-  Labor = 'Labor',
-  Property = 'Property',
-  Tax = 'Tax'
-}
+export type SpecializationInput = {
+  specializations: Array<CreateSpecializationInput>;
+};
 
 export type Subscription = {
   __typename?: 'Subscription';
@@ -706,7 +712,7 @@ export type UpdateLawyerInput = {
   licenseNumber?: InputMaybe<Scalars['String']['input']>;
   profilePicture?: InputMaybe<Scalars['String']['input']>;
   rating?: InputMaybe<Scalars['Int']['input']>;
-  specialization?: InputMaybe<Array<Scalars['ID']['input']>>;
+  specialization?: InputMaybe<Array<LawyerSpecializationInput>>;
   university?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -723,7 +729,7 @@ export type UpdateReviewInput = {
 
 export type UpdateSpecializationInput = {
   pricePerHour?: InputMaybe<Scalars['Int']['input']>;
-  subscription?: InputMaybe<Scalars['Boolean']['input']>;
+  subscription: Scalars['Boolean']['input'];
 };
 
 export type CreateAppointmentMutationVariables = Exact<{
