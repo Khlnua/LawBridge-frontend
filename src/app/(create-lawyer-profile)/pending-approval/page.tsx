@@ -1,16 +1,37 @@
-// import { currentUser } from "@clerk/nextjs/server";
+// components/AdminSpecializations.tsx
+"use client";
 
-// const LawyerPendingPage = async () => {
-//   const user = await currentUser();
-//   const userId = user?.id;
+import { NotificationBell } from "@/components/notfication";
+import { gql, useQuery } from "@apollo/client";
 
-//   return <div>User ID: {userId}</div>;
-// };
+const GET_ADMIN_SPECIALIZATIONS = gql`
+  query GetAdminSpecializations {
+    getAdminSpecializations {
+      id
+      categoryName
+    }
+  }
+`;
 
-// export default LawyerPendingPage;
+export default function AdminSpecializations() {
+  const { data, loading, error } = useQuery(GET_ADMIN_SPECIALIZATIONS);
 
-const PendingPage = () => {
-  return <div> PendingPage</div>;
-};
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error.message}</div>;
 
-export default PendingPage;
+  console.log("🎯 Admin Specializations:", data.getAdminSpecializations);
+
+  return (
+    <div className="p-4">
+      <h2 className="text-xl font-bold mb-2">Admin Specializations</h2>
+      <ul className="list-disc list-inside">
+        {data.getAdminSpecializations.map((spec: any) => (
+          <li key={spec.id}>
+            {spec.categoryName} (ID: {spec.id})
+          </li>
+        ))}
+      </ul>
+      <NotificationBell/>
+    </div>
+  );
+}

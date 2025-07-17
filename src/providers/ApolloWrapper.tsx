@@ -23,7 +23,7 @@ export const ApolloWrapper = ({ children }: { children: ReactNode }) => {
     return {
       headers: {
         ...headers,
-        Authorization: clerkToken,
+        Authorization: `Bearer ${clerkToken || ""}`,
       },
     };
   });

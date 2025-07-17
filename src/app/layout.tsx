@@ -4,6 +4,9 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { ApolloWrapper } from "@/providers/ApolloWrapper";
 import { type Metadata } from "next";
 import Header from "@/components/header/Header";
+import { Socket } from "dgram";
+import { SocketProvider } from "@/context/SocketContext";
+import { Toaster } from "sonner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -34,7 +37,11 @@ export default function RootLayout({
           >
             <Header />
 
+            <SocketProvider>
+            <Toaster richColors position="top-right" /> 
+
             <main className="flex justify-center items-center min-h-[calc(100vh-4rem)]">{children}</main>
+            </SocketProvider>
           </body>
         </html>
       </ApolloWrapper>
