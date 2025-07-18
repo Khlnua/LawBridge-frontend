@@ -23,26 +23,18 @@ export const MessageBubble: React.FC<{
 
   const renderMessageContent = () => {
     switch (message.type) {
-      case "image":
+      case "IMAGE":
         return (
           <img
-            src={message.fileUrl}
-            alt={message.fileName}
+            src={message.content}
+            alt="image"
             className="rounded-lg max-w-xs h-auto"
           />
         );
-      case "video":
-        return (
-          <video
-            src={message.fileUrl}
-            className="rounded-lg max-w-xs h-auto"
-            controls
-          />
-        );
-      case "document":
+      case "FILE":
         return (
           <a
-            href={message.fileUrl}
+            href={message.content}
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center space-x-3 p-3 bg-slate-50 rounded-lg border hover:bg-slate-100"
@@ -52,14 +44,14 @@ export const MessageBubble: React.FC<{
             </div>
             <div className="flex-1">
               <p className="font-medium text-sm text-slate-800">
-                {message.fileName}
+                Download File
               </p>
             </div>
           </a>
         );
       default:
         return (
-          <p className="whitespace-pre-wrap break-words">{message.text}</p>
+          <p className="whitespace-pre-wrap break-words">{message.content}</p>
         );
     }
   };
@@ -71,12 +63,12 @@ export const MessageBubble: React.FC<{
         isOwnMessage ? "justify-end" : "justify-start"
       )}
     >
+      {/* Avatar for other user, fallback to generic avatar */}
       {!isOwnMessage && (
-        <img
-          src={message.sender.avatar}
-          alt={message.sender.name}
-          className="w-8 h-8 rounded-full mb-4 flex-shrink-0"
-        />
+        <div className="w-8 h-8 rounded-full mb-4 flex-shrink-0 bg-slate-300 flex items-center justify-center text-white font-bold">
+          {/* Optionally, show initials or a generic icon */}
+          <span>U</span>
+        </div>
       )}
       <div>
         <div
@@ -95,7 +87,7 @@ export const MessageBubble: React.FC<{
             isOwnMessage ? "text-right" : "text-left"
           )}
         >
-          {formatTime(message.timestamp)}
+          {formatTime(message.createdAt)}
         </div>
       </div>
     </div>
