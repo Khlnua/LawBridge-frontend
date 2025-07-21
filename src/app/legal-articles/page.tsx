@@ -1,7 +1,7 @@
-"use client"
+"use client";
 
-import { Button, GetPost } from "@/components"
-import { specializations } from "../(create-lawyer-profile)/lawyer-form/utils/specializations"
+import { Button, GetPost } from "@/components";
+import { specializations } from "../utils/specializations";
 
 const ArticlesPage = () => {
   return (
@@ -24,7 +24,7 @@ const ArticlesPage = () => {
         <GetPost />
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default ArticlesPage
+export default ArticlesPage;
