@@ -71,6 +71,23 @@ export type Availability = {
   startTime: Scalars['String']['output'];
 };
 
+export type ChatHistory = {
+  __typename?: 'ChatHistory';
+  _id: Scalars['ID']['output'];
+  botResponse: Scalars['String']['output'];
+  createdAt: Scalars['String']['output'];
+  sessionId: Scalars['String']['output'];
+  userId: Scalars['String']['output'];
+  userMessage: Scalars['String']['output'];
+};
+
+export type ChatHistoryInput = {
+  botResponse?: InputMaybe<Scalars['String']['input']>;
+  sessionId?: InputMaybe<Scalars['String']['input']>;
+  userId?: InputMaybe<Scalars['String']['input']>;
+  userMessage: Scalars['String']['input'];
+};
+
 export type ChatRoom = {
   __typename?: 'ChatRoom';
   _id: Scalars['String']['output'];
@@ -279,6 +296,7 @@ export type Mutation = {
   markAllNotificationsAsRead: Scalars['Boolean']['output'];
   markNotificationAsRead: Notification;
   reviewDocument: Document;
+  saveChatHistory: ChatHistory;
   setAvailability?: Maybe<Availability>;
   updateAchievement: Achievement;
   updateChatRoom: ChatRoom;
@@ -403,6 +421,11 @@ export type MutationReviewDocumentArgs = {
 };
 
 
+export type MutationSaveChatHistoryArgs = {
+  input: ChatHistoryInput;
+};
+
+
 export type MutationSetAvailabilityArgs = {
   day: DayOfWeek;
   endTime: Scalars['String']['input'];
@@ -511,6 +534,7 @@ export type Query = {
   getAppointmentsByLawyer?: Maybe<Array<Maybe<Appointment>>>;
   getAppointmentsByUser?: Maybe<Array<Maybe<Appointment>>>;
   getAvailability?: Maybe<Array<Maybe<Availability>>>;
+  getChatHistoryByUser: Array<ChatHistory>;
   getChatRoomById?: Maybe<ChatRoom>;
   getChatRoomsByAppointment: Array<ChatRoom>;
   getCommentsByPost: Array<Comment>;
@@ -557,6 +581,11 @@ export type QueryGetAppointmentsByUserArgs = {
 export type QueryGetAvailabilityArgs = {
   day: DayOfWeek;
   lawyerId: Scalars['String']['input'];
+};
+
+
+export type QueryGetChatHistoryByUserArgs = {
+  userId: Scalars['String']['input'];
 };
 
 
@@ -757,6 +786,20 @@ export type CreateAppointmentMutationVariables = Exact<{
 
 export type CreateAppointmentMutation = { __typename?: 'Mutation', createAppointment?: { __typename?: 'Appointment', lawyerId: string, schedule: string, status: AppointmentStatus, chatRoomId?: string | null } | null };
 
+export type SaveChatHistoryMutationVariables = Exact<{
+  input: ChatHistoryInput;
+}>;
+
+
+export type SaveChatHistoryMutation = { __typename?: 'Mutation', saveChatHistory: { __typename?: 'ChatHistory', _id: string, userId: string, sessionId: string, userMessage: string, botResponse: string, createdAt: string } };
+
+export type GetChatHistoryByUserQueryVariables = Exact<{
+  userId: Scalars['String']['input'];
+}>;
+
+
+export type GetChatHistoryByUserQuery = { __typename?: 'Query', getChatHistoryByUser: Array<{ __typename?: 'ChatHistory', _id: string, userId: string, sessionId: string, userMessage: string, botResponse: string, createdAt: string }> };
+
 export type GetAdminSpecializationsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -799,6 +842,89 @@ export function useCreateAppointmentMutation(baseOptions?: Apollo.MutationHookOp
 export type CreateAppointmentMutationHookResult = ReturnType<typeof useCreateAppointmentMutation>;
 export type CreateAppointmentMutationResult = Apollo.MutationResult<CreateAppointmentMutation>;
 export type CreateAppointmentMutationOptions = Apollo.BaseMutationOptions<CreateAppointmentMutation, CreateAppointmentMutationVariables>;
+export const SaveChatHistoryDocument = gql`
+    mutation SaveChatHistory($input: ChatHistoryInput!) {
+  saveChatHistory(input: $input) {
+    _id
+    userId
+    sessionId
+    userMessage
+    botResponse
+    createdAt
+  }
+}
+    `;
+export type SaveChatHistoryMutationFn = Apollo.MutationFunction<SaveChatHistoryMutation, SaveChatHistoryMutationVariables>;
+
+/**
+ * __useSaveChatHistoryMutation__
+ *
+ * To run a mutation, you first call `useSaveChatHistoryMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useSaveChatHistoryMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [saveChatHistoryMutation, { data, loading, error }] = useSaveChatHistoryMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useSaveChatHistoryMutation(baseOptions?: Apollo.MutationHookOptions<SaveChatHistoryMutation, SaveChatHistoryMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<SaveChatHistoryMutation, SaveChatHistoryMutationVariables>(SaveChatHistoryDocument, options);
+      }
+export type SaveChatHistoryMutationHookResult = ReturnType<typeof useSaveChatHistoryMutation>;
+export type SaveChatHistoryMutationResult = Apollo.MutationResult<SaveChatHistoryMutation>;
+export type SaveChatHistoryMutationOptions = Apollo.BaseMutationOptions<SaveChatHistoryMutation, SaveChatHistoryMutationVariables>;
+export const GetChatHistoryByUserDocument = gql`
+    query GetChatHistoryByUser($userId: String!) {
+  getChatHistoryByUser(userId: $userId) {
+    _id
+    userId
+    sessionId
+    userMessage
+    botResponse
+    createdAt
+  }
+}
+    `;
+
+/**
+ * __useGetChatHistoryByUserQuery__
+ *
+ * To run a query within a React component, call `useGetChatHistoryByUserQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetChatHistoryByUserQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetChatHistoryByUserQuery({
+ *   variables: {
+ *      userId: // value for 'userId'
+ *   },
+ * });
+ */
+export function useGetChatHistoryByUserQuery(baseOptions: Apollo.QueryHookOptions<GetChatHistoryByUserQuery, GetChatHistoryByUserQueryVariables> & ({ variables: GetChatHistoryByUserQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetChatHistoryByUserQuery, GetChatHistoryByUserQueryVariables>(GetChatHistoryByUserDocument, options);
+      }
+export function useGetChatHistoryByUserLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetChatHistoryByUserQuery, GetChatHistoryByUserQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetChatHistoryByUserQuery, GetChatHistoryByUserQueryVariables>(GetChatHistoryByUserDocument, options);
+        }
+export function useGetChatHistoryByUserSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetChatHistoryByUserQuery, GetChatHistoryByUserQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetChatHistoryByUserQuery, GetChatHistoryByUserQueryVariables>(GetChatHistoryByUserDocument, options);
+        }
+export type GetChatHistoryByUserQueryHookResult = ReturnType<typeof useGetChatHistoryByUserQuery>;
+export type GetChatHistoryByUserLazyQueryHookResult = ReturnType<typeof useGetChatHistoryByUserLazyQuery>;
+export type GetChatHistoryByUserSuspenseQueryHookResult = ReturnType<typeof useGetChatHistoryByUserSuspenseQuery>;
+export type GetChatHistoryByUserQueryResult = Apollo.QueryResult<GetChatHistoryByUserQuery, GetChatHistoryByUserQueryVariables>;
 export const GetAdminSpecializationsDocument = gql`
     query GetAdminSpecializations {
   getAdminSpecializations {
