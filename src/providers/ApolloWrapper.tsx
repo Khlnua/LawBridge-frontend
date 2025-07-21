@@ -11,7 +11,7 @@ import { ReactNode } from "react";
 import { useAuth } from "@clerk/nextjs";
 
 const httpLink = createHttpLink({
-  uri: process.env.BACKEND_URL || "http://localhost:4000/graphql",
+  uri: process.env.BACKEND_URL || "http://localhost:4000",
 });
 
 export const ApolloWrapper = ({ children }: { children: ReactNode }) => {
