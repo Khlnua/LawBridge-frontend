@@ -5,6 +5,8 @@ import { useUser, useAuth } from "@clerk/nextjs";
 import { useSocket } from "@/context/SocketContext";
 import { LiveKitRoom, useRoomContext } from "@livekit/components-react";
 import "@livekit/components-styles";
+import { useQuery, useMutation, gql } from "@apollo/client";
+import { useParams } from "next/navigation";
 
 // Custom Components
 import { ChatHeader } from "@/components/chat/ChatHeader";
@@ -124,13 +126,68 @@ const CallConnectingModal = ({ callType }: { callType: "video" | "audio" }) => (
   </div>
 );
 
+// GraphQL query to fetch messages by chatRoomId
+const GET_MESSAGES = gql`
+  query getMessages($chatRoomId: ID!) {
+    getMessages(chatRoomId: $chatRoomId) {
+      chatRoomId
+      userId
+      type
+      content
+    }
+  }
+`;
+
+// GraphQL mutation to send a message
+const CREATE_MESSAGE = gql`
+  mutation createMessage(
+    $chatRoomId: ID!
+    $userId: String!
+    $type: MediaType!
+    $content: String
+  ) {
+    createMessage(
+      chatRoomId: $chatRoomId
+      userId: $userId
+      type: $type
+      content: $content
+    ) {
+      chatRoomId
+      userId
+      type
+      content
+    }
+  }
+`;
+
 export default function ChatPage() {
   const { user, isLoaded } = useUser();
   const { getToken } = useAuth();
   const { socket, isConnected, sendMessage, joinRoom, leaveRoom, emitTyping } =
     useSocket();
+  const params = useParams();
+  // Get chatRoomId from URL params or fallback to a default
+  const chatRoomId =
+    (params?.chatRoomId as string) || "685a1b9dff6157ee051ccaaa";
 
+  // Apollo: fetch previous messages for this chatroom
+  const {
+    data: chatData,
+    loading: chatLoading,
+    error: chatError,
+  } = useQuery(GET_MESSAGES, {
+    variables: { chatRoomId },
+    skip: !chatRoomId,
+    fetchPolicy: "cache-and-network",
+  });
+
+  // Apollo: mutation for sending messages
+  const [createMessage] = useMutation(CREATE_MESSAGE);
+
+  // State for messages
   const [messages, setMessages] = useState<Message[]>([]);
+  // Add ref for auto-scroll
+  const messagesEndRef = useRef<HTMLDivElement>(null);
   const [liveKitToken, setLiveKitToken] = useState<string | null>(null);
   const [isJoiningCall, setIsJoiningCall] = useState(false);
   const [isCallConnected, setIsCallConnected] = useState(false);
@@ -153,6 +210,23 @@ export default function ChatPage() {
   };
   const roomName = "685a1b9dff6157ee051ccaaa";
 
+  // Load previous messages when data is available
+  useEffect(() => {
+    if (chatData?.getMessages) {
+      // Force sort by createdAt ascending (oldest first)
+      const sorted = [...chatData.getMessages].sort(
+        (a, b) =>
+          new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+      );
+      setMessages(sorted);
+    }
+  }, [chatData]);
+
+  // Auto-scroll to bottom when messages change
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
+
   // --- Socket Effects ---
   useEffect(() => {
     if (!socket || !roomName) return;
@@ -162,28 +236,29 @@ export default function ChatPage() {
 
     // Listen for new messages
     const handleNewMessage = (message: any) => {
-      console.log("📩 New message received:", message);
       setMessages((prev) => {
-        // Avoid duplicat
-        // es by checking message ID
         const exists = prev.some(
           (msg) =>
             msg.id === message.id ||
             (msg.content === message.content && msg.userId === message.userId)
         );
         if (!exists) {
-          return [
+          const merged = [
             ...prev,
             {
-              id: message._id || message.id,
-              _id: message._id || message.id,
+              chatRoomId: message.chatRoomId,
               content: message.content,
               userId: message.userId,
               type: message.type || "TEXT",
+              id: message._id || message.id,
               createdAt: message.createdAt || new Date().toISOString(),
-              chatRoomId: message.chatRoomId,
             },
           ];
+          // Force sort by createdAt ascending (oldest first)
+          return merged.sort(
+            (a, b) =>
+              new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+          );
         }
         return prev;
       });
@@ -258,33 +333,40 @@ export default function ChatPage() {
     setIsJoiningCall(false);
   }, []);
 
+  // Update handleSendMessage to use GraphQL mutation
   const handleSendMessage = useCallback(
     async (content: string) => {
-      if (!user || !roomName || isSending || !content.trim()) return;
-
+      if (!user || !chatRoomId || isSending || !content.trim()) return;
       setIsSending(true);
-
       try {
-        // Send message via Socket.IO
-        sendMessage({
-          chatRoomId: roomName,
-          content: content.trim(),
-          userId: user.id,
-          type: "TEXT",
+        // Send message via GraphQL mutation
+        await createMessage({
+          variables: {
+            chatRoomId,
+            userId: user.id,
+            type: "TEXT",
+            content: content.trim(),
+          },
         });
-
-        // Stop typing indicator
-        if (isTyping) {
-          setIsTyping(false);
-          emitTyping({ chatRoomId: roomName, isTyping: false });
-        }
+        // Optionally, refetch or update messages state
+        setMessages((prev) => [
+          ...prev,
+          {
+            chatRoomId: Array.isArray(chatRoomId) ? chatRoomId[0] : chatRoomId,
+            userId: user.id,
+            type: "TEXT",
+            content: content.trim(),
+            id: `temp-${Date.now()}`, // temporary id
+            createdAt: new Date().toISOString(),
+          },
+        ]);
       } catch (err) {
         console.error("Failed to send message:", err);
       } finally {
         setIsSending(false);
       }
     },
-    [user, roomName, sendMessage, isSending, isTyping, emitTyping]
+    [user, chatRoomId, createMessage, isSending]
   );
 
   const handleSendFile = useCallback(
@@ -362,8 +444,8 @@ export default function ChatPage() {
     [user, roomName, isTyping, emitTyping]
   );
 
-  // Show loading while user data is loading
-  if (!isLoaded) {
+  // Show loading while user data or messages are loading
+  if (!isLoaded || chatLoading) {
     return <LoadingSpinner />;
   }
 
@@ -429,6 +511,8 @@ export default function ChatPage() {
                 </span>
               </div>
             )}
+            {/* Scroll to bottom anchor */}
+            <div ref={messagesEndRef} />
           </div>
 
           <div
