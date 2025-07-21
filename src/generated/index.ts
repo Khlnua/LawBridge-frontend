@@ -16,6 +16,7 @@ export type Scalars = {
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
   Date: { input: any; output: any; }
+  JSON: { input: any; output: any; }
 };
 
 export type Achievement = {
@@ -74,7 +75,7 @@ export type Availability = {
 export type ChatHistory = {
   __typename?: 'ChatHistory';
   _id: Scalars['ID']['output'];
-  botResponse: Scalars['String']['output'];
+  botResponse: Scalars['JSON']['output'];
   createdAt: Scalars['String']['output'];
   sessionId: Scalars['String']['output'];
   userId: Scalars['String']['output'];
@@ -82,7 +83,7 @@ export type ChatHistory = {
 };
 
 export type ChatHistoryInput = {
-  botResponse?: InputMaybe<Scalars['String']['input']>;
+  botResponse?: InputMaybe<Scalars['JSON']['input']>;
   sessionId?: InputMaybe<Scalars['String']['input']>;
   userId?: InputMaybe<Scalars['String']['input']>;
   userMessage: Scalars['String']['input'];
@@ -791,14 +792,14 @@ export type SaveChatHistoryMutationVariables = Exact<{
 }>;
 
 
-export type SaveChatHistoryMutation = { __typename?: 'Mutation', saveChatHistory: { __typename?: 'ChatHistory', _id: string, userId: string, sessionId: string, userMessage: string, botResponse: string, createdAt: string } };
+export type SaveChatHistoryMutation = { __typename?: 'Mutation', saveChatHistory: { __typename?: 'ChatHistory', _id: string, userId: string, sessionId: string, userMessage: string, botResponse: any, createdAt: string } };
 
 export type GetChatHistoryByUserQueryVariables = Exact<{
   userId: Scalars['String']['input'];
 }>;
 
 
-export type GetChatHistoryByUserQuery = { __typename?: 'Query', getChatHistoryByUser: Array<{ __typename?: 'ChatHistory', _id: string, userId: string, sessionId: string, userMessage: string, botResponse: string, createdAt: string }> };
+export type GetChatHistoryByUserQuery = { __typename?: 'Query', getChatHistoryByUser: Array<{ __typename?: 'ChatHistory', _id: string, userId: string, sessionId: string, userMessage: string, botResponse: any, createdAt: string }> };
 
 export type GetAdminSpecializationsQueryVariables = Exact<{ [key: string]: never; }>;
 
