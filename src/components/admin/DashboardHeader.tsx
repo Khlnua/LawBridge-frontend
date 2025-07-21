@@ -20,17 +20,13 @@ export function DashboardHeader() {
       
       <div className="flex items-center gap-4">
         <div className="relative hidden md:block">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-          <Input
-            placeholder="Хайх..."
-            className="pl-10 w-64"
-          />
+          
         </div>
         
         <Button variant="outline" size="sm" className="relative">
           <Bell className="w-4 h-4" />
           <Badge className="absolute -top-1 -right-1 w-5 h-5 rounded-full p-0 flex items-center justify-center text-xs bg-red-500">
-            3
+            0
           </Badge>
         </Button>
       </div>

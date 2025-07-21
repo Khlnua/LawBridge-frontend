@@ -10,11 +10,11 @@ import { useToast } from "@/hooks/use-toast";
 const mockLawyers = [
   {
     id: "1",
-    name: "Sarah Johnson",
-    email: "sarah.johnson@lawfirm.com",
-    phone: "+1 (555) 123-4567",
+    name: "Сампил Ганболд",
+    email: "samba@lawfirm.com",
+    phone: "+976 9999-9999",
     licenseNumber: "LIC-2024-001",
-    barAdmission: "New York State Bar, 2018",
+    barAdmission: "МУИС, 2018",
     specialization: ["Corporate Law", "Contract Law", "Mergers & Acquisitions"],
     yearsExperience: 6,
     location: "New York, NY",
@@ -108,10 +108,10 @@ export function LawyerApprovalDashboard() {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="bg-[var(--gradient-header)] text-primary-foreground p-6 shadow-[var(--shadow-elevated)]">
+      <header className="bg-primary text-primary-foreground p-6 shadow-elevated">
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center gap-3 mb-2">
-            <Scale className="h-8 w-8" />
+            <Scale className="h-8 w-8 text-primary-foreground" />
           </div>
           <p className="text-primary-foreground/80 text-lg">
             Хуульч Өмгөөлөгчийн хүсэлтүүдийг хянах, батлах
@@ -122,7 +122,7 @@ export function LawyerApprovalDashboard() {
       <div className="max-w-7xl mx-auto p-6"> 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <Card className="bg-[var(--gradient-card)] border border-border shadow-[var(--shadow-card)]">
+          <Card className="bg-card border border-border shadow-card">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">
                 Total Applications
@@ -134,7 +134,7 @@ export function LawyerApprovalDashboard() {
             </CardContent>
           </Card>
 
-          <Card className="bg-[var(--gradient-card)] border border-border shadow-[var(--shadow-card)]">
+          <Card className="bg-card border border-border shadow-card">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">
                 Pending Review
@@ -149,7 +149,7 @@ export function LawyerApprovalDashboard() {
             </CardContent>
           </Card>
 
-          <Card className="bg-[var(--gradient-card)] border border-border shadow-[var(--shadow-card)]">
+          <Card className="bg-card border border-border shadow-card">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">
                 Approved
@@ -161,7 +161,7 @@ export function LawyerApprovalDashboard() {
             </CardContent>
           </Card>
 
-          <Card className="bg-[var(--gradient-card)] border border-border shadow-[var(--shadow-card)]">
+          <Card className="bg-card border border-border shadow-card">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">
                 Rejected
