@@ -39,7 +39,7 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
           return;
       }
       
-      s = io("http://localhost:4000", {
+      s = io("https://lawbridge-server.onrender.com/", {
         path: "/socket.io",
         auth: { token },
         transports: ["websocket"], // Forcing websocket is fine for modern browsers

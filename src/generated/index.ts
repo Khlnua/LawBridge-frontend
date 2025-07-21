@@ -16,6 +16,7 @@ export type Scalars = {
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
   Date: { input: any; output: any; }
+  JSON: { input: any; output: any; }
 };
 
 export type Achievement = {
@@ -69,6 +70,23 @@ export type Availability = {
   endTime: Scalars['String']['output'];
   lawyerId: Scalars['String']['output'];
   startTime: Scalars['String']['output'];
+};
+
+export type ChatHistory = {
+  __typename?: 'ChatHistory';
+  _id: Scalars['ID']['output'];
+  botResponse: Scalars['JSON']['output'];
+  createdAt: Scalars['String']['output'];
+  sessionId: Scalars['String']['output'];
+  userId: Scalars['String']['output'];
+  userMessage: Scalars['String']['output'];
+};
+
+export type ChatHistoryInput = {
+  botResponse?: InputMaybe<Scalars['JSON']['input']>;
+  sessionId?: InputMaybe<Scalars['String']['input']>;
+  userId?: InputMaybe<Scalars['String']['input']>;
+  userMessage: Scalars['String']['input'];
 };
 
 export type ChatRoom = {
@@ -279,6 +297,7 @@ export type Mutation = {
   markAllNotificationsAsRead: Scalars['Boolean']['output'];
   markNotificationAsRead: Notification;
   reviewDocument: Document;
+  saveChatHistory: ChatHistory;
   setAvailability?: Maybe<Availability>;
   updateAchievement: Achievement;
   updateChatRoom: ChatRoom;
@@ -403,6 +422,11 @@ export type MutationReviewDocumentArgs = {
 };
 
 
+export type MutationSaveChatHistoryArgs = {
+  input: ChatHistoryInput;
+};
+
+
 export type MutationSetAvailabilityArgs = {
   day: DayOfWeek;
   endTime: Scalars['String']['input'];
@@ -511,6 +535,7 @@ export type Query = {
   getAppointmentsByLawyer?: Maybe<Array<Maybe<Appointment>>>;
   getAppointmentsByUser?: Maybe<Array<Maybe<Appointment>>>;
   getAvailability?: Maybe<Array<Maybe<Availability>>>;
+  getChatHistoryByUser: Array<ChatHistory>;
   getChatRoomById?: Maybe<ChatRoom>;
   getChatRoomsByAppointment: Array<ChatRoom>;
   getCommentsByPost: Array<Comment>;
@@ -557,6 +582,11 @@ export type QueryGetAppointmentsByUserArgs = {
 export type QueryGetAvailabilityArgs = {
   day: DayOfWeek;
   lawyerId: Scalars['String']['input'];
+};
+
+
+export type QueryGetChatHistoryByUserArgs = {
+  userId: Scalars['String']['input'];
 };
 
 

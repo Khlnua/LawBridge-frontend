@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { UseFormRegister, FieldErrors, UseFormSetValue } from "react-hook-form";
+import { useState, useEffect } from "react";
+import { UseFormRegister, FieldErrors, UseFormSetValue, UseFormGetValues } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ZodErrors } from "../ZodError";
@@ -14,6 +14,7 @@ type Props = {
   errors: FieldErrors<FormData>;
   goToNextStep?: () => void;
   setValue: UseFormSetValue<FormData>;
+  getValues: UseFormGetValues<FormData>; // React Hook Form-аас утга авахад ашиглана
 };
 
 const FirstCardForLawyer = ({
@@ -21,13 +22,10 @@ const FirstCardForLawyer = ({
   errors,
   goToNextStep,
   setValue,
+  getValues,
 }: Props) => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [localPreview, setLocalPreview] = useState<string | null>(null);
-
-  const handleUploadSuccess = (url: string) => {
-    setValue("avatar", url);
-  };
 
   const {
     fileInputRef,
@@ -38,7 +36,11 @@ const FirstCardForLawyer = ({
     deleteImage,
     setIsDragging,
     uploadToServer,
-  } = useUploadAvatar({ onUpload: handleUploadSuccess });
+  } = useUploadAvatar({
+    onUpload: (url: string) => {
+      setValue("avatar", url);
+    },
+  });
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -59,6 +61,7 @@ const FirstCardForLawyer = ({
   };
 
   const handleNextStep = async () => {
+    // Хэрвээ ямар нэгэн алдаа байвал дараагийн алхам руу бүү шилж
     if (
       errors.firstName?.message ||
       errors.lastName?.message ||
@@ -66,7 +69,16 @@ const FirstCardForLawyer = ({
     ) {
       return;
     }
-    if (selectedFile) await uploadToServer(selectedFile);
+
+    // Хэрэв зураг сонгогдсон бол сервер рүү upload хийж URL авах
+    if (selectedFile) {
+      const uploadedUrl = await uploadToServer(selectedFile);
+      if (typeof uploadedUrl === "string") {
+        setValue("avatar", uploadedUrl);
+      }
+    }
+
+    // Дараагийн алхам руу шилжих
     if (goToNextStep) goToNextStep();
   };
 
@@ -106,10 +118,10 @@ const FirstCardForLawyer = ({
         </div>
       </div>
       <div>
-        <label htmlFor="eMail" className="block text-sm font-medium mb-1">
+        <label htmlFor="email" className="block text-sm font-medium mb-1">
           Email
         </label>
-        <Input id="eMail" {...register("email")} />
+        <Input id="email" {...register("email")} />
         <ZodErrors
           error={errors.email?.message ? [errors.email.message] : undefined}
         />
@@ -143,3 +155,4 @@ const FirstCardForLawyer = ({
 };
 
 export default FirstCardForLawyer;
+ 
