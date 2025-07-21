@@ -1,6 +1,8 @@
 overwrite: true
 schema:
-  - "http://localhost:4000/graphql"
+
+  - "https://lawbridge-server.onrender.com/graphql"
+
 
 documents:
   - "./src/**/*.graphql"
