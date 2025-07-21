@@ -17,7 +17,6 @@ export type Scalars = {
   Float: { input: number; output: number; }
   Date: { input: any; output: any; }
   JSON: { input: any; output: any; }
-  JSON: { input: any; output: any; }
 };
 
 export type Achievement = {
@@ -76,11 +75,7 @@ export type Availability = {
 export type ChatHistory = {
   __typename?: 'ChatHistory';
   _id: Scalars['ID']['output'];
-<<<<<<< HEAD
   botResponse: Scalars['JSON']['output'];
-=======
-  botResponse: Scalars['String']['output'];
->>>>>>> 2ec209d7afcdc2f5bf58fbc18e191fbe809f9d73
   createdAt: Scalars['String']['output'];
   sessionId: Scalars['String']['output'];
   userId: Scalars['String']['output'];
@@ -88,11 +83,7 @@ export type ChatHistory = {
 };
 
 export type ChatHistoryInput = {
-<<<<<<< HEAD
   botResponse?: InputMaybe<Scalars['JSON']['input']>;
-=======
-  botResponse?: InputMaybe<Scalars['String']['input']>;
->>>>>>> 2ec209d7afcdc2f5bf58fbc18e191fbe809f9d73
   sessionId?: InputMaybe<Scalars['String']['input']>;
   userId?: InputMaybe<Scalars['String']['input']>;
   userMessage: Scalars['String']['input'];
