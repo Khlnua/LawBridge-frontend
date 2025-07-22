@@ -1,60 +1,65 @@
 "use client";
 
 import { useState } from "react";
-import { FileText, Star, Clock } from "lucide-react";
-import LawyerPosts from "./LawyerPosts"; 
-import { LawyerReviews } from "./LawyerReviews"; 
+import { FileText, Star, Calendar } from "lucide-react";
+import LawyerPosts from "./LawyerPosts";
+import { LawyerReviews } from "./LawyerReviews";
 import { LawyerSchedule } from "./LawyerSchedule";
 
-const Tabs = () => {
-  const [activeTab, setActiveTab] = useState<"posts" | "reviews" | "schedule">("posts");
+type TabType = "posts" | "reviews" | "schedule";
 
-  const renderTab = () => {
-    switch (activeTab) {
-      case "posts":
-        return <LawyerPosts />;
-      case "reviews":
-        return <LawyerReviews />;
-      case "schedule":
-        return <LawyerSchedule />;
-    }
-  };
+const SidebarTabs = () => {
+  const [activeTab, setActiveTab] = useState<TabType>("posts");
+
+  const tabItems: { id: TabType; label: string; icon: React.ReactNode }[] = [
+    {
+      id: "posts",
+      label: "Нийтлэлүүд",
+      icon: <FileText className="w-4 h-4" />,
+    },
+    {
+      id: "reviews",
+      label: "Сэтгэгдлүүд",
+      icon: <Star className="w-4 h-4" />,
+    },
+    {
+      id: "schedule",
+      label: "Хуваарь",
+      icon: <Calendar className="w-4 h-4" />,
+    },
+  ];
 
   return (
-    <>
-      <div className="flex gap-4 flex-wrap justify-center">
-        <button
-          onClick={() => setActiveTab("posts")}
-          className={`flex items-center gap-2 px-4 py-2 rounded-md font-medium ${
-            activeTab === "posts" ? "bg-blue-600 text-white" : "bg-gray-100 text-gray-700"
-          }`}
-        >
-          <FileText size={16} />
-          Posts
-        </button>
-        <button
-          onClick={() => setActiveTab("reviews")}
-          className={`flex items-center gap-2 px-4 py-2 rounded-md font-medium ${
-            activeTab === "reviews" ? "bg-blue-600 text-white" : "bg-gray-100 text-gray-700"
-          }`}
-        >
-          <Star size={16} />
-          Reviews
-        </button>
-        <button
-          onClick={() => setActiveTab("schedule")}
-          className={`flex items-center gap-2 px-4 py-2 rounded-md font-medium ${
-            activeTab === "schedule" ? "bg-blue-600 text-white" : "bg-gray-100 text-gray-700"
-          }`}
-        >
-          <Clock size={16} />
-          Schedule
-        </button>
-      </div>
+    <div className="w-full flex flex-col md:flex-row gap-6">
+      {/* Sidebar */}
+      <aside className="md:w-60 w-full rounded-xl bg-white shadow-sm p-4 border-none">
+        <nav className="flex flex-col md:space-y-2 space-x-2 md:space-x-0 gap-3">
+          {tabItems.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`flex items-center gap-2 px-4 py-2 rounded-md transition-all duration-150 text-sm w-full justify-start
+                ${
+                  activeTab === tab.id
+                    ? "bg-[#316eea] text-white shadow-sm"
+                    : "text-gray-700 hover:bg-gray-100"
+                }`}
+            >
+              {tab.icon}
+              {tab.label}
+            </button>
+          ))}
+        </nav>
+      </aside>
 
-      <div className="w-full max-w-4xl bg-white shadow rounded-xl p-6">{renderTab()}</div>
-    </>
+      {/* Main Content */}
+      <section className="flex-1 bg-white border rounded-xl shadow-sm p-6">
+        {activeTab === "posts" && <LawyerPosts />}
+        {activeTab === "reviews" && <LawyerReviews />}
+        {activeTab === "schedule" && <LawyerSchedule />}
+      </section>
+    </div>
   );
 };
 
-export default Tabs;
+export default SidebarTabs;

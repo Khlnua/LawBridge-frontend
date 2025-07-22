@@ -29,11 +29,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider signInUrl="/sign-in" signUpUrl="/sign-up">
-      <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
-        <body
-          className={`min-h-screen bg-background font-sans antialiased ${geistSans.variable} ${geistMono.variable}`}
-        >
+
+    <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
+      <body
+        className={`min-h-screen bg-background font-sans antialiased ${geistSans.variable} ${geistMono.variable}`}
+      >
+        <ClerkProvider signInUrl="/sign-in" signUpUrl="/sign-up">
+
           <ApolloWrapper>
             <Header />
             <SocketProvider>
@@ -42,10 +44,12 @@ export default function RootLayout({
               <main className="flex justify-center items-center min-h-[calc(100vh-4rem)]">
                 {children}
               </main>
-            </SocketProvider>{" "}
+
+            </SocketProvider>
           </ApolloWrapper>
-        </body>
-      </html>
-    </ClerkProvider>
+        </ClerkProvider>
+      </body>
+    </html>
+
   );
 }

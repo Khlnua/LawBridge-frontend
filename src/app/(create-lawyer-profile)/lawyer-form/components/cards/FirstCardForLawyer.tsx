@@ -1,7 +1,12 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { UseFormRegister, FieldErrors, UseFormSetValue } from "react-hook-form";
+import { useState, useEffect } from "react";
+import {
+  UseFormRegister,
+  FieldErrors,
+  UseFormSetValue,
+  UseFormGetValues,
+} from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ZodErrors } from "../ZodError";
@@ -14,18 +19,32 @@ type Props = {
   errors: FieldErrors<FormData>;
   goToNextStep?: () => void;
   setValue: UseFormSetValue<FormData>;
+  getValues: UseFormGetValues<FormData>;
 };
 
-const FirstCardForLawyer = ({ register, errors, goToNextStep, setValue }: Props) => {
+const FirstCardForLawyer = ({
+  register,
+  errors,
+  goToNextStep,
+  setValue,
+  getValues,
+}: Props) => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [localPreview, setLocalPreview] = useState<string | null>(null);
 
-  const handleUploadSuccess = (url: string) => {
-    setValue("avatar", url);
-  };
-
-  const { fileInputRef, previewLink, uploading, isDragging, openBrowse, deleteImage, setIsDragging, uploadToServer } = useUploadAvatar({
-    onUpload: handleUploadSuccess,
+  const {
+    fileInputRef,
+    previewLink,
+    uploading,
+    isDragging,
+    openBrowse,
+    deleteImage,
+    setIsDragging,
+    uploadToServer,
+  } = useUploadAvatar({
+    onUpload: (url: string) => {
+      setValue("avatar", url);
+    },
   });
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -47,10 +66,19 @@ const FirstCardForLawyer = ({ register, errors, goToNextStep, setValue }: Props)
   };
 
   const handleNextStep = async () => {
-    if (errors.firstName?.message || errors.lastName?.message || errors.email?.message) {
+    if (errors.firstName?.message || errors.lastName?.message) {
       return;
     }
-    if (selectedFile) await uploadToServer(selectedFile);
+
+    // Хэрэв зураг сонгогдсон бол сервер рүү upload хийж URL авах
+    if (selectedFile) {
+      const uploadedUrl = await uploadToServer(selectedFile);
+      if (typeof uploadedUrl === "string") {
+        setValue("avatar", uploadedUrl);
+      }
+    }
+
+    // Дараагийн алхам руу шилжих
     if (goToNextStep) goToNextStep();
   };
 
@@ -70,7 +98,11 @@ const FirstCardForLawyer = ({ register, errors, goToNextStep, setValue }: Props)
             Нэр
           </label>
           <Input id="firstName" {...register("firstName")} />
-          <ZodErrors error={errors.firstName?.message ? [errors.firstName.message] : undefined} />
+          <ZodErrors
+            error={
+              errors.firstName?.message ? [errors.firstName.message] : undefined
+            }
+          />
         </div>
 
         <div>
@@ -78,18 +110,13 @@ const FirstCardForLawyer = ({ register, errors, goToNextStep, setValue }: Props)
             Овог
           </label>
           <Input id="lastName" {...register("lastName")} />
-          <ZodErrors error={errors.lastName?.message ? [errors.lastName.message] : undefined} />
+          <ZodErrors
+            error={
+              errors.lastName?.message ? [errors.lastName.message] : undefined
+            }
+          />
         </div>
       </div>
-      {/* <div>
-        <label htmlFor="eMail" className="block text-sm font-medium mb-1">
-          Email
-        </label>
-        <Input id="eMail" {...register("email")} />
-        <ZodErrors
-          error={errors.email?.message ? [errors.email.message] : undefined}
-        />
-      </div> */}
 
       <Avatar
         errors={errors}
@@ -108,7 +135,10 @@ const FirstCardForLawyer = ({ register, errors, goToNextStep, setValue }: Props)
         setIsDragging={setIsDragging}
       />
 
-      <Button onClick={handleNextStep} className="w-full bg-blue-500 hover:bg-blue-400 cursor-pointer text-white">
+      <Button
+        onClick={handleNextStep}
+        className="w-full bg-blue-500 hover:bg-blue-400 cursor-pointer text-white"
+      >
         Дараачийн
       </Button>
     </div>

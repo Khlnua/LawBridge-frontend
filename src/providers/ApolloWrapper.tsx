@@ -7,7 +7,7 @@ import {
   createHttpLink,
 } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
-import { ReactNode } from "react";
+import { ReactNode, useEffect, useMemo, useState } from "react";
 import { useAuth } from "@clerk/nextjs";
 
 const httpLink = createHttpLink({
@@ -16,22 +16,33 @@ const httpLink = createHttpLink({
 
 export const ApolloWrapper = ({ children }: { children: ReactNode }) => {
   const { getToken } = useAuth();
+  const [client, setClient] = useState<ApolloClient<any> | null>(null);
 
-  const authLink = setContext(async (_, { headers }) => {
-    const clerkToken = await getToken();
+  useEffect(() => {
+    const initApolloClient = async () => {
+      const token = await getToken();
 
-    return {
-      headers: {
-        ...headers,
-        Authorization: `Bearer ${clerkToken || ""}`,
-      },
+      const authLink = setContext((_, { headers }) => {
+        return {
+          headers: {
+            ...headers,
+            Authorization: token ? `Bearer ${token}` : "",
+          },
+        };
+      });
+
+      const newClient = new ApolloClient({
+        link: authLink.concat(httpLink),
+        cache: new InMemoryCache(),
+      });
+
+      setClient(newClient);
     };
-  });
 
-  const client = new ApolloClient({
-    link: authLink.concat(httpLink),
-    cache: new InMemoryCache(),
-  });
+    initApolloClient();
+  }, [getToken]);
+
+  if (!client) return null; // Or loading spinner
 
   return <ApolloProvider client={client}>{children}</ApolloProvider>;
 };

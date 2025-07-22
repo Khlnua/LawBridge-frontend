@@ -4,7 +4,7 @@ import { auth } from "@clerk/nextjs/server";
 export async function GET(req: NextRequest) {
   try {
     const { userId } = await auth();
-    
+
     if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
@@ -13,17 +13,21 @@ export async function GET(req: NextRequest) {
     const requestUserId = searchParams.get("userId");
 
     if (!requestUserId) {
-      return NextResponse.json({ error: "User ID is required" }, { status: 400 });
+      return NextResponse.json(
+        { error: "User ID is required" },
+        { status: 400 }
+      );
     }
 
     // Connect to your backend GraphQL server
-    const backendUrl = process.env.BACKEND_URL || "http://localhost:4000/graphql";
-    
+    const backendUrl =
+      process.env.BACKEND_URL || "http://localhost:4000/graphql";
+
     const response = await fetch(backendUrl, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${userId}`,
+        Authorization: `Bearer ${userId}`,
       },
       body: JSON.stringify({
         query: `
@@ -37,18 +41,20 @@ export async function GET(req: NextRequest) {
           }
         `,
         variables: {
-          userId: requestUserId
-        }
-      })
+          userId: requestUserId,
+        },
+      }),
     });
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.errors?.[0]?.message || `HTTP ${response.status}`);
+      throw new Error(
+        errorData.errors?.[0]?.message || `HTTP ${response.status}`
+      );
     }
 
     const data = await response.json();
-    
+
     if (data.errors) {
       throw new Error(data.errors[0].message);
     }
@@ -61,10 +67,9 @@ export async function GET(req: NextRequest) {
     };
 
     return NextResponse.json(stats);
-
   } catch (error) {
     console.error("Chat stats API error:", error);
-    
+
     // Return default stats if backend is not available
     return NextResponse.json({
       messageCount: 0,
@@ -73,4 +78,4 @@ export async function GET(req: NextRequest) {
       averageResponseTime: 0,
     });
   }
-} 
+}
