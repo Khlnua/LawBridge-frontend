@@ -121,10 +121,10 @@ export const LawyerProfileHeader = () => {
               variant="outline"
               size="sm"
               onClick={() => setIsEditing(true)}
-              className="mt-2"
+              className="mt-2 border-none bg-[#83bce5] text-[#0b1536]"
             >
               <Pencil size={14} className="mr-1" />
-              Засварлах
+              Шинэчлэх
             </Button>
           </>
         )}
@@ -194,7 +194,7 @@ export const LawyerProfileHeader = () => {
             <Button
               onClick={handleSave}
               disabled={uploading}
-              className="bg-green-600 hover:bg-green-700 text-white"
+              className="bg-[#0b1536] hover:bg-[#0b1536b6] text-white rounded-4xl"
             >
               <Save size={16} className="mr-1" />
               Хадгалах
@@ -205,8 +205,9 @@ export const LawyerProfileHeader = () => {
                 setIsEditing(false);
                 setLocalPreview(null);
               }}
+              className="text-[#0b1536] border-[#0b1536] rounded-4xl"
             >
-              <X size={16} className="mr-1" />
+              <X size={16} className="mr-1"/>
               Болих
             </Button>
           </CardFooter>
