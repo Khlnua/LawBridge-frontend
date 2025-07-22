@@ -4,9 +4,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Scale, Users, Clock, CheckCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast"; 
+import { useQuery, useMutation } from "@apollo/client";
+import { GET_PENDING_REQUESTS, APPROVE_LAWYER, REJECT_LAWYER } from "@/graphql/lawyerApproval";
 
+// https://chatgpt.com/c/687f752a-9d54-8008-8257-bc99a53395cf
 
-// Mock data for demonstration
 const mockLawyers = [
   {
     id: "1",
@@ -67,15 +69,17 @@ const mockLawyers = [
 ];
 
 export function LawyerApprovalDashboard() {
-  const [lawyers, setLawyers] = useState(mockLawyers);
+  const [lawyers, setLawyers] = useState(useQuery);
   const { toast } = useToast();
+  const { data, loading, error, refetch } = useQuery(GET_PENDING_REQUESTS);
+  const [approveLawyer] = useMutation(APPROVE_LAWYER);
+  const [rejectLawyer] = useMutation(REJECT_LAWYER);
 
-  const handleApprove = (id: string) => {
-    setLawyers(prev =>
-      prev.map(lawyer =>
-        lawyer.id === id ? { ...lawyer, status: "approved" as const } : lawyer
-      )
-    );
+    const handleApprove = async (id: string) => {
+    await approveLawyer({ variables: { id } });
+    toast({ title: "Амжилттай", description: "Хуульчийг баталгаажууллаа." });
+    refetch();
+    };
     
     const lawyer = lawyers.find(l => l.id === id);
     toast({
@@ -84,12 +88,12 @@ export function LawyerApprovalDashboard() {
     });
   };
 
-  const handleReject = (id: string) => {
-    setLawyers(prev =>
-      prev.map(lawyer =>
-        lawyer.id === id ? { ...lawyer, status: "rejected" as const } : lawyer
-      )
-    );
+    const handleReject = async (id: string) => {
+    await rejectLawyer({ variables: { id } });
+    toast({ title: "Татгалзсан", description: "Хүсэлтийг цуцаллаа." });
+    refetch();
+
+  };
     
     const lawyer = lawyers.find(l => l.id === id);
     toast({

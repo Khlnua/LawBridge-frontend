@@ -1,8 +1,22 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+} from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Check, X, User, Scale, MapPin, Calendar, Mail, Phone } from "lucide-react";
+import {
+  Check,
+  X,
+  User,
+  Scale,
+  MapPin,
+  Calendar,
+  Mail,
+  Phone,
+} from "lucide-react";
 
 interface LawyerCardProps {
   lawyer: {
@@ -55,7 +69,9 @@ export function LawyerCard({ lawyer, onApprove, onReject }: LawyerCardProps) {
               </AvatarFallback>
             </Avatar>
             <div>
-              <h3 className="text-lg font-semibold text-foreground">{lawyer.name}</h3>
+              <h3 className="text-lg font-semibold text-foreground">
+                {lawyer.name}
+              </h3>
               <p className="text-sm text-muted-foreground flex items-center gap-1">
                 <Scale className="h-3 w-3" />
                 License #{lawyer.licenseNumber}
@@ -87,19 +103,25 @@ export function LawyerCard({ lawyer, onApprove, onReject }: LawyerCardProps) {
           <div className="space-y-2">
             <div className="flex items-center gap-2 text-muted-foreground">
               <Calendar className="h-3 w-3" />
-              <span>Applied: {new Date(lawyer.applicationDate).toLocaleDateString()}</span>
+              <span>
+                Applied: {new Date(lawyer.applicationDate).toLocaleDateString()}
+              </span>
             </div>
             <div className="text-muted-foreground">
-              <span className="font-medium">Bar Admission:</span> {lawyer.barAdmission}
+              <span className="font-medium">Bar Admission:</span>{" "}
+              {lawyer.barAdmission}
             </div>
             <div className="text-muted-foreground">
-              <span className="font-medium">Experience:</span> {lawyer.yearsExperience} years
+              <span className="font-medium">Experience:</span>{" "}
+              {lawyer.yearsExperience} years
             </div>
           </div>
         </div>
 
         <div>
-          <p className="text-sm font-medium text-foreground mb-2">Specializations:</p>
+          <p className="text-sm font-medium text-foreground mb-2">
+            Specializations:
+          </p>
           <div className="flex flex-wrap gap-2">
             {lawyer.specialization.map((spec, index) => (
               <Badge key={index} variant="secondary" className="text-xs">
