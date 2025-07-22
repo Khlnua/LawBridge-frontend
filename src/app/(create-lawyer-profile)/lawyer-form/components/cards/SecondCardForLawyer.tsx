@@ -21,8 +21,7 @@ const SecondCardForLawyer = ({
   goToNextStep,
   goToPreviousStep,
 }: Props) => {
-  const { getValues } = useFormContext<FormData>();
-  const [selectedDocs, setSelectedDocs] = useState<FileList | null>(null);
+  const [, setSelectedDocs] = useState<FileList | null>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSelectedDocs(e.target.files);

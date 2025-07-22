@@ -37,34 +37,32 @@ const ChatMessageBubble: React.FC<ChatMessageBubbleProps> = ({ message, isOwnMes
         <ReactMarkdown
           remarkPlugins={[remarkGfm]}
           components={{
-            code({ inline, className, children, ...props }: any) {
-              const match = /language-(\w+)/.exec(className || "");
-              let codeString = "";
-              if (Array.isArray(children)) {
-                codeString = children.filter((c) => typeof c === "string").join("");
-              } else if (typeof children === "string") {
-                codeString = children;
-              } else {
-                // Defensive: if children is not string/array, render a warning
-                return <code className={className} {...props}>[Invalid code block]</code>;
-              }
-              codeString = codeString.replace(/\n$/, "");
-              return !inline ? (
-                <SyntaxHighlighter
-                  style={vscDarkPlus}
-                  language={match?.[1] || "javascript"}
-                  PreTag="div"
-                  className="rounded-md"
-                  {...props}
-                >
-                  {codeString}
-                </SyntaxHighlighter>
-              ) : (
-                <code className={className} {...props}>
-                  {codeString}
-                </code>
-              );
-            },
+          code: ({node, inline, className, children, ...props}: React.HTMLAttributes<HTMLElement> & {inline?: boolean, node?: any}) => {
+            const match = /language-(\w+)/.exec(className || "");
+            let codeString = "";
+            if (Array.isArray(children)) {
+              codeString = children.filter((c) => typeof c === "string").join("");
+            } else if (typeof children === "string") {
+              codeString = children;
+            } else {
+              // Defensive: if children is not string/array, render a warning
+              return <code className={className} {...props}>[Invalid code block]</code>;
+            }
+            codeString = codeString.replace(/\n$/, "");
+            return !inline ? (
+              <SyntaxHighlighter
+                style={vscDarkPlus}
+                language={match?.[1] || "javascript"}
+                PreTag="div"
+                className="rounded-md"
+                {...props}
+              >
+                {codeString}
+              </SyntaxHighlighter>
+            ) : (
+              <code className={className} {...props}>{codeString}</code>
+            );
+          },
           }}
         >
           {typeof message.text === "string"

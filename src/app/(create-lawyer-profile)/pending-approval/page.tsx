@@ -1,7 +1,6 @@
 // components/AdminSpecializations.tsx
 "use client";
 
-import { NotificationBell } from "@/components/notfication";
 import { gql, useQuery } from "@apollo/client";
 
 const GET_ADMIN_SPECIALIZATIONS = gql`
@@ -25,7 +24,7 @@ export default function AdminSpecializations() {
     <div className="p-4">
       <h2 className="text-xl font-bold mb-2">Admin Specializations</h2>
       <ul className="list-disc list-inside">
-        {data.getAdminSpecializations.map((spec: any) => (
+        {data.getAdminSpecializations.map((spec: { id: string; categoryName: string }) => (
           <li key={spec.id}>
             {spec.categoryName} (ID: {spec.id})
           </li>
