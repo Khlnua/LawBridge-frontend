@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useMutation, useQuery } from "@apollo/client";
 import { CREATE_POST } from "@/graphql/post";
-import { GET_SPECIALIZATION_QUERY } from "@/graphql/adminSpecialization";
+import { useGetAdminSpecializationsQuery } from "@/generated";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -23,7 +23,7 @@ const CreatePost = ({ onCreate }: CreatePostProps) => {
   const [video, setVideo] = useState<string | null>(null);
   const [audio, setAudio] = useState<string | null>(null);
 
-  const { data: specData } = useQuery(GET_SPECIALIZATION_QUERY);
+  const { data: specData } = useGetAdminSpecializationsQuery()
 
   const [createPost, { loading }] = useMutation(CREATE_POST, {
     onCompleted: (data) => {
@@ -127,7 +127,7 @@ const CreatePost = ({ onCreate }: CreatePostProps) => {
             )
           }
         >
-          {specData?.specializations?.map((spec: any) => (
+          {specData?.getAdminSpecializations?.map((spec: any) => (
             <option key={spec.id} value={spec.id}>
               {spec.name}
             </option>
