@@ -11,11 +11,7 @@ import { formatMoneyDigits } from "../../../../utils/numberFormat";
 import { CREATE_LAWYER_MUTATION } from "@/graphql/lawyer";
 import { useUser } from "@clerk/nextjs";
 import { useCreateSpecializationMutation } from "@/generated";
-import { FieldErrors, UseFormSetValue } from "react-hook-form";
-import { formatMoneyDigits } from "../../../../utils/numberFormat";
-import { useRouter } from "next/navigation";
-import { useQuery } from "@apollo/client";
-import { GET_SPECIALIZATION_QUERY } from "@/graphql/adminSpecialization";
+import { useGetAdminSpecializationsQuery } from "@/generated";
 
 type Props = {
   errors: FieldErrors<FormData>;
@@ -36,8 +32,6 @@ const ThirdCardForLawyer = ({
   const { getValues } = useFormContext<FormData>();
   const { user } = useUser();
 
-
- 
   const [hourlyRates, setHourlyRates] = useState<{ [key: string]: string }>({});
 
   const [createLawyer, { loading: creatingLawyer }] = useMutation(
@@ -45,7 +39,7 @@ const ThirdCardForLawyer = ({
   );
 
   const [createSpecialization] = useCreateSpecializationMutation();
-
+  const [getAdminSpecializations] = useGetAdminSpecializationsQuery();
 
   useEffect(() => {
     setRecommendPaid((prev) => {
@@ -164,7 +158,6 @@ const ThirdCardForLawyer = ({
       </div>
 
       {watchedSpecializations.length > 0 && (
-
         <div className="space-y-4 relative">
           <label className="block font-medium mb-4 text-[16px]">
             Та төлбөртэй үйлчилгээ санал болгох уу?
@@ -179,7 +172,6 @@ const ThirdCardForLawyer = ({
                     ? "bg-green-200 border-green-500"
                     : "border-blue-300 hover:bg-gray-100"
                 }`}
-
                 onClick={(e) => {
                   if ((e.target as HTMLElement).tagName !== "INPUT") {
                     setRecommendPaid((prev) => ({
