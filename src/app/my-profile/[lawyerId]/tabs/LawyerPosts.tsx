@@ -60,19 +60,19 @@ export const LawyerPosts = () => {
     },
   ]);
 
-  const handleAddPost = (newPost: PostType) => {
-    const postToAdd: PostType = {
-      ...newPost,
-      id: posts.length + 1,
-      createdAt: new Date().toISOString().split("T")[0],
-      comments: [],
-    };
-    setPosts([newPost, ...posts]);
-  };
+  // const handleAddPost = (newPost: PostType) => {
+  //   const postToAdd: PostType = {
+  //     ...newPost,
+  //     id: posts.length + 1,
+  //     createdAt: new Date().toISOString().split("T")[0],
+  //     comments: [],
+  //   };
+  //   setPosts([newPost, ...posts]);
+  // };
 
   return (
     <div className="space-y-6 border-none">
-      <CreatePost onCreate={handleAddPost} />
+      {/* <CreatePost onCreate={handleAddPost} /> */}
       <div className="space-y-4">
         {posts.map((post) => (
           <PostCard key={post.id} post={post} />
