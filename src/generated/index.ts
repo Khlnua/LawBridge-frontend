@@ -172,7 +172,7 @@ export type CreateReviewInput = {
 };
 
 export type CreateSpecializationInput = {
-  lawyerId: Scalars['ID']['input'];
+  lawyerId?: InputMaybe<Scalars['ID']['input']>;
   pricePerHour?: InputMaybe<Scalars['Int']['input']>;
   specializationId: Scalars['ID']['input'];
   subscription: Scalars['Boolean']['input'];
@@ -505,7 +505,7 @@ export type Post = {
   createdAt: Scalars['Date']['output'];
   id: Scalars['ID']['output'];
   lawyerId: Scalars['ID']['output'];
-  specialization: Array<Specialization>;
+  specialization: Array<AdminSpecialization>;
   title: Scalars['String']['output'];
   type: MediaType;
   updatedAt?: Maybe<Scalars['Date']['output']>;
@@ -780,6 +780,11 @@ export type UpdateSpecializationInput = {
   subscription: Scalars['Boolean']['input'];
 };
 
+export type GetAdminSpecializationsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetAdminSpecializationsQuery = { __typename?: 'Query', getAdminSpecializations: Array<{ __typename?: 'AdminSpecialization', id: string, categoryName: string }> };
+
 export type CreateAppointmentMutationVariables = Exact<{
   input: CreateAppointmentInput;
 }>;
@@ -801,12 +806,54 @@ export type GetChatHistoryByUserQueryVariables = Exact<{
 
 export type GetChatHistoryByUserQuery = { __typename?: 'Query', getChatHistoryByUser: Array<{ __typename?: 'ChatHistory', _id: string, userId: string, sessionId: string, userMessage: string, botResponse: any, createdAt: string }> };
 
-export type GetAdminSpecializationsQueryVariables = Exact<{ [key: string]: never; }>;
+export type CreateSpecializationMutationVariables = Exact<{
+  input?: InputMaybe<SpecializationInput>;
+}>;
 
 
-export type GetAdminSpecializationsQuery = { __typename?: 'Query', getAdminSpecializations: Array<{ __typename?: 'AdminSpecialization', id: string, categoryName: string }> };
+export type CreateSpecializationMutation = { __typename?: 'Mutation', createSpecialization: Array<{ __typename?: 'Specialization', _id: string, lawyerId: string, specializationId: string, subscription: boolean, pricePerHour?: number | null } | null> };
 
 
+export const GetAdminSpecializationsDocument = gql`
+    query GetAdminSpecializations {
+  getAdminSpecializations {
+    id
+    categoryName
+  }
+}
+    `;
+
+/**
+ * __useGetAdminSpecializationsQuery__
+ *
+ * To run a query within a React component, call `useGetAdminSpecializationsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetAdminSpecializationsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetAdminSpecializationsQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetAdminSpecializationsQuery(baseOptions?: Apollo.QueryHookOptions<GetAdminSpecializationsQuery, GetAdminSpecializationsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetAdminSpecializationsQuery, GetAdminSpecializationsQueryVariables>(GetAdminSpecializationsDocument, options);
+      }
+export function useGetAdminSpecializationsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetAdminSpecializationsQuery, GetAdminSpecializationsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetAdminSpecializationsQuery, GetAdminSpecializationsQueryVariables>(GetAdminSpecializationsDocument, options);
+        }
+export function useGetAdminSpecializationsSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetAdminSpecializationsQuery, GetAdminSpecializationsQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetAdminSpecializationsQuery, GetAdminSpecializationsQueryVariables>(GetAdminSpecializationsDocument, options);
+        }
+export type GetAdminSpecializationsQueryHookResult = ReturnType<typeof useGetAdminSpecializationsQuery>;
+export type GetAdminSpecializationsLazyQueryHookResult = ReturnType<typeof useGetAdminSpecializationsLazyQuery>;
+export type GetAdminSpecializationsSuspenseQueryHookResult = ReturnType<typeof useGetAdminSpecializationsSuspenseQuery>;
+export type GetAdminSpecializationsQueryResult = Apollo.QueryResult<GetAdminSpecializationsQuery, GetAdminSpecializationsQueryVariables>;
 export const CreateAppointmentDocument = gql`
     mutation CreateAppointment($input: CreateAppointmentInput!) {
   createAppointment(input: $input) {
@@ -926,43 +973,40 @@ export type GetChatHistoryByUserQueryHookResult = ReturnType<typeof useGetChatHi
 export type GetChatHistoryByUserLazyQueryHookResult = ReturnType<typeof useGetChatHistoryByUserLazyQuery>;
 export type GetChatHistoryByUserSuspenseQueryHookResult = ReturnType<typeof useGetChatHistoryByUserSuspenseQuery>;
 export type GetChatHistoryByUserQueryResult = Apollo.QueryResult<GetChatHistoryByUserQuery, GetChatHistoryByUserQueryVariables>;
-export const GetAdminSpecializationsDocument = gql`
-    query GetAdminSpecializations {
-  getAdminSpecializations {
-    id
-    categoryName
+export const CreateSpecializationDocument = gql`
+    mutation CreateSpecialization($input: SpecializationInput) {
+  createSpecialization(input: $input) {
+    _id
+    lawyerId
+    specializationId
+    subscription
+    pricePerHour
   }
 }
     `;
+export type CreateSpecializationMutationFn = Apollo.MutationFunction<CreateSpecializationMutation, CreateSpecializationMutationVariables>;
 
 /**
- * __useGetAdminSpecializationsQuery__
+ * __useCreateSpecializationMutation__
  *
- * To run a query within a React component, call `useGetAdminSpecializationsQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetAdminSpecializationsQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
+ * To run a mutation, you first call `useCreateSpecializationMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateSpecializationMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
  *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
  *
  * @example
- * const { data, loading, error } = useGetAdminSpecializationsQuery({
+ * const [createSpecializationMutation, { data, loading, error }] = useCreateSpecializationMutation({
  *   variables: {
+ *      input: // value for 'input'
  *   },
  * });
  */
-export function useGetAdminSpecializationsQuery(baseOptions?: Apollo.QueryHookOptions<GetAdminSpecializationsQuery, GetAdminSpecializationsQueryVariables>) {
+export function useCreateSpecializationMutation(baseOptions?: Apollo.MutationHookOptions<CreateSpecializationMutation, CreateSpecializationMutationVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetAdminSpecializationsQuery, GetAdminSpecializationsQueryVariables>(GetAdminSpecializationsDocument, options);
+        return Apollo.useMutation<CreateSpecializationMutation, CreateSpecializationMutationVariables>(CreateSpecializationDocument, options);
       }
-export function useGetAdminSpecializationsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetAdminSpecializationsQuery, GetAdminSpecializationsQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetAdminSpecializationsQuery, GetAdminSpecializationsQueryVariables>(GetAdminSpecializationsDocument, options);
-        }
-export function useGetAdminSpecializationsSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetAdminSpecializationsQuery, GetAdminSpecializationsQueryVariables>) {
-          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<GetAdminSpecializationsQuery, GetAdminSpecializationsQueryVariables>(GetAdminSpecializationsDocument, options);
-        }
-export type GetAdminSpecializationsQueryHookResult = ReturnType<typeof useGetAdminSpecializationsQuery>;
-export type GetAdminSpecializationsLazyQueryHookResult = ReturnType<typeof useGetAdminSpecializationsLazyQuery>;
-export type GetAdminSpecializationsSuspenseQueryHookResult = ReturnType<typeof useGetAdminSpecializationsSuspenseQuery>;
-export type GetAdminSpecializationsQueryResult = Apollo.QueryResult<GetAdminSpecializationsQuery, GetAdminSpecializationsQueryVariables>;
+export type CreateSpecializationMutationHookResult = ReturnType<typeof useCreateSpecializationMutation>;
+export type CreateSpecializationMutationResult = Apollo.MutationResult<CreateSpecializationMutation>;
+export type CreateSpecializationMutationOptions = Apollo.BaseMutationOptions<CreateSpecializationMutation, CreateSpecializationMutationVariables>;

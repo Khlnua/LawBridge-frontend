@@ -27,7 +27,8 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "types/clerk.d.ts"
+    "types/clerk.d.ts",
+    "src/graphql/adminSpecialization.grapghql"
   ],
   "exclude": ["node_modules"]
 }
