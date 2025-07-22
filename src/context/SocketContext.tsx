@@ -106,6 +106,30 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
       } catch (error) {
         console.error("Failed to connect socket:", error);
       }
+      
+      s = io("https://lawbridge-server.onrender.com/", {
+        path: "/socket.io",
+        auth: { token },
+        transports: ["websocket"], // Forcing websocket is fine for modern browsers
+      });
+
+      setSocket(s);
+
+      s.on("connect", () => {
+        console.log("✅ Socket connected:", s.id);
+        setIsConnected(true);
+      });
+
+      s.on("disconnect", () => {
+        console.log("❌ Socket disconnected");
+        setIsConnected(false);
+      });
+
+      s.on("connect_error", (err) => {
+        console.error("❌ Socket connect error:", err.message);
+        // This will now properly show "Authentication error: ..." from your server
+      });
+
     };
 
     connectSocket();
