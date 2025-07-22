@@ -3,7 +3,7 @@ import { z } from "zod";
 export const schemaLawyerProfile = z.object({
   firstName: z.string().max(100).min(2, { message: "Өөрийн нэрээ оруулна уу!" }),
   lastName: z.string().max(100).min(2, { message: "Овог нэрээ оруулна уу! " }),
-  email: z.string().email({ message: "Мейл хаяг шаардлага хангахгүй байна!" }),
+  // email: z.string().email({ message: "Мейл хаяг шаардлага хангахгүй байна!" }),
   phone: z
     .string()
     .length(8, { message: "Утасны дугаар 8 оронтой байх ёстой!" })
@@ -13,10 +13,7 @@ export const schemaLawyerProfile = z.object({
     message: "Өмгөөлөгчийн дугаар шаадлага хангахгүй байна! (ж: LAW-2021-045)",
   }),
   specializations: z.array(z.string()).min(1, { message: "Өөрийн талбарыг сонгоно уу" }),
-  bio: z
-    .string()
-    .min(10, { message: "Араваас илүү тэмдэгт оруулна УУ!" })
-    .max(1000, { message: "Хязгаар хэтэрсэн байна!" }),
+  bio: z.string().min(10, { message: "Араваас илүү тэмдэгт оруулна УУ!" }).max(1000, { message: "Хязгаар хэтэрсэн байна!" }),
   university: z.string().min(2, { message: "Их сургуулийн мэдээллээ гүйцэд оруулна уу!" }),
   avatar: z.string().min(1, { message: "Нүүр зураг оруулна уу!" }),
   documents: z.custom(

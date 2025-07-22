@@ -31,7 +31,7 @@ export default function AdminSpecializations() {
           </li>
         ))}
       </ul>
-      <NotificationBell/>
+      {/* <NotificationBell/> */}
     </div>
   );
 }

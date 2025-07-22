@@ -14,7 +14,7 @@ const httpLink = createHttpLink({
   uri: "http://localhost:4000/graphql",
   // process.env.NEXT_PUBLIC_BACKEND_URL ||
   // "https://lawbridge-server.onrender.com/graphql",
-});
+
 
 export const ApolloWrapper = ({ children }: { children: ReactNode }) => {
   const { getToken } = useAuth();

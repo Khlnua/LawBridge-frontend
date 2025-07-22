@@ -33,10 +33,12 @@ function OtpFormPageInner() {
         body: JSON.stringify({ phone, otp }),
       });
 
+      const data = await res.json();
+
       if (!res.ok) {
-        const data = await res.json();
         setError(data.message || "OTP шалгалт амжилтгүй боллоо");
       } else {
+        
         router.push("/");
       }
     } catch {
@@ -118,4 +120,3 @@ export default function OtpFormPage() {
     </Suspense>
   );
 }
- 

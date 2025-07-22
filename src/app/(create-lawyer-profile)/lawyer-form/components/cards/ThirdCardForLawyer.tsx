@@ -7,11 +7,15 @@ import { useMutation } from "@apollo/client";
 import { Button, Checkbox, Input } from "@/components/ui/index";
 import { ZodErrors } from "../ZodError";
 import { FormData } from "../../page";
-import { specializations } from "../../../../utils/specializations";
 import { formatMoneyDigits } from "../../../../utils/numberFormat";
 import { CREATE_LAWYER_MUTATION } from "@/graphql/lawyer";
 import { useUser } from "@clerk/nextjs";
 import { useCreateSpecializationMutation } from "@/generated";
+import { FieldErrors, UseFormSetValue } from "react-hook-form";
+import { formatMoneyDigits } from "../../../../utils/numberFormat";
+import { useRouter } from "next/navigation";
+import { useQuery } from "@apollo/client";
+import { GET_SPECIALIZATION_QUERY } from "@/graphql/adminSpecialization";
 
 type Props = {
   errors: FieldErrors<FormData>;
@@ -32,9 +36,8 @@ const ThirdCardForLawyer = ({
   const { getValues } = useFormContext<FormData>();
   const { user } = useUser();
 
-  const [recommendPaid, setRecommendPaid] = useState<{
-    [key: string]: boolean;
-  }>({});
+
+ 
   const [hourlyRates, setHourlyRates] = useState<{ [key: string]: string }>({});
 
   const [createLawyer, { loading: creatingLawyer }] = useMutation(
@@ -42,6 +45,7 @@ const ThirdCardForLawyer = ({
   );
 
   const [createSpecialization] = useCreateSpecializationMutation();
+
 
   useEffect(() => {
     setRecommendPaid((prev) => {
@@ -122,6 +126,7 @@ const ThirdCardForLawyer = ({
       );
     }
   };
+  const specializations = data?.getAdminSpecializations || [];
 
   return (
     <div className="space-y-10">
@@ -130,15 +135,22 @@ const ThirdCardForLawyer = ({
           Ажиллах талбараа сонгоно уу
         </label>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-          {specializations.map((spec) => (
-            <div key={spec} className="flex items-center space-x-2">
+          {specializations.map((spec: { id: string; categoryName: string }) => (
+            <div key={spec.id} className="flex items-center space-x-2">
               <Checkbox
-                checked={watchedSpecializations.includes(spec)}
+                id={`spec-${spec.id}`}
+                checked={watchedSpecializations.includes(spec.categoryName)}
                 onCheckedChange={(checked) =>
-                  handleCheckboxChange(checked, spec)
+                  handleCheckboxChange(checked, spec.categoryName)
                 }
+                className="cursor-pointer hover:bg-gray-100"
               />
-              <label className="text-sm cursor-pointer">{spec}</label>
+              <label
+                htmlFor={`spec-${spec.id}`}
+                className="text-sm cursor-pointer"
+              >
+                {spec.categoryName}
+              </label>
             </div>
           ))}
         </div>
@@ -152,7 +164,8 @@ const ThirdCardForLawyer = ({
       </div>
 
       {watchedSpecializations.length > 0 && (
-        <div className="space-y-4">
+
+        <div className="space-y-4 relative">
           <label className="block font-medium mb-4 text-[16px]">
             Та төлбөртэй үйлчилгээ санал болгох уу?
           </label>
@@ -166,6 +179,7 @@ const ThirdCardForLawyer = ({
                     ? "bg-green-200 border-green-500"
                     : "border-blue-300 hover:bg-gray-100"
                 }`}
+
                 onClick={(e) => {
                   if ((e.target as HTMLElement).tagName !== "INPUT") {
                     setRecommendPaid((prev) => ({

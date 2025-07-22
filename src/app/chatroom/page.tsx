@@ -1,10 +1,12 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useUser, useAuth } from "@clerk/nextjs";
 import { useSocket } from "@/context/SocketContext";
 import { LiveKitRoom, useRoomContext } from "@livekit/components-react";
 import "@livekit/components-styles";
+import { useQuery, useMutation, gql } from "@apollo/client";
+import { useParams } from "next/navigation";
 
 // Custom Components
 import { ChatHeader } from "@/components/chat/ChatHeader";
@@ -124,12 +126,68 @@ const CallConnectingModal = ({ callType }: { callType: "video" | "audio" }) => (
   </div>
 );
 
+// GraphQL query to fetch messages by chatRoomId
+const GET_MESSAGES = gql`
+  query getMessages($chatRoomId: ID!) {
+    getMessages(chatRoomId: $chatRoomId) {
+      chatRoomId
+      userId
+      type
+      content
+    }
+  }
+`;
+
+// GraphQL mutation to send a message
+const CREATE_MESSAGE = gql`
+  mutation createMessage(
+    $chatRoomId: ID!
+    $userId: String!
+    $type: MediaType!
+    $content: String
+  ) {
+    createMessage(
+      chatRoomId: $chatRoomId
+      userId: $userId
+      type: $type
+      content: $content
+    ) {
+      chatRoomId
+      userId
+      type
+      content
+    }
+  }
+`;
+
 export default function ChatPage() {
   const { user, isLoaded } = useUser();
   const { getToken } = useAuth();
-  const { socket, isConnected } = useSocket();
+  const { socket, isConnected, sendMessage, joinRoom, leaveRoom, emitTyping } =
+    useSocket();
+  const params = useParams();
+  // Get chatRoomId from URL params or fallback to a default
+  const chatRoomId =
+    (params?.chatRoomId as string) || "685a1b9dff6157ee051ccaaa";
 
+  // Apollo: fetch previous messages for this chatroom
+  const {
+    data: chatData,
+    loading: chatLoading,
+    error: chatError,
+  } = useQuery(GET_MESSAGES, {
+    variables: { chatRoomId },
+    skip: !chatRoomId,
+    fetchPolicy: "cache-and-network",
+  });
+
+  // Apollo: mutation for sending messages
+  const [createMessage] = useMutation(CREATE_MESSAGE);
+
+  // State for messages
   const [messages, setMessages] = useState<Message[]>([]);
+  // Add ref for auto-scroll
+  const messagesEndRef = useRef<HTMLDivElement>(null);
   const [liveKitToken, setLiveKitToken] = useState<string | null>(null);
   const [isJoiningCall, setIsJoiningCall] = useState(false);
   const [isCallConnected, setIsCallConnected] = useState(false);
@@ -137,6 +195,11 @@ export default function ChatPage() {
     "video" | "audio" | null
   >(null);
   const [isSending, setIsSending] = useState(false);
+  const [typingUsers, setTypingUsers] = useState<{ [key: string]: string }>({});
+  const [isTyping, setIsTyping] = useState(false);
+
+  // Use ref to store typing timeout
+  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // MOCK DATA: In a real app, this would come from page props or an API call.
   const otherUser: ChatUser = {
@@ -145,11 +208,106 @@ export default function ChatPage() {
     avatar: "https://i.pravatar.cc/150?u=sarah_connor",
     isLawyer: true,
   };
-  const roomName = user
-    ? `chat_${[user.id, otherUser.id].sort().join("_")}`
-    : null;
+  const roomName = "685a1b9dff6157ee051ccaaa";
 
-  // --- Callbacks and Socket Effects ---
+  // Load previous messages when data is available
+  useEffect(() => {
+    if (chatData?.getMessages) {
+      // Force sort by createdAt ascending (oldest first)
+      const sorted = [...chatData.getMessages].sort(
+        (a, b) =>
+          new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+      );
+      setMessages(sorted);
+    }
+  }, [chatData]);
+
+  // Auto-scroll to bottom when messages change
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
+
+  // --- Socket Effects ---
+  useEffect(() => {
+    if (!socket || !roomName) return;
+
+    // Join the chat room
+    joinRoom(roomName);
+
+    // Listen for new messages
+    const handleNewMessage = (message: any) => {
+      setMessages((prev) => {
+        const exists = prev.some(
+          (msg) =>
+            msg.id === message.id ||
+            (msg.content === message.content && msg.userId === message.userId)
+        );
+        if (!exists) {
+          const merged = [
+            ...prev,
+            {
+              chatRoomId: message.chatRoomId,
+              content: message.content,
+              userId: message.userId,
+              type: message.type || "TEXT",
+              id: message._id || message.id,
+              createdAt: message.createdAt || new Date().toISOString(),
+            },
+          ];
+          // Force sort by createdAt ascending (oldest first)
+          return merged.sort(
+            (a, b) =>
+              new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+          );
+        }
+        return prev;
+      });
+    };
+
+    // Listen for typing events
+    const handleUserTyping = ({
+      userId,
+      username,
+      isTyping: typing,
+    }: {
+      userId: string;
+      username: string;
+      isTyping: boolean;
+    }) => {
+      if (userId === user?.id) return; // Don't show typing for current user
+
+      setTypingUsers((prev) => {
+        const updated = { ...prev };
+        if (typing) {
+          updated[userId] = username;
+        } else {
+          delete updated[userId];
+        }
+        return updated;
+      });
+    };
+
+    // Listen for message errors
+    const handleMessageError = (error: any) => {
+      console.error("❌ Message error:", error);
+      // You might want to show a toast notification here
+    };
+
+    // Add event listeners
+    socket.on("message-created", handleNewMessage);
+    socket.on("user-typing", handleUserTyping);
+    socket.on("message-error", handleMessageError);
+
+    // Cleanup on unmount
+    return () => {
+      socket.off("message-created", handleNewMessage);
+      socket.off("user-typing", handleUserTyping);
+      socket.off("message-error", handleMessageError);
+      leaveRoom(roomName);
+    };
+  }, [socket, roomName, user?.id, joinRoom, leaveRoom]);
+
+  // --- Callbacks ---
   const handleJoinCall = useCallback(
     async (callType: "video" | "audio") => {
       if (!user || !roomName || isJoiningCall) return;
@@ -163,7 +321,6 @@ export default function ChatPage() {
       } catch (error) {
         console.error("Failed to get token:", error);
         setIsJoiningCall(false);
-        // Could add error toast here
       }
     },
     [user, roomName, getToken, isJoiningCall]
@@ -176,64 +333,119 @@ export default function ChatPage() {
     setIsJoiningCall(false);
   }, []);
 
-  useEffect(() => {
-    if (!socket || !isConnected || !roomName) return;
-    const handleNewMessage = (newMessage: Message) => {
-      if (newMessage.chatRoomId === roomName) {
-        setMessages((prev) => [...prev, newMessage]);
-      }
-    };
-    socket.on("chat-message", handleNewMessage);
-    return () => {
-      socket.off("chat-message", handleNewMessage);
-    };
-  }, [socket, isConnected, roomName]);
-
+  // Update handleSendMessage to use GraphQL mutation
   const handleSendMessage = useCallback(
     async (content: string) => {
-      if (!socket || !user || !roomName || isSending) return;
-
+      if (!user || !chatRoomId || isSending || !content.trim()) return;
       setIsSending(true);
       try {
-        const messagePayload = {
-          chatRoomId: roomName,
-          text: content,
-          type: "text" as const,
-          sender: {
-            id: user.id,
-            name: user.fullName ?? "Me",
-            avatar: user.imageUrl,
-            isLawyer: !!user.publicMetadata?.isLawyer,
+        // Send message via GraphQL mutation
+        await createMessage({
+          variables: {
+            chatRoomId,
+            userId: user.id,
+            type: "TEXT",
+            content: content.trim(),
           },
-          timestamp: new Date(),
-        };
-
-        // Optimistically add message
+        });
+        // Optionally, refetch or update messages state
         setMessages((prev) => [
           ...prev,
-          { ...messagePayload, id: `temp_${Date.now()}` },
+          {
+            chatRoomId: Array.isArray(chatRoomId) ? chatRoomId[0] : chatRoomId,
+            userId: user.id,
+            type: "TEXT",
+            content: content.trim(),
+            id: `temp-${Date.now()}`, // temporary id
+            createdAt: new Date().toISOString(),
+          },
         ]);
-
-        socket.emit("chat-message", {
-          toUserId: otherUser.id,
-          ...messagePayload,
-        });
-      } catch (error) {
-        console.error("Failed to send message:", error);
-        // Could add error handling here
+      } catch (err) {
+        console.error("Failed to send message:", err);
       } finally {
         setIsSending(false);
       }
     },
-    [socket, user, roomName, otherUser.id, isSending]
+    [user, chatRoomId, createMessage, isSending]
   );
 
-  const handleSendFile = useCallback((file: File) => {
-    // Show a more user-friendly notification
-    alert(`File uploads are not yet implemented. File: ${file.name}`);
-  }, []);
+  const handleSendFile = useCallback(
+    async (file: File) => {
+      if (!user || !roomName || isSending) return;
 
-  if (!isLoaded || !user) {
+      setIsSending(true);
+
+      try {
+        // Upload file first
+        const formData = new FormData();
+        formData.append("file", file);
+
+        const res = await fetch("/api/upload", {
+          method: "POST",
+          body: formData,
+        });
+
+        if (!res.ok) {
+          throw new Error("Failed to upload file");
+        }
+
+        const { url } = await res.json();
+
+        // Send file message via Socket.IO
+        sendMessage({
+          chatRoomId: roomName,
+          content: url,
+          userId: user.id,
+          type: "IMAGE",
+        });
+      } catch (err) {
+        console.error("File upload error:", err);
+      } finally {
+        setIsSending(false);
+      }
+    },
+    [user, roomName, sendMessage, isSending]
+  );
+
+  const handleTyping = useCallback(
+    (typing: boolean) => {
+      if (!user || !roomName) return;
+
+      if (typing) {
+        // Clear existing timeout
+        if (typingTimeoutRef.current) {
+          clearTimeout(typingTimeoutRef.current);
+        }
+
+        // Only emit if not already typing
+        if (!isTyping) {
+          setIsTyping(true);
+          emitTyping({ chatRoomId: roomName, isTyping: true });
+        }
+
+        // Set timeout to stop typing after 3 seconds
+        typingTimeoutRef.current = setTimeout(() => {
+          setIsTyping(false);
+          emitTyping({ chatRoomId: roomName, isTyping: false });
+        }, 3000);
+      } else {
+        // Clear timeout and stop typing immediately
+        if (typingTimeoutRef.current) {
+          clearTimeout(typingTimeoutRef.current);
+          typingTimeoutRef.current = null;
+        }
+
+        if (isTyping) {
+          setIsTyping(false);
+          emitTyping({ chatRoomId: roomName, isTyping: false });
+        }
+      }
+    },
+    [user, roomName, isTyping, emitTyping]
+  );
+
+  // Show loading while user data or messages are loading
+  if (!isLoaded || chatLoading) {
     return <LoadingSpinner />;
   }
 
@@ -241,7 +453,6 @@ export default function ChatPage() {
     <>
       <ConnectionStatus isConnected={isConnected} isJoining={isJoiningCall} />
 
-      {/* Main Chat Container with improved responsive design */}
       <main
         className="
         w-full h-screen bg-white
@@ -254,7 +465,6 @@ export default function ChatPage() {
       "
       >
         <div className="flex flex-col h-full">
-          {/* Enhanced Header with better spacing */}
           <div className="flex-shrink-0 border-b border-slate-200/80 bg-white/95 backdrop-blur-sm">
             <ChatHeader
               user={otherUser}
@@ -265,7 +475,6 @@ export default function ChatPage() {
             />
           </div>
 
-          {/* Message Area with improved scrolling - ensure it takes available space */}
           <div
             className="
             flex-1 min-h-0 overflow-y-auto 
@@ -275,10 +484,37 @@ export default function ChatPage() {
             hover:scrollbar-thumb-slate-400
           "
           >
-            <MessageList messages={messages} />
+            <MessageList
+              messages={messages}
+              setMessages={setMessages}
+              currentUserId={user?.id}
+            />
+
+            {/* Typing Indicator */}
+            {Object.keys(typingUsers).length > 0 && (
+              <div className="flex items-center space-x-2 p-3 text-sm text-gray-500">
+                <div className="flex space-x-1">
+                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+                  <div
+                    className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
+                    style={{ animationDelay: "0.1s" }}
+                  ></div>
+                  <div
+                    className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
+                    style={{ animationDelay: "0.2s" }}
+                  ></div>
+                </div>
+                <span>
+                  {Object.values(typingUsers).join(", ")}
+                  {Object.keys(typingUsers).length === 1 ? " is" : " are"}{" "}
+                  typing...
+                </span>
+              </div>
+            )}
+            {/* Scroll to bottom anchor */}
+            <div ref={messagesEndRef} />
           </div>
 
-          {/* Enhanced Input Area - fixed at bottom */}
           <div
             className="
             flex-shrink-0 border-t border-slate-200/80 
@@ -290,24 +526,24 @@ export default function ChatPage() {
             <ChatInput
               onSend={handleSendMessage}
               onFileChange={handleSendFile}
+              onTyping={handleTyping}
               isSending={isSending}
+              disabled={!isConnected}
             />
           </div>
         </div>
       </main>
 
-      {/* Enhanced Connection Modal */}
       {isJoiningCall && !isCallConnected && activeCallType && (
         <CallConnectingModal callType={activeCallType} />
       )}
 
-      {/* LiveKit Room */}
       {liveKitToken && activeCallType && (
         <LiveKitRoom
           token={liveKitToken}
           serverUrl={process.env.NEXT_PUBLIC_LIVEKIT_SERVER_URL}
           connect={true}
-          video={false} // Start with media off to prevent race conditions
+          video={false}
           audio={false}
           onDisconnected={handleLeaveCall}
         >

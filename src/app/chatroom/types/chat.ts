@@ -6,12 +6,10 @@ export interface User {
 }
 
 export interface Message {
-  id: string; // Every message MUST have a unique ID
-  text: string;
-  type: "text" | "image" | "video" | "document";
-  fileUrl?: string;
-  fileName?: string;
-  timestamp: Date | string; // Can be a Date object or an ISO string
-  sender: User;
-  chatRoomId: string; // ID of the chat room this message belongs to
+  id: string;
+  chatRoomId: string;
+  userId: string;
+  content: string;
+  type: "TEXT" | "IMAGE" | "FILE";
+  createdAt: string;
 }

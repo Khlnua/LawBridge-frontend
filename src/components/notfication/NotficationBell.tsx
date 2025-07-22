@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useQuery, useMutation, gql } from "@apollo/client";
-import { socket } from "@/lib/socket";
+import { getSocket } from "@/lib/socket";
 
 const GET_MY_NOTIFICATIONS = gql`
   query GetMyNotifications {
@@ -34,18 +34,19 @@ export function NotificationBell() {
   const [markAsRead] = useMutation(MARK_NOTIFICATION_AS_READ);
 
   const notifications = data?.myNotifications ?? [];
-interface Notification {
+  interface Notification {
     id: string;
     type: string;
     content: string;
     read: boolean;
     createdAt: string;
-}
+  }
 
-const unreadCount = notifications.filter((n: Notification) => !n.read).length;
+  const unreadCount = notifications.filter((n: Notification) => !n.read).length;
 
   // Socket.IO realtime шинэ notification хүлээж авах
   useEffect(() => {
+    const socket = getSocket();
     socket.on("new-notification", () => {
       refetch();
     });
@@ -97,7 +98,9 @@ const unreadCount = notifications.filter((n: Notification) => !n.read).length;
       {open && (
         <div className="absolute right-0 mt-2 w-96 max-h-96 overflow-auto bg-white shadow-lg rounded-md z-50">
           {loading && <p className="p-4 text-center">Ачааллаж байна...</p>}
-          {error && <p className="p-4 text-center text-red-600">Алдаа гарлаа</p>}
+          {error && (
+            <p className="p-4 text-center text-red-600">Алдаа гарлаа</p>
+          )}
           {!loading && notifications.length === 0 && (
             <p className="p-4 text-center text-gray-500">Мэдэгдэл алга</p>
           )}
@@ -107,13 +110,13 @@ const unreadCount = notifications.filter((n: Notification) => !n.read).length;
               key={n.id}
               onClick={() => onNotificationClick(n.id)}
               className={`p-3 cursor-pointer border-b hover:bg-gray-100 ${
-            !n.read ? "bg-blue-50" : ""
+                !n.read ? "bg-blue-50" : ""
               }`}
             >
               <p className="font-semibold">{n.type.replace(/_/g, " ")}</p>
               <p className="text-sm">{n.content}</p>
               <p className="text-xs text-gray-400">
-            {new Date(n.createdAt).toLocaleString()}
+                {new Date(n.createdAt).toLocaleString()}
               </p>
             </div>
           ))}

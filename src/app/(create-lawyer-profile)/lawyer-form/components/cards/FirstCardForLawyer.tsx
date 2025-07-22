@@ -40,6 +40,7 @@ const FirstCardForLawyer = ({
     onUpload: (url: string) => {
       setValue("avatar", url);
     },
+
   });
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -61,12 +62,12 @@ const FirstCardForLawyer = ({
   };
 
   const handleNextStep = async () => {
-    // Хэрвээ ямар нэгэн алдаа байвал дараагийн алхам руу бүү шилж
     if (
       errors.firstName?.message ||
       errors.lastName?.message ||
       errors.email?.message
     ) {
+
       return;
     }
 
@@ -98,11 +99,7 @@ const FirstCardForLawyer = ({
             Нэр
           </label>
           <Input id="firstName" {...register("firstName")} />
-          <ZodErrors
-            error={
-              errors.firstName?.message ? [errors.firstName.message] : undefined
-            }
-          />
+          <ZodErrors error={errors.firstName?.message ? [errors.firstName.message] : undefined} />
         </div>
 
         <div>
@@ -110,21 +107,8 @@ const FirstCardForLawyer = ({
             Овог
           </label>
           <Input id="lastName" {...register("lastName")} />
-          <ZodErrors
-            error={
-              errors.lastName?.message ? [errors.lastName.message] : undefined
-            }
-          />
+          <ZodErrors error={errors.lastName?.message ? [errors.lastName.message] : undefined} />
         </div>
-      </div>
-      <div>
-        <label htmlFor="email" className="block text-sm font-medium mb-1">
-          Email
-        </label>
-        <Input id="email" {...register("email")} />
-        <ZodErrors
-          error={errors.email?.message ? [errors.email.message] : undefined}
-        />
       </div>
 
       <Avatar
@@ -144,10 +128,7 @@ const FirstCardForLawyer = ({
         setIsDragging={setIsDragging}
       />
 
-      <Button
-        onClick={handleNextStep}
-        className="w-full bg-blue-500 hover:bg-blue-400 cursor-pointer text-white"
-      >
+      <Button onClick={handleNextStep} className="w-full bg-blue-500 hover:bg-blue-400 cursor-pointer text-white">
         Дараачийн
       </Button>
     </div>

@@ -73,7 +73,7 @@ export const LawyerProfileHeader = () => {
   };
 
   return (
-    <Card className="w-full max-w-4xl mx-auto p-6 space-y-4">
+    <Card className="w-full p-6 space-y-4 border-none bg-[#d6ebf7] ">
       <CardHeader className="flex flex-col items-center text-center gap-4">
         <div className="relative group">
           <Avatar className="w-28 h-28 border">

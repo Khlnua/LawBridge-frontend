@@ -1,7 +1,7 @@
 import { currentUser } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { LawyerProfileHeader } from "./tabs"; 
-import Tabs from "./tabs/Tabs";
+import SidebarTabs from "./tabs/Tabs";
 
 type PageProps = {
   params: {
@@ -24,12 +24,12 @@ const LawyerProfilePageForLawyers = async ({ params }: PageProps) => {
   }
 
   return (
-    <div className="w-full px-4 py-8 flex flex-col items-center space-y-6">
+    <div className="w-full max-w-6xl mx-auto px-4 py-8 space-y-6">
       <LawyerProfileHeader />
-      <Tabs />
+      <SidebarTabs />
     </div>
-
   );
+  
 };
 
 export default LawyerProfilePageForLawyers;

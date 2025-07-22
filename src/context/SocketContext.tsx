@@ -1,42 +1,110 @@
-// src/context/SocketContext.tsx - CORRECTED VERSION
+"use client";
 
-"use client"
-import React, { createContext, useContext, useEffect, useState } from "react";
-import { Socket, io } from "socket.io-client";
-import { useAuth } from "@clerk/nextjs";
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  ReactNode,
+} from "react";
+import { useUser, useAuth } from "@clerk/nextjs";
+import { io, Socket } from "socket.io-client";
+
+interface User {
+  id: string;
+  username: string;
+  imageUrl: string;
+  socketId: string;
+}
 
 interface SocketContextType {
   socket: Socket | null;
   isConnected: boolean;
+  onlineUsers: User[];
+  sendMessage: (data: {
+    chatRoomId: string;
+    content: string;
+    userId: string;
+    type?: string;
+  }) => void;
+  joinRoom: (roomId: string) => void;
+  leaveRoom: (roomId: string) => void;
+  emitTyping: (data: { chatRoomId: string; isTyping: boolean }) => void;
 }
 
-const SocketContext = createContext<SocketContextType>({
-  socket: null,
-  isConnected: false,
-});
+const SocketContext = createContext<SocketContextType | undefined>(undefined);
 
-export const useSocket = () => useContext(SocketContext);
+export const useSocket = () => {
+  const context = useContext(SocketContext);
+  if (!context) {
+    throw new Error("useSocket must be used within a SocketProvider");
+  }
+  return context;
+};
 
-export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
+interface SocketProviderProps {
+  children: ReactNode;
+}
+
+export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
+  const { user, isLoaded } = useUser();
+  const { getToken } = useAuth();
   const [socket, setSocket] = useState<Socket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
-  const { getToken, isSignedIn } = useAuth(); // Get isSignedIn status as well
+  const [onlineUsers, setOnlineUsers] = useState<User[]>([]);
 
   useEffect(() => {
-    // Only attempt to connect if the user is signed in
-    if (!isSignedIn) {
-      return;
-    }
+    if (!isLoaded || !user) return;
 
-    let s: Socket; // Define socket instance variable
-
-    const setupSocket = async () => {
-      const token = await getToken();
-
-      // Prevent connection if token is not available
-      if (!token) {
-          console.log("Waiting for auth token...");
+    const connectSocket = async () => {
+      try {
+        const token = await getToken();
+        if (!token) {
+          console.error("No authentication token available");
           return;
+        }
+
+        const newSocket = io(
+          process.env.NEXT_PUBLIC_SERVER_URL || "http://localhost:4000",
+          {
+            path: "/socket.io",
+            auth: {
+              token: token,
+            },
+            transports: ["websocket", "polling"],
+          }
+        );
+
+        // Connection events
+        newSocket.on("connect", () => {
+          console.log("✅ Socket connected:", newSocket.id);
+          setIsConnected(true);
+        });
+
+        newSocket.on("disconnect", (reason) => {
+          console.log("❌ Socket disconnected:", reason);
+          setIsConnected(false);
+        });
+
+        newSocket.on("connect_error", (error) => {
+          console.error("❌ Socket connection error:", error);
+          setIsConnected(false);
+        });
+
+        // Online users
+        newSocket.on("onlineUsers", (users: User[]) => {
+          console.log("👥 Online users updated:", users);
+          setOnlineUsers(users);
+        });
+
+        // Error handling
+        newSocket.on("message-error", (error) => {
+          console.error("❌ Message error:", error);
+        });
+
+        setSocket(newSocket);
+      } catch (error) {
+        console.error("Failed to connect socket:", error);
       }
       
       s = io("https://lawbridge-server.onrender.com/", {
@@ -61,24 +129,66 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
         console.error("❌ Socket connect error:", err.message);
         // This will now properly show "Authentication error: ..." from your server
       });
+
     };
 
-    setupSocket();
+    connectSocket();
 
-    // --- CRITICAL CLEANUP FUNCTION ---
-    // This function will run when the component unmounts
     return () => {
-      if (s) {
-        s.disconnect();
-        setSocket(null);
-        setIsConnected(false);
-        console.log("🧹 Socket cleaned up.");
+      if (socket) {
+        console.log("🔌 Disconnecting socket...");
+        socket.disconnect();
       }
     };
-  }, [isSignedIn, getToken]); // Rerun effect if signed-in status or getToken function changes
+  }, [isLoaded, user, getToken]);
+
+  // Socket utility functions
+  const sendMessage = (data: {
+    chatRoomId: string;
+    content: string;
+    userId: string;
+    type?: string;
+  }) => {
+    if (socket && isConnected) {
+      console.log("📤 Sending message:", data);
+      socket.emit("chat-message", data);
+    } else {
+      console.warn("⚠️ Socket not connected, cannot send message");
+    }
+  };
+
+  const joinRoom = (roomId: string) => {
+    if (socket && isConnected) {
+      console.log("🏠 Joining room:", roomId);
+      socket.emit("join-room", roomId);
+    }
+  };
+
+  const leaveRoom = (roomId: string) => {
+    if (socket && isConnected) {
+      console.log("🚪 Leaving room:", roomId);
+      socket.emit("leave-room", roomId);
+    }
+  };
+
+  const emitTyping = (data: { chatRoomId: string; isTyping: boolean }) => {
+    if (socket && isConnected) {
+      socket.emit("typing", data);
+    }
+  };
+
+  const contextValue: SocketContextType = {
+    socket,
+    isConnected,
+    onlineUsers,
+    sendMessage,
+    joinRoom,
+    leaveRoom,
+    emitTyping,
+  };
 
   return (
-    <SocketContext.Provider value={{ socket, isConnected }}>
+    <SocketContext.Provider value={contextValue}>
       {children}
     </SocketContext.Provider>
   );

@@ -9,6 +9,7 @@ import { schemaLawyerProfile } from "./actions/schema";
 import FirstCardForLawyer from "./components/cards/FirstCardForLawyer";
 import SecondCardForLawyer from "./components/cards/SecondCardForLawyer";
 import ThirdCardForLawyer from "./components/cards/ThirdCardForLawyer";
+import { RedirectToSignUp, SignedIn, SignedOut } from "@clerk/nextjs";
 
 export type FormData = z.infer<typeof schemaLawyerProfile>;
 
@@ -36,6 +37,7 @@ const LawyerRegistrationForm = () => {
     } else if (currentStep === 2) {
       valid = await trigger(["specializations"]);
     }
+
 
     if (valid) {
       setPreviousStep(currentStep);
@@ -107,6 +109,7 @@ const LawyerRegistrationForm = () => {
         </form>
       </div>
     </FormProvider>
+
   );
 };
 
