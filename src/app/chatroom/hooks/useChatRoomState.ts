@@ -3,7 +3,10 @@ import { useUser, useAuth } from "@clerk/nextjs";
 import { useQuery, useMutation, gql } from "@apollo/client";
 import { useSocket } from "@/context/SocketContext";
 import { fetchLiveKitToken } from "@/lib/livekit";
-import { Message, User as ChatUser } from "@/app/chatroom/types/chat";
+import {
+  Message as MessageType,
+  User as ChatUser,
+} from "@/app/chatroom/types/chat";
 
 const GET_MESSAGES = gql`
   query getMessages($chatRoomId: ID!) {
@@ -12,8 +15,6 @@ const GET_MESSAGES = gql`
       userId
       type
       content
-      id
-      createdAt
     }
   }
 `;
@@ -35,20 +36,41 @@ const CREATE_MESSAGE = gql`
       userId
       type
       content
-      id
-      createdAt
     }
   }
 `;
 
-export default function useChatRoomState(chatRoomId: string) {
+export interface UseChatRoomState {
+  user: ChatUser | null;
+  messages: MessageType[];
+  setMessages: React.Dispatch<React.SetStateAction<MessageType[]>>;
+  typingUsers: Record<string, string>;
+  isSending: boolean;
+  isConnected: boolean;
+  isLoading: boolean;
+  error: string | null;
+  handleSendMessage: (content: string) => Promise<void>;
+  handleSendFile: (file: File) => Promise<void>;
+  handleTyping: (typing: boolean) => void;
+  messagesEndRef: React.RefObject<HTMLDivElement>;
+  otherUser: ChatUser;
+  handleJoinCall: (type: "video" | "audio") => Promise<void>;
+  handleLeaveCall: () => void;
+  activeCallType: "video" | "audio" | null;
+  isJoiningCall: boolean;
+  isCallConnected: boolean;
+  liveKitToken: string | null;
+  setIsCallConnected: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsJoiningCall: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+export default function useChatRoomState(chatRoomId: string): UseChatRoomState {
   const { user, isLoaded } = useUser();
   const { getToken } = useAuth();
-  const { socket, isConnected, sendMessage, joinRoom, leaveRoom, emitTyping } =
-    useSocket();
-  const [messages, setMessages] = useState<Message[]>([]);
+  const { socket, isConnected, joinRoom, leaveRoom, emitTyping } = useSocket();
+  const [messages, setMessages] = useState<MessageType[]>([]);
   const [isSending, setIsSending] = useState(false);
-  const [typingUsers, setTypingUsers] = useState<{ [key: string]: string }>({});
+  const [typingUsers, setTypingUsers] = useState<Record<string, string>>({});
   const [isTyping, setIsTyping] = useState(false);
   const [liveKitToken, setLiveKitToken] = useState<string | null>(null);
   const [isJoiningCall, setIsJoiningCall] = useState(false);
@@ -56,7 +78,9 @@ export default function useChatRoomState(chatRoomId: string) {
   const [activeCallType, setActiveCallType] = useState<
     "video" | "audio" | null
   >(null);
-  const messagesEndRef = useRef<HTMLDivElement | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Replace with real user fetching logic
   const otherUser: ChatUser = {
@@ -70,11 +94,14 @@ export default function useChatRoomState(chatRoomId: string) {
   const {
     data: chatData,
     loading: chatLoading,
+    error: apolloError,
     refetch,
   } = useQuery(GET_MESSAGES, {
     variables: { chatRoomId },
     skip: !chatRoomId,
     fetchPolicy: "cache-and-network",
+    onCompleted: () => setIsLoading(false),
+    onError: (err) => setError(err.message),
   });
 
   // Apollo: mutation for sending messages
@@ -83,11 +110,9 @@ export default function useChatRoomState(chatRoomId: string) {
   // Load previous messages when data is available
   useEffect(() => {
     if (chatData?.getMessages) {
-      const sorted = [...chatData.getMessages].sort(
-        (a, b) =>
-          new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
-      );
-      setMessages(sorted);
+      setMessages(chatData.getMessages as MessageType[]);
+      setIsLoading(false);
+      setError(null);
     }
   }, [chatData]);
 
@@ -95,29 +120,14 @@ export default function useChatRoomState(chatRoomId: string) {
   useEffect(() => {
     if (!socket || !chatRoomId) return;
     joinRoom(chatRoomId);
-    const handleNewMessage = (message: any) => {
+    const handleNewMessage = (message: MessageType) => {
       setMessages((prev) => {
         const exists = prev.some(
           (msg) =>
-            msg.id === message.id ||
-            (msg.content === message.content && msg.userId === message.userId)
+            msg.content === message.content && msg.userId === message.userId
         );
         if (!exists) {
-          const merged = [
-            ...prev,
-            {
-              chatRoomId: message.chatRoomId,
-              content: message.content,
-              userId: message.userId,
-              type: message.type || "TEXT",
-              id: message._id || message.id,
-              createdAt: message.createdAt || new Date().toISOString(),
-            },
-          ];
-          return merged.sort(
-            (a, b) =>
-              new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
-          );
+          return [...prev, message];
         }
         return prev;
       });
@@ -164,15 +174,16 @@ export default function useChatRoomState(chatRoomId: string) {
       try {
         await createMessage({
           variables: {
-            chatRoomId,
+            chatRoomId: "685a1b9dff6157ee051ccaaa",
             userId: user.id,
             type: "TEXT",
             content: content.trim(),
           },
         });
         await refetch();
+        setError(null);
       } catch (err) {
-        console.error("Failed to send message:", err);
+        setError(err instanceof Error ? err.message : String(err));
       } finally {
         setIsSending(false);
       }
@@ -209,6 +220,7 @@ export default function useChatRoomState(chatRoomId: string) {
         setLiveKitToken(token);
       } catch (error) {
         setIsJoiningCall(false);
+        setError(error instanceof Error ? error.message : String(error));
       }
     },
     [user, chatRoomId, getToken, isJoiningCall]
@@ -221,16 +233,18 @@ export default function useChatRoomState(chatRoomId: string) {
   }, []);
 
   return {
-    user,
+    user: user as ChatUser | null,
     messages,
     setMessages,
     typingUsers,
     isSending,
     isConnected,
+    isLoading: isLoading || chatLoading,
+    error: error || (apolloError ? apolloError.message : null),
     handleSendMessage,
     handleSendFile,
     handleTyping,
-    messagesEndRef,
+    messagesEndRef: messagesEndRef as React.RefObject<HTMLDivElement>,
     otherUser,
     handleJoinCall,
     handleLeaveCall,

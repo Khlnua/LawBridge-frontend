@@ -10,8 +10,8 @@ import { LiveKitRoom } from "@livekit/components-react";
 import { VideoCallModal } from "@/components/chat/VideoCallModal";
 
 export default function ChatPage() {
-  const params = useParams();
-  const chatRoomId = (params?.chatRoomId as string) || "default";
+  // Hardcode chatRoomId for now
+  const chatRoomId = "685a1b9dff6157ee051ccaaa";
   const {
     user,
     messages,

@@ -8,7 +8,7 @@ import { Message, User as ChatUser } from "@/app/chatroom/types/chat";
 interface ChatRoomProps {
   messages: Message[];
   setMessages: React.Dispatch<React.SetStateAction<Message[]>>;
-  user: any;
+  user: { id: string };
   otherUser: ChatUser;
   typingUsers: { [key: string]: string };
   isSending: boolean;

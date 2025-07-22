@@ -6,9 +6,7 @@ import { useMutation, useQuery } from "@apollo/client";
 import { gql } from "@apollo/client";
 import {
   Send,
-  MessageCircle,
   Scale,
-  FileText,
   Clock,
   User,
   Bot,
@@ -47,11 +45,11 @@ const GET_CHAT_HISTORY_BY_USER = gql`
 
 interface Message {
   id: number;
-  text: string | Object;
+  text: string | Record<string, unknown>;
   sender: "user" | "bot";
   timestamp: Date;
-  sourceDocuments?: any[];
-  metadata?: any;
+  sourceDocuments?: unknown[];
+  metadata?: Record<string, unknown>;
   isError?: boolean;
 }
 
@@ -124,20 +122,20 @@ const LawBridgeChat = () => {
       );
       const loadedMessages: Message[] = [];
 
-      history.forEach((item: any, index: number) => {
+      history.forEach((item: Record<string, unknown>, index: number) => {
         // Add user message
         loadedMessages.push({
           id: index * 2,
-          text: item.userMessage,
+          text: item.userMessage as string,
           sender: "user",
-          timestamp: new Date(item.createdAt),
+          timestamp: new Date(item.createdAt as string),
         });
 
         // Add bot response (parse JSON if needed)
-        let botText = item.botResponse;
+        let botText = item.botResponse as string;
         try {
-          const parsed = JSON.parse(botText);
-          botText = parsed.answer || JSON.stringify(parsed);
+          const parsed = JSON.parse(botText) as Record<string, unknown>;
+          botText = (parsed.answer as string) || JSON.stringify(parsed);
         } catch {
           // Not JSON, use as is
         }
@@ -145,7 +143,7 @@ const LawBridgeChat = () => {
           id: index * 2 + 1,
           text: botText,
           sender: "bot",
-          timestamp: new Date(item.createdAt),
+          timestamp: new Date(item.createdAt as string),
         });
       });
 
@@ -329,19 +327,19 @@ const LawBridgeChat = () => {
         const history = chatHistoryData.getChatHistoryByUser;
         const loadedMessages: Message[] = [];
 
-        history.forEach((item: any, index: number) => {
+        history.forEach((item: Record<string, unknown>, index: number) => {
           loadedMessages.push({
             id: index * 2,
-            text: item.userMessage,
+            text: item.userMessage as string,
             sender: "user",
-            timestamp: new Date(item.createdAt),
+            timestamp: new Date(item.createdAt as string),
           });
 
           loadedMessages.push({
             id: index * 2 + 1,
-            text: item.botResponse,
+            text: item.botResponse as string,
             sender: "bot",
-            timestamp: new Date(item.createdAt),
+            timestamp: new Date(item.createdAt as string),
           });
         });
 
@@ -472,10 +470,16 @@ const LawBridgeChat = () => {
                   }`}
                 >
                   <div className="whitespace-pre-wrap leading-relaxed">
-                    {typeof message.text === "object"
-                      ? (message.text as any).answer ||
-                        JSON.stringify(message.text)
-                      : message.text.toString()}
+                    {typeof message.text === "string"
+                      ? (message.text as string)
+                      : typeof message.text === "object" &&
+                        message.text !== null &&
+                        "answer" in message.text &&
+                        typeof (message.text as Record<string, unknown>)
+                          .answer === "string"
+                      ? ((message.text as Record<string, unknown>)
+                          .answer as string)
+                      : ("" as string)}
                   </div>
 
                   <div className="flex items-center justify-between mt-2 pt-2 border-t border-gray-100/20">
@@ -491,12 +495,27 @@ const LawBridgeChat = () => {
                       {formatTimestamp(message.timestamp)}
                     </div>
 
-                    {message.metadata && message.metadata.responseTime && (
-                      <div className="flex items-center space-x-2 text-xs text-gray-500">
-                        <Clock className="w-3 h-3" />
-                        <span>{message.metadata.responseTime}ms</span>
-                      </div>
-                    )}
+                    {(() => {
+                      const meta = message.metadata as
+                        | Record<string, unknown>
+                        | undefined;
+                      const responseTime =
+                        meta && typeof meta.responseTime !== "undefined"
+                          ? meta.responseTime
+                          : undefined;
+                      if (
+                        typeof responseTime === "number" ||
+                        typeof responseTime === "string"
+                      ) {
+                        return (
+                          <div className="flex items-center space-x-2 text-xs text-gray-500">
+                            <Clock className="w-3 h-3" />
+                            <span>{responseTime}ms</span>
+                          </div>
+                        );
+                      }
+                      return null;
+                    })()}
                   </div>
 
                   {message.sourceDocuments &&

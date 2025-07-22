@@ -172,7 +172,7 @@ export type CreateReviewInput = {
 };
 
 export type CreateSpecializationInput = {
-  lawyerId: Scalars['ID']['input'];
+  lawyerId?: InputMaybe<Scalars['ID']['input']>;
   pricePerHour?: InputMaybe<Scalars['Int']['input']>;
   specializationId: Scalars['ID']['input'];
   subscription: Scalars['Boolean']['input'];
@@ -505,7 +505,7 @@ export type Post = {
   createdAt: Scalars['Date']['output'];
   id: Scalars['ID']['output'];
   lawyerId: Scalars['ID']['output'];
-  specialization: Array<Specialization>;
+  specialization: Array<AdminSpecialization>;
   title: Scalars['String']['output'];
   type: MediaType;
   updatedAt?: Maybe<Scalars['Date']['output']>;

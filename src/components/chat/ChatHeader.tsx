@@ -2,7 +2,6 @@
 
 import React from "react";
 import { Video, PhoneCall, Shield, PhoneOff } from "lucide-react";
-import { cn } from "@/lib/utils";
 import { User } from "@/app/chatroom/types/chat";
 
 interface ChatHeaderProps {

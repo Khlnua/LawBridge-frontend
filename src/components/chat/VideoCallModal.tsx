@@ -9,7 +9,6 @@ import {
   PhoneOff,
   Monitor,
   MonitorOff,
-  Settings,
   Maximize2,
   Minimize2,
   Volume2,
@@ -67,10 +66,8 @@ export const VideoCallModal: React.FC<VideoCallModalProps> = ({
   );
   const [controlsVisible, setControlsVisible] = useState(true);
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const [showSettings, setShowSettings] = useState(false);
   const [callDuration, setCallDuration] = useState(0);
   const [isAudioMuted, setIsAudioMuted] = useState(false);
-  const [pipPosition, setPipPosition] = useState({ x: 24, y: 24 });
 
   // Call duration timer
   useEffect(() => {
@@ -125,11 +122,11 @@ export const VideoCallModal: React.FC<VideoCallModalProps> = ({
   // Auto-hide controls
   useEffect(() => {
     let timer: NodeJS.Timeout;
-    if (controlsVisible && !showSettings) {
+    if (controlsVisible) {
       timer = setTimeout(() => setControlsVisible(false), 4000);
     }
     return () => clearTimeout(timer);
-  }, [controlsVisible, showSettings]);
+  }, [controlsVisible]);
 
   // Format call duration
   const formatDuration = (seconds: number) => {
@@ -160,6 +157,21 @@ export const VideoCallModal: React.FC<VideoCallModalProps> = ({
       onMouseMove={() => setControlsVisible(true)}
       onTouchStart={() => setControlsVisible(true)}
     >
+      {/* Self Preview at the Top (like Messenger) */}
+      {callType === "video" &&
+        !isVideoOff &&
+        localCameraTrackRef &&
+        !isScreenSharing && (
+          <div className="absolute top-4 right-4 z-30">
+            <div className="w-24 h-24 rounded-3xl overflow-hidden border-2 border-white shadow-lg bg-black">
+              <VideoTrack
+                trackRef={localCameraTrackRef}
+                className="w-full h-full object-cover transform scale-x-[-1]" // << Mirror effect
+              />
+            </div>
+          </div>
+        )}
+
       {/* Top Status Bar */}
       <div
         className={cn(
@@ -214,7 +226,7 @@ export const VideoCallModal: React.FC<VideoCallModalProps> = ({
           <div className="relative w-full h-full">
             <VideoTrack
               trackRef={remoteVideoTrackRef}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover transform scale-x-[-1]"
             />
             {/* Overlay for better text visibility */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-black/20" />
@@ -249,36 +261,7 @@ export const VideoCallModal: React.FC<VideoCallModalProps> = ({
         )}
       </div>
 
-      {/* Enhanced Self Preview (Picture-in-Picture) */}
-      <div
-        className={cn(
-          "absolute transition-all duration-300 rounded-xl overflow-hidden border-2 border-white/20 shadow-2xl backdrop-blur-sm",
-          "w-24 h-32 md:w-32 md:h-40 lg:w-40 lg:h-52",
-          callType === "video" &&
-            !isVideoOff &&
-            localCameraTrackRef &&
-            !isScreenSharing
-            ? "opacity-100"
-            : "opacity-0 pointer-events-none"
-        )}
-        style={{
-          top: `${pipPosition.y}px`,
-          right: `${pipPosition.x}px`,
-        }}
-      >
-        {localCameraTrackRef && (
-          <VideoTrack
-            trackRef={localCameraTrackRef}
-            className="w-full h-full object-cover"
-          />
-        )}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-black/30" />
-        <div className="absolute bottom-1 left-1 right-1 text-center">
-          <span className="text-white text-xs font-medium bg-black/50 px-2 py-1 rounded">
-            You
-          </span>
-        </div>
-      </div>
+      {/* Removed old PiP logic; self-preview is now at the top */}
 
       {/* Enhanced Controls Bar */}
       <div
@@ -351,31 +334,7 @@ export const VideoCallModal: React.FC<VideoCallModalProps> = ({
       </div>
 
       {/* Settings Panel */}
-      {showSettings && (
-        <div className="absolute right-4 bottom-24 w-80 bg-black/80 backdrop-blur-md rounded-xl border border-white/10 shadow-2xl p-4">
-          <h3 className="text-white font-semibold mb-3">Call Settings</h3>
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="text-slate-300">Audio Quality</span>
-              <select className="bg-slate-700 text-white rounded px-2 py-1 text-sm">
-                <option>Auto</option>
-                <option>High</option>
-                <option>Medium</option>
-                <option>Low</option>
-              </select>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-slate-300">Video Quality</span>
-              <select className="bg-slate-700 text-white rounded px-2 py-1 text-sm">
-                <option>Auto</option>
-                <option>HD</option>
-                <option>Standard</option>
-                <option>Low</option>
-              </select>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Removed Settings Panel as per edit hint */}
 
       {/* Audio Tracks (invisible) */}
       {useTracks([Track.Source.Microphone])
