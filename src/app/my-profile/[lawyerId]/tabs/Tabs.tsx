@@ -1,17 +1,28 @@
 "use client";
 
 import { useState } from "react";
-import { FileText, Star, Calendar } from "lucide-react";
+import { FileText, Star, Calendar, MessageCircleMoreIcon } from "lucide-react";
 import LawyerPosts from "./LawyerPosts";
 import { LawyerReviews } from "./LawyerReviews";
 import { LawyerSchedule } from "./LawyerSchedule";
+import { LawyerClients } from "./LawyerClients";
 
-type TabType = "posts" | "reviews" | "schedule";
+type TabType = "posts" | "reviews" | "schedule"| "clients";
 
 const SidebarTabs = () => {
   const [activeTab, setActiveTab] = useState<TabType>("posts");
 
   const tabItems: { id: TabType; label: string; icon: React.ReactNode }[] = [
+    {
+      id: "schedule",
+      label: "Хуваарь",
+      icon: <Calendar className="w-4 h-4" />,
+    },
+    {
+      id: "clients",
+      label: "Үйлчлүүлэгчид",
+      icon: <MessageCircleMoreIcon className="w-4 h-4" />,
+    },
     {
       id: "posts",
       label: "Нийтлэлүүд",
@@ -21,11 +32,6 @@ const SidebarTabs = () => {
       id: "reviews",
       label: "Сэтгэгдлүүд",
       icon: <Star className="w-4 h-4" />,
-    },
-    {
-      id: "schedule",
-      label: "Хуваарь",
-      icon: <Calendar className="w-4 h-4" />,
     },
   ];
 
@@ -57,6 +63,7 @@ const SidebarTabs = () => {
         {activeTab === "posts" && <LawyerPosts />}
         {activeTab === "reviews" && <LawyerReviews />}
         {activeTab === "schedule" && <LawyerSchedule />}
+        {activeTab === "clients" && <LawyerClients/>}
       </section>
     </div>
   );

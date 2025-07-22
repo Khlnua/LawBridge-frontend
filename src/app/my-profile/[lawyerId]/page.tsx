@@ -24,7 +24,7 @@ const LawyerProfilePageForLawyers = async ({ params }: PageProps) => {
   }
 
   return (
-    <div className="w-full max-w-6xl mx-auto px-4 py-8 space-y-6">
+    <div className="w-full max-w-6xl mx-auto px-4 py-8 space-y-6 border-none">
       <LawyerProfileHeader />
       <SidebarTabs />
     </div>
