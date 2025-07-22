@@ -29,18 +29,18 @@ const CreatePost = ({ onCreate }: CreatePostProps) => {
     onCompleted: (data) => {
       alert("Нийтлэл амжилттай үүслээ!");
 
-      const newPost: PostType = {
-        _id: data.createPost._id,
+      const post: PostType = {
+        id: data.createPost._id,
         title,
         content,
         specialization: specialization.join(", "),
         mediaUrl: image || video || audio || undefined,
-        mediaType: image ? "image" : video ? "video" : audio ? "audio" : undefined,
+        mediaType: image ? "image" : video ? "video" : undefined,
         createdAt: new Date().toISOString(),
         comments: [],
       };
 
-      onCreate(newPost);
+      onCreate(post);
 
       setTitle("");
       setContent("");
@@ -86,7 +86,6 @@ const CreatePost = ({ onCreate }: CreatePostProps) => {
             text: content,
             image: image || undefined,
             video: video || undefined,
-            audio: audio || undefined,
           },
         },
       },
@@ -123,7 +122,9 @@ const CreatePost = ({ onCreate }: CreatePostProps) => {
           className="border rounded p-2 w-full"
           value={specialization}
           onChange={(e) =>
-            setSpecialization(Array.from(e.target.selectedOptions, (opt) => opt.value))
+            setSpecialization(
+              Array.from(e.target.selectedOptions, (opt) => opt.value)
+            )
           }
         >
           {specData?.specializations?.map((spec: any) => (
@@ -137,15 +138,27 @@ const CreatePost = ({ onCreate }: CreatePostProps) => {
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div className="space-y-1">
           <Label>Зураг</Label>
-          <Input type="file" accept="image/*" onChange={(e) => handleFileUpload(e, "image")} />
+          <Input
+            type="file"
+            accept="image/*"
+            onChange={(e) => handleFileUpload(e, "image")}
+          />
         </div>
         <div className="space-y-1">
           <Label>Видео</Label>
-          <Input type="file" accept="video/*" onChange={(e) => handleFileUpload(e, "video")} />
+          <Input
+            type="file"
+            accept="video/*"
+            onChange={(e) => handleFileUpload(e, "video")}
+          />
         </div>
         <div className="space-y-1">
           <Label>Аудио</Label>
-          <Input type="file" accept="audio/*" onChange={(e) => handleFileUpload(e, "audio")} />
+          <Input
+            type="file"
+            accept="audio/*"
+            onChange={(e) => handleFileUpload(e, "audio")}
+          />
         </div>
       </div>
 
@@ -158,4 +171,3 @@ const CreatePost = ({ onCreate }: CreatePostProps) => {
 };
 
 export default CreatePost;
-

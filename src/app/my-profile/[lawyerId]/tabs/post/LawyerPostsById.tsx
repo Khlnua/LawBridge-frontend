@@ -12,7 +12,6 @@ interface CommentType {
 
 interface PostType {
   id: number;
-  _id: string; // GraphQL id
   title: string;
   content: string;
   specialization: string;
@@ -27,7 +26,7 @@ export const PostCard = ({ post }: { post: PostType }) => {
 
   // Коммент жагсаалт татах query
   const { data, loading, error, refetch } = useQuery(GET_COMMENTS_BY_POST, {
-    variables: { postId: post._id },
+    variables: { postId: post.id },
   });
 
   // Коммент үүсгэх mutation
@@ -46,7 +45,7 @@ export const PostCard = ({ post }: { post: PostType }) => {
     await createComment({
       variables: {
         input: {
-          postId: post._id,
+          postId: post.id,
           content: commentText,
         },
       },
@@ -79,7 +78,8 @@ export const PostCard = ({ post }: { post: PostType }) => {
 
       {/* Комментын тоо */}
       <div className="text-xs text-gray-400 pt-2">
-        Сэтгэгдэл: {data?.getCommentsByPost?.length ?? post.comments.length} ширхэг
+        Сэтгэгдэл: {data?.getCommentsByPost?.length ?? post.comments.length}{" "}
+        ширхэг
       </div>
 
       {/* Коммент бичих хэсэг */}
