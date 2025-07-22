@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef, useEffect } from "react";
 import { useUser } from "@clerk/nextjs";
 import { MessageBubble } from "./MessageBubble";
 import { Message } from "@/app/chatroom/types/chat";
@@ -46,13 +46,14 @@ export const MessageList: React.FC<MessageListProps> = ({
 
   return (
     <div className="space-y-4">
-      {messages
+      {[...messages]
+        .reverse()
         .filter((msg) => msg && msg.userId)
-        .map((msg) => {
+        .map((msg, index) => {
           const isOwnMessage = msg.userId === (currentUserId || user?.id);
           return (
             <MessageBubble
-              key={msg.id}
+              key={`${msg.userId}-${msg.type}-${msg.content}-${index}`}
               message={msg}
               isOwnMessage={isOwnMessage}
             />

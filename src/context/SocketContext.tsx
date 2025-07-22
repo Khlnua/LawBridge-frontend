@@ -22,13 +22,13 @@ interface SocketContextType {
   isConnected: boolean;
   onlineUsers: User[];
   sendMessage: (data: {
-    chatRoomId: string;
+    chatRoomId: "685a1b9dff6157ee051ccaaa";
     content: string;
     userId: string;
     type?: string;
   }) => void;
-  joinRoom: (roomId: string) => void;
-  leaveRoom: (roomId: string) => void;
+  joinRoom: (chatRoomId: string) => void;
+  leaveRoom: (chatRoomId: string) => void;
   emitTyping: (data: { chatRoomId: string; isTyping: boolean }) => void;
 }
 
@@ -133,17 +133,17 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
     }
   };
 
-  const joinRoom = (roomId: string) => {
+  const joinRoom = (chatRoomId: string) => {
     if (socket && isConnected) {
-      console.log("🏠 Joining room:", roomId);
-      socket.emit("join-room", roomId);
+      console.log("🏠 Joining room:", chatRoomId);
+      socket.emit("join-room", chatRoomId);
     }
   };
 
-  const leaveRoom = (roomId: string) => {
+  const leaveRoom = (chatRoomId: string) => {
     if (socket && isConnected) {
-      console.log("🚪 Leaving room:", roomId);
-      socket.emit("leave-room", roomId);
+      console.log("🚪 Leaving room:", chatRoomId);
+      socket.emit("leave-room", chatRoomId);
     }
   };
 
