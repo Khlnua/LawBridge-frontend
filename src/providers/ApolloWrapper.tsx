@@ -10,11 +10,10 @@ import { setContext } from "@apollo/client/link/context";
 import { ReactNode, useEffect, useMemo, useState } from "react";
 import { useAuth } from "@clerk/nextjs";
 
-const httpLink = createHttpLink({
-  uri: "http://localhost:4000/graphql",
-  // process.env.NEXT_PUBLIC_BACKEND_URL ||
-  // "https://lawbridge-server.onrender.com/graphql",
+const httpLink = createHttpLink({ uri: "http://localhost:4000/graphql" });
 
+// process.env.NEXT_PUBLIC_BACKEND_URL ||
+// "https://lawbridge-server.onrender.com/graphql",})
 
 export const ApolloWrapper = ({ children }: { children: ReactNode }) => {
   const { getToken } = useAuth();

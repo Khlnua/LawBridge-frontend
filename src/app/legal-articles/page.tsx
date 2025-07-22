@@ -1,14 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { useQuery } from "@apollo/client";
 import { Button, GetPost } from "@/components";
-import { GET_SPECIALIZATION_QUERY } from "@/graphql/adminSpecialization";
+import { useGetAdminSpecializationsQuery } from "@/generated";
 
 const ArticlesPage = () => {
   const [selectedSpec, setSelectedSpec] = useState<string | null>(null);
 
-  const { data, loading, error } = useQuery(GET_SPECIALIZATION_QUERY);
+  const { data, loading, error } = useGetAdminSpecializationsQuery();
 
   const handleFilter = (category: string) => {
     setSelectedSpec((prev) => (prev === category ? null : category));

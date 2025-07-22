@@ -10,8 +10,11 @@ import { FormData } from "../../page";
 import { formatMoneyDigits } from "../../../../utils/numberFormat";
 import { CREATE_LAWYER_MUTATION } from "@/graphql/lawyer";
 import { useUser } from "@clerk/nextjs";
-import { useCreateSpecializationMutation } from "@/generated";
-import { useGetAdminSpecializationsQuery } from "@/generated";
+import {
+  useCreateSpecializationMutation,
+  useGetAdminSpecializationsQuery,
+} from "@/generated";
+import { EmailAddress } from "@clerk/backend";
 
 type Props = {
   errors: FieldErrors<FormData>;
@@ -34,18 +37,22 @@ const ThirdCardForLawyer = ({
 
   const [hourlyRates, setHourlyRates] = useState<{ [key: string]: string }>({});
 
+  const [recommendPaid, setRecommendPaid] = useState<{
+    [key: string]: boolean;
+  }>({});
+
   const [createLawyer, { loading: creatingLawyer }] = useMutation(
     CREATE_LAWYER_MUTATION
   );
-
   const [createSpecialization] = useCreateSpecializationMutation();
-  const [getAdminSpecializations] = useGetAdminSpecializationsQuery();
+  const { data } = useGetAdminSpecializationsQuery();
+  const specializations = data?.getAdminSpecializations || [];
 
   useEffect(() => {
     setRecommendPaid((prev) => {
       const updated: { [key: string]: boolean } = {};
-      watchedSpecializations.forEach((spec) => {
-        updated[spec] = prev[spec] ?? false;
+      watchedSpecializations.forEach((id) => {
+        updated[id] = prev[id] ?? false;
       });
       return updated;
     });
@@ -54,6 +61,7 @@ const ThirdCardForLawyer = ({
   const handleRegister = async () => {
     const formData = getValues();
     const lawyerId = user?.id;
+    const EmailAddress = user?.emailAddresses[0]?.emailAddress;
 
     if (!lawyerId) {
       console.error("lawyerId олдсонгүй");
@@ -61,13 +69,13 @@ const ThirdCardForLawyer = ({
     }
 
     try {
-      const { data } = await createLawyer({
+      await createLawyer({
         variables: {
           input: {
-            lawyerId: lawyerId,
+            lawyerId,
+            email: EmailAddress,
             firstName: formData.firstName,
             lastName: formData.lastName,
-            email: formData.email,
             profilePicture: formData.avatar,
             licenseNumber: formData.licenseNumber,
             university: formData.university,
@@ -78,20 +86,20 @@ const ThirdCardForLawyer = ({
       });
 
       await Promise.all(
-        watchedSpecializations.map(async (spec) => {
+        watchedSpecializations.map(async (specId) => {
           const price = parseInt(
-            (hourlyRates[spec] || "0").replace(/,/g, ""),
+            (hourlyRates[specId] || "0").replace(/,/g, ""),
             10
           );
-          const sub = recommendPaid[spec] ?? false;
+          const sub = recommendPaid[specId] ?? false;
 
           await createSpecialization({
             variables: {
               input: {
                 specializations: [
                   {
-                    lawyerId: "687f4227390e098127a90009",
-                    specializationId: "686e20e60f350225bb6ef1b7" /* spec */,
+                    lawyerId,
+                    specializationId: specId,
                     subscription: sub,
                     pricePerHour: sub ? price : 0,
                   },
@@ -120,7 +128,6 @@ const ThirdCardForLawyer = ({
       );
     }
   };
-  const specializations = data?.getAdminSpecializations || [];
 
   return (
     <div className="space-y-10">
@@ -129,13 +136,13 @@ const ThirdCardForLawyer = ({
           Ажиллах талбараа сонгоно уу
         </label>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-          {specializations.map((spec: { id: string; categoryName: string }) => (
+          {specializations.map((spec) => (
             <div key={spec.id} className="flex items-center space-x-2">
               <Checkbox
                 id={`spec-${spec.id}`}
-                checked={watchedSpecializations.includes(spec.categoryName)}
+                checked={watchedSpecializations.includes(spec.id)}
                 onCheckedChange={(checked) =>
-                  handleCheckboxChange(checked, spec.categoryName)
+                  handleCheckboxChange(checked, spec.id)
                 }
                 className="cursor-pointer hover:bg-gray-100"
               />
@@ -162,11 +169,15 @@ const ThirdCardForLawyer = ({
           <label className="block font-medium mb-4 text-[16px]">
             Та төлбөртэй үйлчилгээ санал болгох уу?
           </label>
-          {watchedSpecializations.map((spec) => {
-            const isChecked = recommendPaid[spec] || false;
+          {watchedSpecializations.map((specId) => {
+            const spec = specializations.find((s) => s.id === specId);
+            if (!spec) return null;
+
+            const isChecked = recommendPaid[specId] || false;
+
             return (
               <div
-                key={spec}
+                key={specId}
                 className={`flex items-center p-3 border rounded-lg transition-colors ${
                   isChecked
                     ? "bg-green-200 border-green-500"
@@ -176,7 +187,7 @@ const ThirdCardForLawyer = ({
                   if ((e.target as HTMLElement).tagName !== "INPUT") {
                     setRecommendPaid((prev) => ({
                       ...prev,
-                      [spec]: !isChecked,
+                      [specId]: !isChecked,
                     }));
                   }
                 }}
@@ -186,12 +197,12 @@ const ThirdCardForLawyer = ({
                   onCheckedChange={(checked) =>
                     setRecommendPaid((prev) => ({
                       ...prev,
-                      [spec]: Boolean(checked),
+                      [specId]: Boolean(checked),
                     }))
                   }
                 />
                 <label className="text-sm ml-2">
-                  {`${spec} ${
+                  {`${spec.categoryName} ${
                     isChecked ? "талбарт төлбөртэй ажиллана" : "үнэгүй ажиллана"
                   }`}
                 </label>
@@ -199,12 +210,12 @@ const ThirdCardForLawyer = ({
                   <div className="ml-auto">
                     <Input
                       placeholder="Цагийн хөлс"
-                      value={hourlyRates[spec] || ""}
+                      value={hourlyRates[specId] || ""}
                       onChange={(e) => {
                         const raw = e.target.value.replace(/[^0-9]/g, "");
                         setHourlyRates((prev) => ({
                           ...prev,
-                          [spec]: formatMoneyDigits(raw),
+                          [specId]: formatMoneyDigits(raw),
                         }));
                       }}
                       className="w-32 text-xs"

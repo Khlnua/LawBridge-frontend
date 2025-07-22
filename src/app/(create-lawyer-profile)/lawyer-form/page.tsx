@@ -21,7 +21,11 @@ const LawyerRegistrationForm = () => {
     },
   });
 
-  const { watch, trigger, formState: { errors, isSubmitting } } = methods;
+  const {
+    watch,
+    trigger,
+    formState: { errors, isSubmitting },
+  } = methods;
   const watchedSpecializations = watch("specializations");
 
   const [currentStep, setCurrentStep] = useState(0);
@@ -31,13 +35,12 @@ const LawyerRegistrationForm = () => {
     let valid = false;
 
     if (currentStep === 0) {
-      valid = await trigger(["firstName", "lastName", "email", "avatar"]);
+      valid = await trigger(["firstName", "lastName", "avatar"]);
     } else if (currentStep === 1) {
       valid = await trigger(["licenseNumber", "university", "bio"]);
     } else if (currentStep === 2) {
       valid = await trigger(["specializations"]);
     }
-
 
     if (valid) {
       setPreviousStep(currentStep);
@@ -52,7 +55,11 @@ const LawyerRegistrationForm = () => {
     }
   };
 
-  const CurrentStepComponent = [FirstCardForLawyer, SecondCardForLawyer, ThirdCardForLawyer][currentStep];
+  const CurrentStepComponent = [
+    FirstCardForLawyer,
+    SecondCardForLawyer,
+    ThirdCardForLawyer,
+  ][currentStep];
 
   const propsForStep: Record<number, any> = {
     0: {
@@ -86,32 +93,37 @@ const LawyerRegistrationForm = () => {
           onSubmit={methods.handleSubmit(onSubmit)}
           className="w-full max-w-2xl border-2 border-blue-400 shadow-2xl p-8 rounded-lg space-y-6"
         >
-          <h1 className="text-2xl font-bold mb-6 text-center">Өмгөөлөгчийн бүртгэл</h1>
+          <h1 className="text-2xl font-bold mb-6 text-center">
+            Өмгөөлөгчийн бүртгэл
+          </h1>
           <AnimatePresence mode="wait">
             <motion.div
               key={currentStep}
-              initial={{ opacity: 0, x: currentStep > previousStep ? 100 : -100 }}
+              initial={{
+                opacity: 0,
+                x: currentStep > previousStep ? 100 : -100,
+              }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: currentStep > previousStep ? -100 : 100 }}
               className="space-y-4"
               transition={{ type: "spring", stiffness: 300, damping: 30 }}
             >
-              <CurrentStepComponent  errors={errors}
-  setValue={methods.setValue}
-  register={methods.register}
-  getValues={methods.getValues}
-  watchedSpecializations={watchedSpecializations}
-  goToNextStep={goToNextStep}
-  goToPreviousStep={goToPreviousStep}
-  isSubmitting={isSubmitting} />
+              <CurrentStepComponent
+                errors={errors}
+                setValue={methods.setValue}
+                register={methods.register}
+                getValues={methods.getValues}
+                watchedSpecializations={watchedSpecializations}
+                goToNextStep={goToNextStep}
+                goToPreviousStep={goToPreviousStep}
+                isSubmitting={isSubmitting}
+              />
             </motion.div>
           </AnimatePresence>
         </form>
       </div>
     </FormProvider>
-
   );
 };
 
 export default LawyerRegistrationForm;
- 
