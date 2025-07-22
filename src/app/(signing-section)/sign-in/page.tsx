@@ -11,23 +11,22 @@ import OtpInput from "@/components/OtpInput";
 
 export default function LoginPage() {
   const router = useRouter();
-  const [phoneOrEmail, setPhoneOrEmail] = useState("");
+  const [phone, setPhone] = useState("+976");
+  const [email, setEmail] = useState("");
   const [otp, setOtp] = useState("");
   const [pending, setPending] = useState(false);
   const [error, setError] = useState("");
+  const [method, setMethod] = useState<"phone" | "email" | null>(null);
   const { signIn, setActive } = useSignIn();
-
-  const isPhone = phoneOrEmail.startsWith("+976");
 
   const sendOtpOrStartSignIn = async (e: FormEvent) => {
     e.preventDefault();
     setError("");
 
-    if (isPhone) {
-      
+    if (method === "phone") {
       const res = await fetch("/api/send-login-otp", {
         method: "POST",
-        body: JSON.stringify({ phone: phoneOrEmail }),
+        body: JSON.stringify({ phone }),
         headers: { "Content-Type": "application/json" },
       });
 
@@ -37,8 +36,9 @@ export default function LoginPage() {
         const data = await res.json();
         setError(data.message || "OTP илгээхэд алдаа гарлаа.");
       }
-    } else {
-      
+    }
+
+    if (method === "email") {
       if (!signIn) {
         setError("SignIn функц ачаалагдаагүй байна.");
         return;
@@ -46,7 +46,7 @@ export default function LoginPage() {
 
       try {
         const result = await signIn.create({
-          identifier: phoneOrEmail,
+          identifier: email,
           strategy: "email_code",
         });
 
@@ -66,11 +66,10 @@ export default function LoginPage() {
     e.preventDefault();
     setError("");
 
-    if (isPhone) {
-      // Утасны OTP шалгах
+    if (method === "phone") {
       const res = await fetch("/api/verify-login-otp", {
         method: "POST",
-        body: JSON.stringify({ phone: phoneOrEmail, otp }),
+        body: JSON.stringify({ phone, otp }),
         headers: { "Content-Type": "application/json" },
       });
 
@@ -92,20 +91,16 @@ export default function LoginPage() {
       } else {
         setError(data.message || "OTP шалгахад алдаа гарлаа.");
       }
-    } else {
-      
-      if (!signIn) {
-        setError("SignIn функц ачаалагдаагүй байна.");
-        return;
-      }
+    }
 
+    if (method === "email") {
       try {
-        const result = await signIn.attemptFirstFactor({
+        const result = await signIn?.attemptFirstFactor({
           strategy: "email_code",
           code: otp,
         });
 
-        if (result.status === "complete") {
+        if (result?.status === "complete") {
           await setActive?.({ session: result.createdSessionId });
           router.push("/");
         } else {
@@ -130,43 +125,115 @@ export default function LoginPage() {
             />
           </div>
           <div className="p-6 md:p-8 flex flex-col justify-center">
-            <form onSubmit={pending ? verifyOtpOrEmailCode : sendOtpOrStartSignIn} className="flex flex-col gap-6">
-              <div className="text-center">
-                <h1 className="text-2xl font-bold">Тавтай морилно уу?</h1>
-                <p className="text-muted-foreground text-sm">
-                  Login to your LawBridge account
-                </p>
-                
+            {method === null && (
+              <div className="flex flex-col gap-4 text-center">
+                <h1 className="text-2xl font-bold">Нэвтрэх аргаа сонгоно уу</h1>
+                <Button
+                  onClick={() => {
+                    setMethod("phone");
+                    setPhone("+976");
+                    setEmail("");
+                    setError("");
+                    setPending(false);
+                    setOtp("");
+                  }}
+                  className="w-full bg-blue-600 text-white"
+                >
+                  Утасны дугаараар нэвтрэх
+                </Button>
+                <Button
+                  onClick={() => {
+                    setMethod("email");
+                    setEmail("");
+                    setPhone("+976");
+                    setError("");
+                    setPending(false);
+                    setOtp("");
+                  }}
+                  className="w-full bg-gray-800 text-white"
+                >
+                  Имэйлээр нэвтрэх
+                </Button>
               </div>
+            )}
 
-              {!pending ? (
-                <>
-                  <Label>Утас эсвэл И-мэйл</Label>
-                  <Input
-                    placeholder="+976******** эсвэл name@gmail.com"
-                    value={phoneOrEmail}
-                    onChange={(e) => setPhoneOrEmail(e.target.value)}
-                  />
-                  <Button type="submit"
-                    className="w-full bg-[#2563eb] text-white">Үргэлжлүүлэх</Button>
-                </>
-              ) : (
-                <>
-                  <Label>Баталгаажуулах код</Label>
-                  <OtpInput onChange={setOtp} />
-                  <Button type="submit">Нэвтрэх</Button>
-                </>
-              )}
+            {method !== null && (
+              <form
+                onSubmit={pending ? verifyOtpOrEmailCode : sendOtpOrStartSignIn}
+                className="flex flex-col gap-6"
+              >
+                <div className="text-center">
+                  <h1 className="text-2xl font-bold">Тавтай морилно уу?</h1>
+                  <p className="text-muted-foreground text-sm">
+                    Login to your LawBridge account
+                  </p>
+                </div>
 
-              {error && <p className="text-red-500 text-sm text-center">{error}</p>}
+                {!pending ? (
+                  <>
+                    <Label>
+                      {method === "phone" ? "Утасны дугаар" : "Имэйл хаяг"}
+                    </Label>
+                    <Input
+                      placeholder={
+                        method === "phone" ? "+976********" : "name@gmail.com"
+                      }
+                      value={method === "phone" ? phone : email}
+                      onChange={(e) => {
+                        if (method === "phone") {
+                          let val = e.target.value;
+                          if (!val.startsWith("+976")) {
+                            val = "+976" + val.replace(/^\+?976/, "");
+                          }
+                          // Утасны дугаарын уртыг хязгаарлах (жишээ: +976 + 8 орон)
+                          if (val.length > 12) val = val.slice(0, 12);
+                          setPhone(val);
+                        } else {
+                          setEmail(e.target.value);
+                        }
+                      }}
+                    />
+                    <Button
+                      type="submit"
+                      className="w-full bg-[#2563eb] text-white"
+                    >
+                      Үргэлжлүүлэх
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      onClick={() => {
+                        setMethod(null);
+                        setPhone("+976");
+                        setEmail("");
+                        setError("");
+                        setPending(false);
+                        setOtp("");
+                      }}
+                    >
+                      Буцах
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <Label>Баталгаажуулах код</Label>
+                    <OtpInput onChange={setOtp} />
+                    <Button type="submit">Нэвтрэх</Button>
+                  </>
+                )}
 
-              <div className="text-sm text-center mt-4">
-                Шинэ хэрэглэгч үү?{" "}
-                <a href="/sign-up/user" className="underline text-blue-600">
-                  Бүртгүүлэх
-                </a>
-              </div>
-            </form>
+                {error && (
+                  <p className="text-red-500 text-sm text-center">{error}</p>
+                )}
+
+                <div className="text-sm text-center mt-4">
+                  Шинэ хэрэглэгч үү?{" "}
+                  <a href="/sign-up/user" className="underline text-blue-600">
+                    Бүртгүүлэх
+                  </a>
+                </div>
+              </form>
+            )}
           </div>
         </CardContent>
       </Card>
