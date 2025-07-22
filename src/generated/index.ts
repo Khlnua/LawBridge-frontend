@@ -275,6 +275,7 @@ export type Message = {
 export type Mutation = {
   __typename?: 'Mutation';
   adminCreateSpecialization: AdminSpecialization;
+  clearChatHistory: Scalars['Boolean']['output'];
   createAchievement: Achievement;
   createAppointment?: Maybe<Appointment>;
   createChatRoom?: Maybe<Scalars['String']['output']>;
@@ -311,6 +312,11 @@ export type Mutation = {
 
 export type MutationAdminCreateSpecializationArgs = {
   input: AdminCreateSpecializationInput;
+};
+
+
+export type MutationClearChatHistoryArgs = {
+  userId: Scalars['String']['input'];
 };
 
 
