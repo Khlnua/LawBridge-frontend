@@ -11,9 +11,9 @@ import { ReactNode, useEffect, useMemo, useState } from "react";
 import { useAuth } from "@clerk/nextjs";
 
 const httpLink = createHttpLink({
-  uri:
-    process.env.NEXT_PUBLIC_BACKEND_URL ||
-    "https://lawbridge-server.onrender.com/graphql",
+  uri: "http://localhost:4000/graphql",
+  // process.env.NEXT_PUBLIC_BACKEND_URL ||
+  // "https://lawbridge-server.onrender.com/graphql",
 });
 
 export const ApolloWrapper = ({ children }: { children: ReactNode }) => {

@@ -10,8 +10,8 @@ import { FormData } from "../../page";
 import { specializations } from "../../../../utils/specializations";
 import { formatMoneyDigits } from "../../../../utils/numberFormat";
 import { CREATE_LAWYER_MUTATION } from "@/graphql/lawyer";
-import { CREATE_SPECIALIZATION_MUTATION } from "@/graphql/specialization";
 import { useUser } from "@clerk/nextjs";
+import { useCreateSpecializationMutation } from "@/generated";
 
 type Props = {
   errors: FieldErrors<FormData>;
@@ -30,7 +30,7 @@ const ThirdCardForLawyer = ({
 }: Props) => {
   const { push } = useRouter();
   const { getValues } = useFormContext<FormData>();
-  const { user } = useUser(); // ✅ Hook зөв газарт
+  const { user } = useUser();
 
   const [recommendPaid, setRecommendPaid] = useState<{
     [key: string]: boolean;
@@ -40,7 +40,8 @@ const ThirdCardForLawyer = ({
   const [createLawyer, { loading: creatingLawyer }] = useMutation(
     CREATE_LAWYER_MUTATION
   );
-  const [createSpecialization] = useMutation(CREATE_SPECIALIZATION_MUTATION);
+
+  const [createSpecialization] = useCreateSpecializationMutation();
 
   useEffect(() => {
     setRecommendPaid((prev) => {
@@ -89,10 +90,14 @@ const ThirdCardForLawyer = ({
           await createSpecialization({
             variables: {
               input: {
-                lawyerId,
-                specializationId: spec,
-                subscription: sub,
-                pricePerHour: sub ? price : 0,
+                specializations: [
+                  {
+                    lawyerId: "687f4227390e098127a90009",
+                    specializationId: "686e20e60f350225bb6ef1b7" /* spec */,
+                    subscription: sub,
+                    pricePerHour: sub ? price : 0,
+                  },
+                ],
               },
             },
           });

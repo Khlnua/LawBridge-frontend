@@ -787,6 +787,13 @@ export type CreateAppointmentMutationVariables = Exact<{
 
 export type CreateAppointmentMutation = { __typename?: 'Mutation', createAppointment?: { __typename?: 'Appointment', lawyerId: string, schedule: string, status: AppointmentStatus, chatRoomId?: string | null } | null };
 
+export type CreateSpecializationMutationVariables = Exact<{
+  input?: InputMaybe<SpecializationInput>;
+}>;
+
+
+export type CreateSpecializationMutation = { __typename?: 'Mutation', createSpecialization: Array<{ __typename?: 'Specialization', _id: string, lawyerId: string, specializationId: string, subscription: boolean, pricePerHour?: number | null } | null> };
+
 export type GetAdminSpecializationsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -829,6 +836,43 @@ export function useCreateAppointmentMutation(baseOptions?: Apollo.MutationHookOp
 export type CreateAppointmentMutationHookResult = ReturnType<typeof useCreateAppointmentMutation>;
 export type CreateAppointmentMutationResult = Apollo.MutationResult<CreateAppointmentMutation>;
 export type CreateAppointmentMutationOptions = Apollo.BaseMutationOptions<CreateAppointmentMutation, CreateAppointmentMutationVariables>;
+export const CreateSpecializationDocument = gql`
+    mutation CreateSpecialization($input: SpecializationInput) {
+  createSpecialization(input: $input) {
+    _id
+    lawyerId
+    specializationId
+    subscription
+    pricePerHour
+  }
+}
+    `;
+export type CreateSpecializationMutationFn = Apollo.MutationFunction<CreateSpecializationMutation, CreateSpecializationMutationVariables>;
+
+/**
+ * __useCreateSpecializationMutation__
+ *
+ * To run a mutation, you first call `useCreateSpecializationMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateSpecializationMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createSpecializationMutation, { data, loading, error }] = useCreateSpecializationMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useCreateSpecializationMutation(baseOptions?: Apollo.MutationHookOptions<CreateSpecializationMutation, CreateSpecializationMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateSpecializationMutation, CreateSpecializationMutationVariables>(CreateSpecializationDocument, options);
+      }
+export type CreateSpecializationMutationHookResult = ReturnType<typeof useCreateSpecializationMutation>;
+export type CreateSpecializationMutationResult = Apollo.MutationResult<CreateSpecializationMutation>;
+export type CreateSpecializationMutationOptions = Apollo.BaseMutationOptions<CreateSpecializationMutation, CreateSpecializationMutationVariables>;
 export const GetAdminSpecializationsDocument = gql`
     query GetAdminSpecializations {
   getAdminSpecializations {

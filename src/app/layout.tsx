@@ -29,22 +29,24 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider signInUrl="/sign-in" signUpUrl="/sign-up">
-      <ApolloWrapper>
-        <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
-          <body
-            className={`min-h-screen bg-background font-sans antialiased ${geistSans.variable} ${geistMono.variable}`}
-          >
+    <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
+      <body
+        className={`min-h-screen bg-background font-sans antialiased ${geistSans.variable} ${geistMono.variable}`}
+      >
+        <ClerkProvider signInUrl="/sign-in" signUpUrl="/sign-up">
+          <ApolloWrapper>
             <Header />
 
             <SocketProvider>
-            <Toaster richColors position="top-right" /> 
+              <Toaster richColors position="top-right" />
 
-            <main className="flex justify-center items-center min-h-[calc(100vh-4rem)]">{children}</main>
+              <main className="flex justify-center items-center min-h-[calc(100vh-4rem)]">
+                {children}
+              </main>
             </SocketProvider>
-          </body>
-        </html>
-      </ApolloWrapper>
-    </ClerkProvider>
+          </ApolloWrapper>
+        </ClerkProvider>
+      </body>
+    </html>
   );
 }
