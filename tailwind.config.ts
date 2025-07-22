@@ -26,43 +26,43 @@ export default {
                 foreground: 'oklch(0.145 0 0)',
                 primary: {
                     DEFAULT: 'oklch(0.205 0 0)',
-                    foreground: 'oklch(0.985 0 0)',
+                    'foreground': 'oklch(0.985 0 0)',
                 },
                 secondary: {
                     DEFAULT: 'oklch(0.97 0 0)',
-                    foreground: 'oklch(0.205 0 0)',
+                    'foreground': 'oklch(0.205 0 0)',
                 },
                 destructive: {
                     DEFAULT: 'oklch(0.577 0.245 27.325)',
-                    foreground: 'oklch(0.985 0 0)',
+                    'foreground': 'oklch(0.985 0 0)',
                 },
                 success: {
                     DEFAULT: 'oklch(0.646 0.222 41.116)',
-                    foreground: 'oklch(0.985 0 0)',
+                    'foreground': 'oklch(0.985 0 0)',
                 },
                 warning: {
                     DEFAULT: 'oklch(0.828 0.189 84.429)',
-                    foreground: 'oklch(0.205 0 0)',
+                    'foreground': 'oklch(0.205 0 0)',
                 },
                 muted: {
                     DEFAULT: 'oklch(0.97 0 0)',
-                    foreground: 'oklch(0.556 0 0)',
+                    'foreground': 'oklch(0.556 0 0)',
                 },
                 accent: {
                     DEFAULT: 'oklch(0.97 0 0)',
-                    foreground: 'oklch(0.205 0 0)',
+                    'foreground': 'oklch(0.205 0 0)',
                 },
                 popover: {
                     DEFAULT: 'oklch(1 0 0)',
-                    foreground: 'oklch(0.145 0 0)',
+                    'foreground': 'oklch(0.145 0 0)',
                 },
                 card: {
                     DEFAULT: 'oklch(1 0 0)',
-                    foreground: 'oklch(0.145 0 0)',
+                    'foreground': 'oklch(0.145 0 0)',
                 },
                 sidebar: {
                     DEFAULT: 'oklch(0.985 0 0)',
-                    foreground: 'oklch(0.145 0 0)',
+                    'foreground': 'oklch(0.145 0 0)',
                     primary: 'oklch(0.205 0 0)',
                     'primary-foreground': 'oklch(0.985 0 0)',
                     accent: 'oklch(0.97 0 0)',

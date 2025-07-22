@@ -15,51 +15,51 @@ const mockLawyers = [
     phone: "+976 9999-9999",
     licenseNumber: "LIC-2024-001",
     barAdmission: "МУИС, 2018",
-    specialization: ["Corporate Law", "Contract Law", "Mergers & Acquisitions"],
+    specialization: ["Үндсэн хууль", "Гэрээний эрх зүй", "Нийлмэл эрх зүй болон Буруутгал"],
     yearsExperience: 6,
-    location: "New York, NY",
+    location: "Улаанбаатар, Монгол",
     status: "pending" as const,
     applicationDate: "2024-01-15",
     avatar: undefined,
   },
   {
     id: "2",
-    name: "Michael Chen",
-    email: "m.chen@legalservices.com",
-    phone: "+1 (555) 987-6543",
+    name: "Магнай Раднаа",
+    email: "mr.Radnaa@legalservices.com",
+    phone: "+976 9987-6543",
     licenseNumber: "LIC-2024-002",
-    barAdmission: "California State Bar, 2015",
-    specialization: ["Criminal Defense", "Civil Rights"],
+    barAdmission: "МУИС, 2015",
+    specialization: ["Гэмт хэргийн хамгаалалт", "Иргэний эрх"],
     yearsExperience: 9,
-    location: "Los Angeles, CA",
+    location: "Улаанбаатар, Монгол",
     status: "approved" as const,
     applicationDate: "2024-01-12",
     avatar: undefined,
   },
   {
     id: "3",
-    name: "Emily Rodriguez",
+    name: "Эрэгмаа Рагчаа",
     email: "emily.r@familylaw.org",
-    phone: "+1 (555) 456-7890",
+    phone: "+976 9456-7890",
     licenseNumber: "LIC-2024-003",
-    barAdmission: "Texas State Bar, 2020",
-    specialization: ["Family Law", "Divorce Mediation", "Child Custody"],
+    barAdmission: "Шихихутуг, 2020",
+    specialization: ["Гэр бүлийн эрх зүй", "Гэрлэлт эрх зүй", "Хүүхдийн асрамж"],
     yearsExperience: 4,
-    location: "Austin, TX",
+    location: "Улаанбаатар, Монгол",
     status: "pending" as const,
     applicationDate: "2024-01-18",
     avatar: undefined,
   },
   {
     id: "4",
-    name: "David Kim",
+    name: "Дарлиг Жамбал",
     email: "david.kim@patentlaw.com",
-    phone: "+1 (555) 321-0987",
+    phone: "+976 9321-0987",
     licenseNumber: "LIC-2024-004",
-    barAdmission: "Illinois State Bar, 2012",
-    specialization: ["Intellectual Property", "Patent Law", "Technology Law"],
+    barAdmission: "Этүгэн, 2012",
+    specialization: ["Оюуны өмч", "Патентын эрх зүй", "Технологийн эрх зүй"],
     yearsExperience: 12,
-    location: "Chicago, IL",
+    location: "Улаанбаатар, Монгол",
     status: "rejected" as const,
     applicationDate: "2024-01-10",
     avatar: undefined,
@@ -79,8 +79,8 @@ export function LawyerApprovalDashboard() {
     
     const lawyer = lawyers.find(l => l.id === id);
     toast({
-      title: "Lawyer Approved",
-      description: `${lawyer?.name} has been approved successfully.`,
+      title: "Хуульч баталгаажсан",
+      description: `${lawyer?.name} Амжилттай баталгаажлаа.`,
     });
   };
 
@@ -93,8 +93,8 @@ export function LawyerApprovalDashboard() {
     
     const lawyer = lawyers.find(l => l.id === id);
     toast({
-      title: "Application Rejected",
-      description: `${lawyer?.name}'s application has been rejected.`,
+      title: "Хуульчийн хүсэлт татгалзсан",
+      description: `${lawyer?.name} -ийн хүсэлт татгалзлаа.`,
     });
   };
 
@@ -125,7 +125,7 @@ export function LawyerApprovalDashboard() {
           <Card className="bg-card border border-border shadow-card">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">
-                Total Applications
+                Нийт Хуульчид
               </CardTitle>
               <Users className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
@@ -137,14 +137,14 @@ export function LawyerApprovalDashboard() {
           <Card className="bg-card border border-border shadow-card">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">
-                Pending Review
+                Хүлээгдэж буй
               </CardTitle>
               <Clock className="h-4 w-4 text-warning" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-foreground">{stats.pending}</div>
               <Badge variant="secondary" className="mt-1">
-                Requires Action
+                Үйлдэл хүлээгдэж байна
               </Badge>
             </CardContent>
           </Card>
@@ -152,7 +152,7 @@ export function LawyerApprovalDashboard() {
           <Card className="bg-card border border-border shadow-card">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">
-                Approved
+                Баталгаажсан
               </CardTitle>
               <CheckCircle className="h-4 w-4 text-success" />
             </CardHeader>
@@ -164,7 +164,7 @@ export function LawyerApprovalDashboard() {
           <Card className="bg-card border border-border shadow-card">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">
-                Rejected
+                Татгалзсан
               </CardTitle>
               <div className="h-4 w-4 bg-destructive rounded-full" />
             </CardHeader>
@@ -178,7 +178,7 @@ export function LawyerApprovalDashboard() {
         <div className="space-y-6">
           <h2 className="text-2xl font-semibold text-foreground flex items-center gap-2">
             <Scale className="h-6 w-6 text-primary" />
-            Lawyer Applications
+            Хуульчийн хүсэлтүүд
           </h2>
           
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

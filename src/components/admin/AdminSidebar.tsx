@@ -38,7 +38,7 @@ const menuItems = [
   },
   {
     title: "Хуульчийн баталгаажуулалт",
-    section: "lawyeraprroval",
+    section: "lawyerapproval",
     icon: Gavel,
   },
 ];
