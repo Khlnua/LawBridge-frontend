@@ -1,7 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { UseFormRegister, FieldErrors, UseFormSetValue, UseFormGetValues } from "react-hook-form";
+import {
+  UseFormRegister,
+  FieldErrors,
+  UseFormSetValue,
+  UseFormGetValues,
+} from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ZodErrors } from "../ZodError";
@@ -14,7 +19,7 @@ type Props = {
   errors: FieldErrors<FormData>;
   goToNextStep?: () => void;
   setValue: UseFormSetValue<FormData>;
-  getValues: UseFormGetValues<FormData>; // React Hook Form-аас утга авахад ашиглана
+  getValues: UseFormGetValues<FormData>;
 };
 
 const FirstCardForLawyer = ({
@@ -40,7 +45,6 @@ const FirstCardForLawyer = ({
     onUpload: (url: string) => {
       setValue("avatar", url);
     },
-
   });
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -62,12 +66,7 @@ const FirstCardForLawyer = ({
   };
 
   const handleNextStep = async () => {
-    if (
-      errors.firstName?.message ||
-      errors.lastName?.message ||
-      errors.email?.message
-    ) {
-
+    if (errors.firstName?.message || errors.lastName?.message) {
       return;
     }
 
@@ -99,7 +98,11 @@ const FirstCardForLawyer = ({
             Нэр
           </label>
           <Input id="firstName" {...register("firstName")} />
-          <ZodErrors error={errors.firstName?.message ? [errors.firstName.message] : undefined} />
+          <ZodErrors
+            error={
+              errors.firstName?.message ? [errors.firstName.message] : undefined
+            }
+          />
         </div>
 
         <div>
@@ -107,7 +110,11 @@ const FirstCardForLawyer = ({
             Овог
           </label>
           <Input id="lastName" {...register("lastName")} />
-          <ZodErrors error={errors.lastName?.message ? [errors.lastName.message] : undefined} />
+          <ZodErrors
+            error={
+              errors.lastName?.message ? [errors.lastName.message] : undefined
+            }
+          />
         </div>
       </div>
 
@@ -128,7 +135,10 @@ const FirstCardForLawyer = ({
         setIsDragging={setIsDragging}
       />
 
-      <Button onClick={handleNextStep} className="w-full bg-blue-500 hover:bg-blue-400 cursor-pointer text-white">
+      <Button
+        onClick={handleNextStep}
+        className="w-full bg-blue-500 hover:bg-blue-400 cursor-pointer text-white"
+      >
         Дараачийн
       </Button>
     </div>
@@ -136,4 +146,3 @@ const FirstCardForLawyer = ({
 };
 
 export default FirstCardForLawyer;
- 

@@ -3,8 +3,6 @@
 import { useState } from "react";
 import LawyerCard from "@/components/landing-page/LawyerCard";
 import { TestingFakeLawyers } from "../../app/utils/fake-lawyers";
-import { useQuery } from "@apollo/client";
-import { GET_SPECIALIZATION_QUERY } from "@/graphql/adminSpecialization";
 import {
   Select,
   SelectContent,
@@ -13,13 +11,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useGetAdminSpecializationsQuery } from "@/generated";
 
 const FilteredByCategories = () => {
   const [selectedSpecialty, setSelectedSpecialty] = useState<string | null>(
     null
   );
 
-  const { data } = useQuery(GET_SPECIALIZATION_QUERY);
+  const { data } = useGetAdminSpecializationsQuery();
 
   const filteredLawyers = TestingFakeLawyers.filter((lawyer) => {
     if (!selectedSpecialty) return true;

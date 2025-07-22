@@ -5,7 +5,6 @@ export const CREATE_LAWYER_MUTATION = gql`
     createLawyer(input: $input) {
       bio
       document
-      email
       firstName
       lastName
       licenseNumber
@@ -14,5 +13,3 @@ export const CREATE_LAWYER_MUTATION = gql`
     }
   }
 `;
-
- 
