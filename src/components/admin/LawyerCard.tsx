@@ -115,7 +115,7 @@ export function LawyerCard({ lawyer, onApprove, onReject }: LawyerCardProps) {
           <Button
             variant="default"
             onClick={() => onApprove(lawyer.id)}
-            className="flex-1 gap-2"
+            className="flex-1 gap-2 bg-[#11b761] text-white"
           >
             <Check className="h-4 w-4" />
             Approve
@@ -123,7 +123,7 @@ export function LawyerCard({ lawyer, onApprove, onReject }: LawyerCardProps) {
           <Button
             variant="destructive"
             onClick={() => onReject(lawyer.id)}
-            className="flex-1 gap-2"
+            className="flex-1 gap-2 bg-[#cd3e3e] text-white"
           >
             <X className="h-4 w-4" />
             Reject
