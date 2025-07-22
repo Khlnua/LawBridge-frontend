@@ -37,6 +37,7 @@
     "date-fns": "^4.1.0",
     "framer-motion": "^12.20.1",
     "graphql": "^16.11.0",
+    "livekit-client": "^2.15.3",
     "livekit-server-sdk": "^2.13.1",
     "lottie-react": "^2.4.1",
     "lucide-react": "^0.525.0",
