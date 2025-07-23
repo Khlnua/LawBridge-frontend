@@ -14,6 +14,7 @@ import {
 import { useGetAdminSpecializationsQuery } from "@/generated";
 import { useQuery } from "@apollo/client";
 import { GET_ALL_LAWYERS } from "@/graphql/lawyer";
+import Link from "next/link";
 
 // Define types for category and lawyer
 interface Category {
@@ -56,7 +57,14 @@ const FilteredByCategories = () => {
   const filteredLawyers = lawyers.filter((lawyer: Lawyer) => {
     if (!selectedSpecialty) return true;
 
-    // For real lawyers: specialization is array of objects
+    // Real lawyers: specialization is an array of objects
+    if (Array.isArray(lawyer.specialization)) {
+      return lawyer.specialization.some(
+        (spec: any) => spec.categoryName === selectedSpecialty
+      );
+    }
+
+ 
     if (Array.isArray(lawyer.specialty)) {
       return lawyer.specialty.includes(selectedSpecialty);
     }
@@ -67,9 +75,9 @@ const FilteredByCategories = () => {
   const handleSpecaltyChange = (value: string | null) => {
     if (value === "Бүх чиглэл") {
       setSelectedSpecialty(null);
-      return;
+    } else {
+      setSelectedSpecialty(value);
     }
-    setSelectedSpecialty(value);
   };
 
   const specializations = data?.getAdminSpecializations || [];
@@ -96,7 +104,8 @@ const FilteredByCategories = () => {
               </SelectItem>
             </SelectGroup>
             <SelectGroup>
-              {specializations.map((spec: Category) => (
+              {specializations.map((spec: { id: string; categoryName: string }) => (
+
                 <SelectItem
                   key={spec.id}
                   value={spec.categoryName}
@@ -111,6 +120,7 @@ const FilteredByCategories = () => {
       </div>
 
       {filteredLawyers?.length > 0 ? (
+
         filteredLawyers.map((lawyer: Lawyer, index) => (
           <LawyerCard
             id={lawyer.lawyerId}
