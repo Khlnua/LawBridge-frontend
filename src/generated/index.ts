@@ -840,6 +840,13 @@ export type CreateSpecializationMutationVariables = Exact<{
 
 export type CreateSpecializationMutation = { __typename?: 'Mutation', createSpecialization: Array<{ __typename?: 'Specialization', _id: string, lawyerId: string, specializationId: string, subscription: boolean, pricePerHour?: number | null } | null> };
 
+export type GetSpecializationsByLawyerQueryVariables = Exact<{
+  lawyerId: Scalars['ID']['input'];
+}>;
+
+
+export type GetSpecializationsByLawyerQuery = { __typename?: 'Query', getSpecializationsByLawyer: Array<{ __typename?: 'Specialization', _id: string, lawyerId: string, specializationId: string, categoryName?: string | null, subscription: boolean, pricePerHour?: number | null }> };
+
 
 export const GetAdminSpecializationsDocument = gql`
     query GetAdminSpecializations {
@@ -1037,3 +1044,48 @@ export function useCreateSpecializationMutation(baseOptions?: Apollo.MutationHoo
 export type CreateSpecializationMutationHookResult = ReturnType<typeof useCreateSpecializationMutation>;
 export type CreateSpecializationMutationResult = Apollo.MutationResult<CreateSpecializationMutation>;
 export type CreateSpecializationMutationOptions = Apollo.BaseMutationOptions<CreateSpecializationMutation, CreateSpecializationMutationVariables>;
+export const GetSpecializationsByLawyerDocument = gql`
+    query GetSpecializationsByLawyer($lawyerId: ID!) {
+  getSpecializationsByLawyer(lawyerId: $lawyerId) {
+    _id
+    lawyerId
+    specializationId
+    categoryName
+    subscription
+    pricePerHour
+  }
+}
+    `;
+
+/**
+ * __useGetSpecializationsByLawyerQuery__
+ *
+ * To run a query within a React component, call `useGetSpecializationsByLawyerQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetSpecializationsByLawyerQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetSpecializationsByLawyerQuery({
+ *   variables: {
+ *      lawyerId: // value for 'lawyerId'
+ *   },
+ * });
+ */
+export function useGetSpecializationsByLawyerQuery(baseOptions: Apollo.QueryHookOptions<GetSpecializationsByLawyerQuery, GetSpecializationsByLawyerQueryVariables> & ({ variables: GetSpecializationsByLawyerQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetSpecializationsByLawyerQuery, GetSpecializationsByLawyerQueryVariables>(GetSpecializationsByLawyerDocument, options);
+      }
+export function useGetSpecializationsByLawyerLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetSpecializationsByLawyerQuery, GetSpecializationsByLawyerQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetSpecializationsByLawyerQuery, GetSpecializationsByLawyerQueryVariables>(GetSpecializationsByLawyerDocument, options);
+        }
+export function useGetSpecializationsByLawyerSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetSpecializationsByLawyerQuery, GetSpecializationsByLawyerQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetSpecializationsByLawyerQuery, GetSpecializationsByLawyerQueryVariables>(GetSpecializationsByLawyerDocument, options);
+        }
+export type GetSpecializationsByLawyerQueryHookResult = ReturnType<typeof useGetSpecializationsByLawyerQuery>;
+export type GetSpecializationsByLawyerLazyQueryHookResult = ReturnType<typeof useGetSpecializationsByLawyerLazyQuery>;
+export type GetSpecializationsByLawyerSuspenseQueryHookResult = ReturnType<typeof useGetSpecializationsByLawyerSuspenseQuery>;
+export type GetSpecializationsByLawyerQueryResult = Apollo.QueryResult<GetSpecializationsByLawyerQuery, GetSpecializationsByLawyerQueryVariables>;

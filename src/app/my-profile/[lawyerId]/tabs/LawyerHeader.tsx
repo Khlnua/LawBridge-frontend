@@ -21,15 +21,16 @@ import {
   UPDATE_LAWYER_MUTATION,
 } from "@/graphql/lawyer";
 import { useQuery, useMutation } from "@apollo/client";
+import { GET_SPECIALIZATION_BY_LAWYER_ID } from "@/graphql/specializationsbylawyer";
+import { useUser } from "@clerk/nextjs";
 
-type LawyerProfileHeaderProps = {
-  lawyerId: string;
-};
-
-export const LawyerProfileHeader = ({ lawyerId }: LawyerProfileHeaderProps) => {
+export const LawyerProfileHeader = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [localPreview, setLocalPreview] = useState<string | null>(null);
+
+  const { user } = useUser();
+  const lawyerId = user?.id;
 
   const { data, loading } = useQuery(GET_LAWYER_BY_LAWYERID_QUERY, {
     variables: { lawyerId },
@@ -37,7 +38,12 @@ export const LawyerProfileHeader = ({ lawyerId }: LawyerProfileHeaderProps) => {
 
   const lawyer = data?.getLawyerById;
 
-  console.log("Lawyer data:", lawyer);
+  const { data: specializationData, loading: specialLoad } = useQuery(
+    GET_SPECIALIZATION_BY_LAWYER_ID,
+    {
+      variables: { lawyerId },
+    }
+  );
 
   const [form, setForm] = useState({
     avatar: "",
@@ -45,23 +51,26 @@ export const LawyerProfileHeader = ({ lawyerId }: LawyerProfileHeaderProps) => {
     lastName: "",
     email: "",
     university: "",
-    specialization: "",
+    specialization: [] as {
+      specializationId: string;
+      categoryName: string;
+    }[],
     bio: "",
   });
 
   useEffect(() => {
-    if (lawyer) {
+    if (lawyer && specializationData?.getSpecializationsByLawyer) {
       setForm({
-        avatar: lawyer.profilePicture,
+        avatar: lawyer.profilePicture || "",
         firstName: lawyer.firstName || "",
         lastName: lawyer.lastName || "",
         email: lawyer.email || "",
         university: lawyer.university || "",
-        specialization: lawyer.specialization || [],
+        specialization: specializationData.getSpecializationsByLawyer || [],
         bio: lawyer.bio || "",
       });
     }
-  }, [lawyer]);
+  }, [lawyer, specializationData]);
 
   const [updateLawyer, { loading: updating }] = useMutation(
     UPDATE_LAWYER_MUTATION
@@ -133,7 +142,10 @@ export const LawyerProfileHeader = ({ lawyerId }: LawyerProfileHeaderProps) => {
               alt="Avatar"
               className="object-cover border-none"
             />
-            <AvatarFallback>NB</AvatarFallback>
+            <AvatarFallback>
+              {form.firstName.charAt(0)}
+              {form.lastName.charAt(0)}
+            </AvatarFallback>
           </Avatar>
 
           {isEditing && (
@@ -160,20 +172,39 @@ export const LawyerProfileHeader = ({ lawyerId }: LawyerProfileHeaderProps) => {
         <CardTitle className="text-xl font-semibold">
           {form.lastName} {form.firstName}
         </CardTitle>
+
         {!isEditing && (
           <>
-            <p className="text-green-700">{form.specialization}</p>
-            <div className="text-sm text-gray-500">
-              <div className="flex gap-1 justify-start items-center">
-                {" "}
-                <University /> {form.university}
+            {specialLoad ? (
+              <p className="text-center py-2 text-sm">Ачааллаж байна...</p>
+            ) : form.specialization.length > 0 ? (
+              <div className="flex flex-wrap justify-center gap-2">
+                {form.specialization.map((spec) => (
+                  <span
+                    key={spec.specializationId}
+                    className="bg-[#0b1536] text-white px-3 py-1 text-sm rounded-full"
+                  >
+                    {spec.categoryName}
+                  </span>
+                ))}
               </div>
-              <div className="flex gap-1 justify-start items-center">
-                {" "}
-                <MailIcon /> {form.email}
+            ) : (
+              <p className="text-gray-500 text-sm">
+                Мэргэжлийн чиглэл оруулаагүй байна
+              </p>
+            )}
+
+            <div className="text-sm text-gray-500 mt-2">
+              <div className="flex gap-1 justify-center items-center">
+                <University size={16} /> {form.university}
+              </div>
+              <div className="flex gap-1 justify-center items-center">
+                <MailIcon size={16} /> {form.email}
               </div>
             </div>
+
             <p className="text-sm text-muted-foreground mt-2">{form.bio}</p>
+
             <Button
               variant="outline"
               size="sm"
@@ -212,18 +243,10 @@ export const LawyerProfileHeader = ({ lawyerId }: LawyerProfileHeaderProps) => {
               <Input name="email" value={form.email} onChange={handleChange} />
             </div>
             <div>
-              <Label>Утас</Label>
+              <Label>Их сургууль</Label>
               <Input
-                name="phone"
+                name="university"
                 value={form.university}
-                onChange={handleChange}
-              />
-            </div>
-            <div className="md:col-span-2">
-              <Label>Мэргэжлийн чиглэл</Label>
-              <Input
-                name="specialization"
-                value={form.specialization}
                 onChange={handleChange}
               />
             </div>

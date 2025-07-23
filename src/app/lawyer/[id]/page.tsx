@@ -28,8 +28,22 @@ const CREATE_APPOINTMENT = gql`
   }
 `;
 
-const LawyerProfile = () => {
-  // const { id } = params;
+import { GET_LAWYER_BY_LAWYERID_QUERY } from "@/graphql/lawyer";
+import { useQuery } from "@apollo/client";
+import { use } from "react";
+
+
+type Props = {
+  params: Promise<{ id: string }>;
+};
+
+const LawyerProfile = ({ params }: Props) => {
+  const { id } = use(params);
+
+  const { data, loading, error } = useQuery(GET_LAWYER_BY_LAWYERID_QUERY, {
+    variables: { lawyerId: id },
+  });
+  const lawyerData = data?.getLawyerById;
 
   const [activeTab, setActiveTab] = useState<"posts" | "reviews" | "book">(
     "posts"
@@ -37,12 +51,12 @@ const LawyerProfile = () => {
   const [appointmentStatus, setAppointmentStatus] = useState<string | null>(null);
 
   const lawyer = {
-    id: "lawyer123", // placeholder
-    name: "Б. Номин",
+
+    name: lawyerData?.firstName + " " + lawyerData?.lastName,
     specialization: "Эрүүгийн эрх зүй, Гэр бүлийн эрх зүй",
     specializationId: "spec123", // placeholder
     location: "Улаанбаатар",
-    email: "nomin@example.com",
+    email: lawyerData?.email,
     phone: "99112233",
     rating: 4.9,
     reviews: 27,
@@ -80,6 +94,10 @@ const LawyerProfile = () => {
     } catch (err) {
       setAppointmentStatus("Захиалга үүсгэхэд алдаа гарлаа.");
     }
+
+    avatar: process.env.R2_PUBLIC_DOMAIN + "/" + lawyerData?.profilePicture,
+    description: "10 жилийн туршлагатай, хууль зүйн салбарт үр дүнтэй зөвлөгөө өгдөг өмгөөлөгч.",
+
   };
 
   const renderTabContent = () => {
