@@ -51,12 +51,13 @@ export type Appointment = {
   clientId: Scalars['String']['output'];
   createdAt?: Maybe<Scalars['String']['output']>;
   endedAt?: Maybe<Scalars['String']['output']>;
-  isFree: Scalars['Boolean']['output'];
   lawyerId: Scalars['String']['output'];
   price?: Maybe<Scalars['Int']['output']>;
   schedule: Scalars['String']['output'];
-  specializationId: Scalars['String']['output'];
+  specialization?: Maybe<AdminSpecialization>;
+  specializationId: Scalars['ID']['output'];
   status: AppointmentStatus;
+  subscription: Scalars['Boolean']['output'];
 };
 
 export enum AppointmentStatus {
@@ -66,10 +67,31 @@ export enum AppointmentStatus {
 
 export type Availability = {
   __typename?: 'Availability';
-  day: DayOfWeek;
+  availableDays: Array<Scalars['String']['output']>;
+  day: Scalars['String']['output'];
   endTime: Scalars['String']['output'];
   lawyerId: Scalars['String']['output'];
   startTime: Scalars['String']['output'];
+};
+
+export type AvailabilitySchedule = {
+  __typename?: 'AvailabilitySchedule';
+  _id: Scalars['ID']['output'];
+  availableDays: Array<AvailableDay>;
+  lawyerId: Scalars['String']['output'];
+};
+
+export type AvailableDay = {
+  __typename?: 'AvailableDay';
+  day: Scalars['String']['output'];
+  endTime: Scalars['String']['output'];
+  startTime: Scalars['String']['output'];
+};
+
+export type AvailableDayInput = {
+  day: Scalars['String']['input'];
+  endTime: Scalars['String']['input'];
+  startTime: Scalars['String']['input'];
 };
 
 export type ChatHistory = {
@@ -120,6 +142,7 @@ export type CreateAppointmentInput = {
   endedAt: Scalars['String']['input'];
   lawyerId: Scalars['String']['input'];
   schedule: Scalars['String']['input'];
+  specializationId: Scalars['ID']['input'];
 };
 
 export type CreateChatRoomInput = {
@@ -177,16 +200,6 @@ export type CreateSpecializationInput = {
   specializationId: Scalars['ID']['input'];
   subscription: Scalars['Boolean']['input'];
 };
-
-export enum DayOfWeek {
-  Friday = 'FRIDAY',
-  Monday = 'MONDAY',
-  Saturday = 'SATURDAY',
-  Sunday = 'SUNDAY',
-  Thursday = 'THURSDAY',
-  Tuesday = 'TUESDAY',
-  Wednesday = 'WEDNESDAY'
-}
 
 export type DeleteCommentInput = {
   commentId: Scalars['ID']['input'];
@@ -299,7 +312,7 @@ export type Mutation = {
   markNotificationAsRead: Notification;
   reviewDocument: Document;
   saveChatHistory: ChatHistory;
-  setAvailability?: Maybe<Availability>;
+  setAvailability: AvailabilitySchedule;
   updateAchievement: Achievement;
   updateChatRoom: ChatRoom;
   updateComment: Comment;
@@ -434,10 +447,7 @@ export type MutationSaveChatHistoryArgs = {
 
 
 export type MutationSetAvailabilityArgs = {
-  day: DayOfWeek;
-  endTime: Scalars['String']['input'];
-  lawyerId: Scalars['String']['input'];
-  startTime: Scalars['String']['input'];
+  input: SetAvailabilityInput;
 };
 
 
@@ -587,8 +597,8 @@ export type QueryGetAppointmentsByUserArgs = {
 
 
 export type QueryGetAvailabilityArgs = {
-  day: DayOfWeek;
-  lawyerId: Scalars['String']['input'];
+  day?: InputMaybe<Scalars['String']['input']>;
+  lawyerId?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -713,6 +723,10 @@ export enum ReviewStatus {
   Rejected = 'REJECTED',
   Reviewed = 'REVIEWED'
 }
+
+export type SetAvailabilityInput = {
+  availableDays: Array<AvailableDayInput>;
+};
 
 export type Specialization = {
   __typename?: 'Specialization';
