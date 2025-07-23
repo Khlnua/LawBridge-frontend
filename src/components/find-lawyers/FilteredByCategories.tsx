@@ -23,6 +23,7 @@ interface Category {
 
 interface Lawyer {
   id: string;
+  lawyerId: string;
   firstName: string;
   lastName: string;
   profilePicture?: string;
@@ -112,10 +113,8 @@ const FilteredByCategories = () => {
       {filteredLawyers?.length > 0 ? (
         filteredLawyers.map((lawyer: Lawyer, index) => (
           <LawyerCard
-
             id={lawyer.lawyerId}
             key={lawyer.lawyerId || index}
-
             name={lawyer.firstName + " " + lawyer.lastName}
             avatarImage={lawyer.profilePicture || ""}
             status={lawyer.status || ""}

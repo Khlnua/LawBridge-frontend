@@ -3,14 +3,15 @@ import { redirect } from "next/navigation";
 import { LawyerProfileHeader } from "./tabs";
 import SidebarTabs from "./tabs/Tabs";
 
-const LawyerProfilePageForLawyers = async ({ params }: { params: { lawyerId: string } }) => {
+const LawyerProfilePageForLawyers = async ({ params }: { params: any }) => {
   const user = await currentUser();
 
   if (!user) {
     redirect("/sign-in");
   }
 
-  const { lawyerId: requestedLawyerId } = await params;
+  const resolvedParams = await params;
+  const requestedLawyerId = resolvedParams.lawyerId;
   const loggedInUserId = user.id;
 
   if (loggedInUserId !== requestedLawyerId) {
