@@ -37,7 +37,6 @@ type Message = {
   text: string;
   sender: "user" | "bot";
   timestamp: Date;
-  sourceDocuments?: any[];
   metadata?: Record<string, unknown>;
   isError?: boolean;
 };
@@ -159,7 +158,6 @@ export default function useLawBridgeChat() {
           "I received your message but couldn't generate a response.",
         sender: "bot",
         timestamp: new Date(),
-        sourceDocuments: data.sourceDocuments || [],
         metadata: data.metadata || {},
       };
       setMessages((prev) => [...prev, botMessage]);

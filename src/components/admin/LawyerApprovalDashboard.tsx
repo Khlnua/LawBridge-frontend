@@ -14,7 +14,6 @@ import {
   Eye,
   EyeOff,
   Search,
-  Filter,
   CheckCircle,
   XCircle,
   Clock,
@@ -90,7 +89,6 @@ export default function LawyerApprovalDashboard() {
     MANAGE_LAWYER_REQUEST
   );
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedLawyer, setSelectedLawyer] = useState<Lawyer | null>(null);
   const [showDetails, setShowDetails] = useState<Record<string, boolean>>({});
   const [processingId, setProcessingId] = useState<string | null>(null);
 
