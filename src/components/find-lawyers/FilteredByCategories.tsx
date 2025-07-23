@@ -3,16 +3,28 @@
 import { useState } from "react";
 import LawyerCard from "@/components/landing-page/LawyerCard";
 import { TestingFakeLawyers } from "../../app/utils/fake-lawyers";
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useGetAdminSpecializationsQuery } from "@/generated";
 import { useQuery } from "@apollo/client";
 import { GET_ALL_LAWYERS } from "@/graphql/lawyer";
+import Link from "next/link";
 
 const FilteredByCategories = () => {
   const [selectedSpecialty, setSelectedSpecialty] = useState<string | null>(null);
 
   const { data } = useGetAdminSpecializationsQuery();
-  const { data: allLawyersData, loading: allLawyersLoading, error: allLawyersError } = useQuery(GET_ALL_LAWYERS);
+  const {
+    data: allLawyersData,
+    loading: allLawyersLoading,
+    error: allLawyersError,
+  } = useQuery(GET_ALL_LAWYERS);
 
   if (allLawyersLoading) return <div>Түр хүлээнэ үү...</div>;
   if (allLawyersError) return <div>Алдаа гарлаа.</div>;
@@ -22,12 +34,14 @@ const FilteredByCategories = () => {
   const filteredLawyers = lawyers.filter((lawyer: any) => {
     if (!selectedSpecialty) return true;
 
-    // For real lawyers: specialization is array of objects
+    // Real lawyers: specialization is an array of objects
     if (Array.isArray(lawyer.specialization)) {
-      return lawyer.specialization.some((spec: any) => spec.categoryName === selectedSpecialty);
+      return lawyer.specialization.some(
+        (spec: any) => spec.categoryName === selectedSpecialty
+      );
     }
 
-    // For fake lawyers: specialty is array of strings
+    // Fake lawyers: specialty is array of strings
     if (Array.isArray(lawyer.specialty)) {
       return lawyer.specialty.includes(selectedSpecialty);
     }
@@ -38,9 +52,9 @@ const FilteredByCategories = () => {
   const handleSpecaltyChange = (value: string | null) => {
     if (value === "Бүх чиглэл") {
       setSelectedSpecialty(null);
-      return;
+    } else {
+      setSelectedSpecialty(value);
     }
-    setSelectedSpecialty(value);
   };
 
   const specializations = data?.getAdminSpecializations || [];
@@ -62,7 +76,11 @@ const FilteredByCategories = () => {
             </SelectGroup>
             <SelectGroup>
               {specializations.map((spec: { id: string; categoryName: string }) => (
-                <SelectItem key={spec.id} value={spec.categoryName} className="cursor-pointer hover:bg-gray-100">
+                <SelectItem
+                  key={spec.id}
+                  value={spec.categoryName}
+                  className="cursor-pointer hover:bg-gray-100"
+                >
                   {spec.categoryName}
                 </SelectItem>
               ))}
@@ -72,20 +90,32 @@ const FilteredByCategories = () => {
       </div>
 
       {filteredLawyers?.length > 0 ? (
-        filteredLawyers.map((lawyer: any, index) => (
-          <LawyerCard
-            key={lawyer._id || index}
-            name={lawyer.firstName + " " + lawyer.lastName}
-            avatarImage={lawyer.profilePicture}
-            status={lawyer.status}
-            specialty={lawyer.specialty}
-            rating={lawyer.rating}
-            reviewCount={lawyer.reviewCount}
-            hourlyRate={lawyer.hourlyRate}
-          />
-        ))
+        filteredLawyers.map((lawyer: any, index) => {
+          const lawyerId = lawyer.lawyerId || lawyer._id || index;
+
+          return (
+            <Link
+            key={lawyerId}
+            href={`/lawyer/${lawyerId}`}
+            className="block hover:opacity-90 transition-all"
+            >
+            <LawyerCard
+              name={lawyer.firstName + " " + lawyer.lastName}
+              avatarImage={lawyer.profilePicture}
+              status={lawyer.status}
+              specialty={lawyer.specialty}
+              rating={lawyer.rating}
+              reviewCount={lawyer.reviewCount}
+              hourlyRate={lawyer.hourlyRate}
+            />
+          </Link>
+
+          );
+        })
       ) : (
-        <p className="text-gray-600 text-lg md:col-span-full text-center">Энэ чиглэлээр хуульч олдсонгүй.</p>
+        <p className="text-gray-600 text-lg md:col-span-full text-center">
+          Энэ чиглэлээр хуульч олдсонгүй.
+        </p>
       )}
     </div>
   );
