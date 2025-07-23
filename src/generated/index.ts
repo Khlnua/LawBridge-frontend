@@ -55,7 +55,6 @@ export type Appointment = {
   lawyerId: Scalars['String']['output'];
   notes?: Maybe<Scalars['String']['output']>;
   price?: Maybe<Scalars['Int']['output']>;
-  schedule: Scalars['String']['output'];
   slot: AvailableDay;
   specialization?: Maybe<Specialization>;
   specializationId: Scalars['ID']['output'];
@@ -295,7 +294,7 @@ export type Mutation = {
   adminCreateSpecialization: AdminSpecialization;
   clearChatHistory: Scalars['Boolean']['output'];
   createAchievement: Achievement;
-  createAppointment: Appointment;
+  createAppointment?: Maybe<Appointment>;
   createChatRoom?: Maybe<Scalars['String']['output']>;
   createChatRoomAfterAppointment: ChatRoom;
   createComment: Comment;
@@ -319,6 +318,7 @@ export type Mutation = {
   saveChatHistory: ChatHistory;
   setAvailability: AvailabilitySchedule;
   updateAchievement: Achievement;
+  updateAvailabilityDate: AvailabilitySchedule;
   updateChatRoom: ChatRoom;
   updateComment: Comment;
   updateLawyer: Lawyer;
@@ -458,6 +458,11 @@ export type MutationSetAvailabilityArgs = {
 
 export type MutationUpdateAchievementArgs = {
   input: UpdateAchievementInput;
+};
+
+
+export type MutationUpdateAvailabilityDateArgs = {
+  input: UpdateAvailabilityDateInput;
 };
 
 
@@ -765,6 +770,16 @@ export type UpdateAchievementInput = {
   title?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type UpdateAvailabilityDateInput = {
+  lawyerId: Scalars['String']['input'];
+  newDay: Scalars['String']['input'];
+  newEndTime: Scalars['String']['input'];
+  newStartTime: Scalars['String']['input'];
+  oldDay: Scalars['String']['input'];
+  oldEndTime: Scalars['String']['input'];
+  oldStartTime: Scalars['String']['input'];
+};
+
 export type UpdateChatRoomInput = {
   _id: Scalars['String']['input'];
   allowedMedia?: InputMaybe<AllowedMediaEnum>;
@@ -817,7 +832,7 @@ export type CreateAppointmentMutationVariables = Exact<{
 }>;
 
 
-export type CreateAppointmentMutation = { __typename?: 'Mutation', createAppointment: { __typename?: 'Appointment', lawyerId: string, schedule: string, status: AppointmentStatus, chatRoomId?: string | null } };
+export type CreateAppointmentMutation = { __typename?: 'Mutation', createAppointment?: { __typename?: 'Appointment', id: string, clientId: string, lawyerId: string, status: AppointmentStatus, chatRoomId?: string | null, subscription: boolean, notes?: string | null, specializationId: string, slot: { __typename?: 'AvailableDay', day: string, startTime: string, endTime: string, booked: boolean }, specialization?: { __typename?: 'Specialization', _id: string, lawyerId: string, specializationId: string, categoryName?: string | null, subscription: boolean, pricePerHour?: number | null } | null } | null };
 
 export type SaveChatHistoryMutationVariables = Exact<{
   input: ChatHistoryInput;
@@ -839,13 +854,6 @@ export type CreateSpecializationMutationVariables = Exact<{
 
 
 export type CreateSpecializationMutation = { __typename?: 'Mutation', createSpecialization: Array<{ __typename?: 'Specialization', _id: string, lawyerId: string, specializationId: string, subscription: boolean, pricePerHour?: number | null } | null> };
-
-export type GetSpecializationsByLawyerQueryVariables = Exact<{
-  lawyerId: Scalars['ID']['input'];
-}>;
-
-
-export type GetSpecializationsByLawyerQuery = { __typename?: 'Query', getSpecializationsByLawyer: Array<{ __typename?: 'Specialization', _id: string, lawyerId: string, specializationId: string, categoryName?: string | null, subscription: boolean, pricePerHour?: number | null }> };
 
 
 export const GetAdminSpecializationsDocument = gql`
@@ -891,10 +899,28 @@ export type GetAdminSpecializationsQueryResult = Apollo.QueryResult<GetAdminSpec
 export const CreateAppointmentDocument = gql`
     mutation CreateAppointment($input: CreateAppointmentInput!) {
   createAppointment(input: $input) {
+    id
+    clientId
     lawyerId
-    schedule
     status
     chatRoomId
+    subscription
+    slot {
+      day
+      startTime
+      endTime
+      booked
+    }
+    specialization {
+      _id
+      lawyerId
+      specializationId
+      categoryName
+      subscription
+      pricePerHour
+    }
+    notes
+    specializationId
   }
 }
     `;
@@ -1044,48 +1070,3 @@ export function useCreateSpecializationMutation(baseOptions?: Apollo.MutationHoo
 export type CreateSpecializationMutationHookResult = ReturnType<typeof useCreateSpecializationMutation>;
 export type CreateSpecializationMutationResult = Apollo.MutationResult<CreateSpecializationMutation>;
 export type CreateSpecializationMutationOptions = Apollo.BaseMutationOptions<CreateSpecializationMutation, CreateSpecializationMutationVariables>;
-export const GetSpecializationsByLawyerDocument = gql`
-    query GetSpecializationsByLawyer($lawyerId: ID!) {
-  getSpecializationsByLawyer(lawyerId: $lawyerId) {
-    _id
-    lawyerId
-    specializationId
-    categoryName
-    subscription
-    pricePerHour
-  }
-}
-    `;
-
-/**
- * __useGetSpecializationsByLawyerQuery__
- *
- * To run a query within a React component, call `useGetSpecializationsByLawyerQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetSpecializationsByLawyerQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetSpecializationsByLawyerQuery({
- *   variables: {
- *      lawyerId: // value for 'lawyerId'
- *   },
- * });
- */
-export function useGetSpecializationsByLawyerQuery(baseOptions: Apollo.QueryHookOptions<GetSpecializationsByLawyerQuery, GetSpecializationsByLawyerQueryVariables> & ({ variables: GetSpecializationsByLawyerQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetSpecializationsByLawyerQuery, GetSpecializationsByLawyerQueryVariables>(GetSpecializationsByLawyerDocument, options);
-      }
-export function useGetSpecializationsByLawyerLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetSpecializationsByLawyerQuery, GetSpecializationsByLawyerQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetSpecializationsByLawyerQuery, GetSpecializationsByLawyerQueryVariables>(GetSpecializationsByLawyerDocument, options);
-        }
-export function useGetSpecializationsByLawyerSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetSpecializationsByLawyerQuery, GetSpecializationsByLawyerQueryVariables>) {
-          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<GetSpecializationsByLawyerQuery, GetSpecializationsByLawyerQueryVariables>(GetSpecializationsByLawyerDocument, options);
-        }
-export type GetSpecializationsByLawyerQueryHookResult = ReturnType<typeof useGetSpecializationsByLawyerQuery>;
-export type GetSpecializationsByLawyerLazyQueryHookResult = ReturnType<typeof useGetSpecializationsByLawyerLazyQuery>;
-export type GetSpecializationsByLawyerSuspenseQueryHookResult = ReturnType<typeof useGetSpecializationsByLawyerSuspenseQuery>;
-export type GetSpecializationsByLawyerQueryResult = Apollo.QueryResult<GetSpecializationsByLawyerQuery, GetSpecializationsByLawyerQueryVariables>;
