@@ -13,9 +13,10 @@ export const CREATE_LAWYER_MUTATION = gql`
     }
   }
 `;
-export const GET_LAWYER_BY_ID_QUERY = gql`
-  query GetLawyerById($lawyerId: ID!) {
-    getLawyerById(lawyerId: $lawyerId) {
+
+export const GET_ALL_LAWYERS_QUERY = gql`
+  query Query {
+    getLawyers {
       _id
       lawyerId
       clerkUserId
@@ -42,6 +43,8 @@ export const GET_LAWYER_BY_ID_QUERY = gql`
     }
   }
 `;
+
+
 export const GET_LAWYER_BY_LAWYERID_QUERY = gql`
   query GetLawyerById($lawyerId: ID!) {
     getLawyerById(lawyerId: $lawyerId) {

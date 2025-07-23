@@ -1,10 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { Input } from "../ui";
 import { useState } from "react";
 import { usePathname } from "next/navigation";
-import { Menu, Search, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 
@@ -15,7 +14,6 @@ const navLinks = [
 
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
-
   const pathname = usePathname();
 
   switch (pathname) {
@@ -28,39 +26,18 @@ export default function Header() {
 
   return (
     <header className="w-full bg-white shadow-sm sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
+      <div className="max-w-7xl mx-auto px-2 sm:px-3 lg:px-4 py-4 flex items-center justify-between relative">
         <Link href="/" className="text-xl font-bold text-[#003366]">
           LawBridge
         </Link>
 
-        <div className="hidden md:block relative">
-          <Input
-            placeholder=" Өмгөөлөгч хайх"
-            className=" w-full
-            border-[#003366] border
-          bg-white text-gray-600
-          p-5 md:p-6   
-          pr-16 md:pr-32
-          text-base sm:text-lg  
-          rounded-md   "
-          />
-          <Button
-            className="
-          absolute top-1/2 -translate-y-1/2
-          right-1 sm:right-2     
-          text-[#003366]
-          text-sm sm:text-base   
-          px-3 py-1 sm:px-4 sm:py-2 
-          rounded-md             
-          hover:cursor-pointer hover:opacity-85
-        "
-          >
-            <Search />
-          </Button>
-        </div>
         <nav className="hidden md:flex gap-6 items-center">
           {navLinks.map((link) => (
-            <Link key={link.href} href={link.href} className="text-gray-600 hover:text-blue-600 transition">
+            <Link
+              key={link.href}
+              href={link.href}
+              className="text-gray-600 hover:text-blue-600 transition"
+            >
               {link.label}
             </Link>
           ))}
@@ -69,7 +46,12 @@ export default function Header() {
         <div className="hidden md:flex gap-6 items-center">
           <SignedOut>
             <div className="flex gap-2">
-              <Button variant="outline" size="sm" className="border-[#003366]" asChild>
+              <Button
+                variant="outline"
+                size="sm"
+                className="border-[#003366]"
+                asChild
+              >
                 <Link href="/sign-in">Log In</Link>
               </Button>
               <Button size="sm" className="bg-[#003366] text-cyan-50" asChild>
@@ -100,9 +82,14 @@ export default function Header() {
       </div>
 
       {isOpen && (
-        <div className="md:hidden px-4 pb-4 space-y-4">
+        <div className="md:hidden px-2 pb-4 space-y-4">
           {navLinks.map((link) => (
-            <Link key={link.href} href={link.href} className="block text-gray-700 hover:text-blue-600" onClick={() => setIsOpen(false)}>
+            <Link
+              key={link.href}
+              href={link.href}
+              className="block text-gray-700 hover:text-blue-600"
+              onClick={() => setIsOpen(false)}
+            >
               {link.label}
             </Link>
           ))}
@@ -118,7 +105,12 @@ export default function Header() {
               >
                 <Link href="/sign-in">Log In</Link>
               </Button>
-              <Button size="sm" className="w-full bg-[#003366] text-cyan-50" asChild onClick={() => setIsOpen(false)}>
+              <Button
+                size="sm"
+                className="w-full bg-[#003366] text-cyan-50"
+                asChild
+                onClick={() => setIsOpen(false)}
+              >
                 <Link href="/sign-up">Sign Up</Link>
               </Button>
             </div>
