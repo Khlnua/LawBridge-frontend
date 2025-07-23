@@ -8,6 +8,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import OtpInput from "@/components/OtpInput";
+import Image from "next/image";
+import Link from "next/link";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -53,7 +55,7 @@ export default function LoginPage() {
         if (result.status === "needs_first_factor") {
           setPending(true);
         } else {
-          setError("Алдаатай оролдлого. Та дахин оролдоно уу.");
+          setError("Нэвтрэхэд алдаа гарлаа.");
         }
       } catch (err: any) {
         console.error("Email login error:", err);
@@ -109,7 +111,7 @@ export default function LoginPage() {
           await setActive?.({ session: result.createdSessionId });
           router.push("/");
         } else {
-          setError("Код буруу эсвэл хугацаа дууссан.");
+          setError("Код шалгахад алдаа гарлаа.");
         }
       } catch (err: any) {
         console.error("Code verification error:", err);
@@ -119,57 +121,56 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-blue-100">
-      <Card className="overflow-hidden p-0 border-[#dbeafe]">
-        <CardContent className="grid p-0 md:grid-cols-2">
-          <div className="bg-muted relative hidden md:block">
-            <img
-              src="/lawbridgeLOGO.png"
-              alt="Lawbridge"
-              className="absolute inset-0 h-full w-full object-cover"
-            />
-          </div>
-          <div className="p-6 md:p-8 flex flex-col justify-center">
-            <form onSubmit={pending ? verifyOtpOrEmailCode : sendOtpOrStartSignIn} className="flex flex-col gap-6">
-              <div className="text-center">
-                <h1 className="text-2xl font-bold">Тавтай морилно уу?</h1>
-                <p className="text-muted-foreground text-sm">
-                  Login to your LawBridge account
-                </p>
-                
-              </div>
-
-              {!pending ? (
-                <>
-                  <Label>Утас эсвэл И-мэйл</Label>
-                  <Input
-                    placeholder="+976******** эсвэл name@gmail.com"
-                    value={phoneOrEmail}
-                    onChange={(e) => setPhoneOrEmail(e.target.value)}
-                  />
-                  <Button type="submit"
-                    className="w-full bg-[#2563eb] text-white">Үргэлжлүүлэх</Button>
-                </>
-              ) : (
-                <>
-                  <Label>Баталгаажуулах код</Label>
-                  <OtpInput onChange={setOtp} />
-                  <Button type="submit">Нэвтрэх</Button>
-                </>
-              )}
-
-              {error && <p className="text-red-500 text-sm text-center">{error}</p>}
-
-              <div className="text-sm text-center mt-4">
-                Шинэ хэрэглэгч үү?{" "}
-                <a href="/sign-up/user" className="underline text-blue-600">
-                  Бүртгүүлэх
-                </a>
-              </div>
-            </form>
-          </div>
-        </CardContent>
-      </Card>
+<div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-blue-100">
+  <Card className="overflow-hidden p-0 border-[#dbeafe]">
+    <div style={{ position: "relative", width: "100%", height: "200px" }}>
+      <Image
+        src="/lawbridgeLOGO.png"
+        alt="Lawbridge"
+        fill
+        className="absolute inset-0 object-cover"
+        sizes="100vw"
+        priority
+      />
     </div>
-  );
+    <div className="p-6 md:p-8 flex flex-col justify-center">
+      <form onSubmit={pending ? verifyOtpOrEmailCode : sendOtpOrStartSignIn} className="flex flex-col gap-6">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold">Тавтай морилно уу?</h1>
+          <p className="text-muted-foreground text-sm">
+            Login to your LawBridge account
+          </p>
+        </div>
+
+        {!pending ? (
+          <>
+            <Label>Утас эсвэл И-мэйл</Label>
+            <Input
+              placeholder="+976******** эсвэл name@gmail.com"
+              value={phoneOrEmail}
+              onChange={(e) => setPhoneOrEmail(e.target.value)}
+            />
+            <Button type="submit"
+              className="w-full bg-[#2563eb] text-white">Үргэлжлүүлэх</Button>
+          </>
+        ) : (
+          <>
+            <Label>Баталгаажуулах код</Label>
+            <OtpInput onChange={setOtp} />
+            <Button type="submit">Нэвтрэх</Button>
+          </>
+        )}
+        <Link href="/sign-up/user" className="underline text-blue-600">
+          Бүртгүүлэх
+        </Link>
+        <div className="text-sm text-center mt-4">
+          Шинэ хэрэглэгч үү?{" "}
+          <a href="/sign-up/user" className="underline text-blue-600">
+            Бүртгүүлэх
+          </a>
+        </div>
+      </form>
+    </div>
+  </Card>
+</div>)
 }

@@ -1,7 +1,6 @@
 import { createClerkClient } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
 import twilio from "twilio";
-import { cookies } from "next/headers";
 
 const accountSid = process.env.TWILIO_ACCOUNT_SID!;
 const authToken = process.env.TWILIO_AUTH_TOKEN!;
@@ -30,10 +29,9 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: "OTP буруу байна" }, { status: 400 });
     }
 
-    let existingUserResponse = await clerkClient.users.getUserList({
+    const existingUserResponse = await clerkClient.users.getUserList({
       emailAddress: [`${phone}@gmail.com`],
     });
-
     let user;
 
     if (existingUserResponse.data.length === 0) {
@@ -60,10 +58,14 @@ export async function POST(req: NextRequest) {
     });
 
     return response;
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("OTP verification error:", error);
+    const message =
+      error instanceof Error
+        ? error.message
+        : "OTP шалгалт амжилтгүй";
     return NextResponse.json(
-      { message: error.message || "OTP шалгалт амжилтгүй" },
+      { message },
       { status: 500 }
     );
   }

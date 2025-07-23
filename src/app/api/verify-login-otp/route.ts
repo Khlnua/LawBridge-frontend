@@ -53,10 +53,14 @@ export async function POST(req: NextRequest) {
       sessionId: session.id,
       userId: user.id,
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("OTP login error:", error);
+    const message =
+      error instanceof Error
+        ? error.message
+        : "Системийн алдаа гарлаа";
     return NextResponse.json(
-      { message: error.message || "Системийн алдаа гарлаа" },
+      { message },
       { status: 500 }
     );
   }

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Button, GetPost } from "@/components";
+import { Button} from "@/components";
 import { useGetAdminSpecializationsQuery } from "@/generated";
 
 const ArticlesPage = () => {

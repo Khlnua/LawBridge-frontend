@@ -14,7 +14,6 @@ import {
   useCreateSpecializationMutation,
   useGetAdminSpecializationsQuery,
 } from "@/generated";
-import { EmailAddress } from "@clerk/backend";
 
 type Props = {
   errors: FieldErrors<FormData>;
@@ -28,7 +27,6 @@ const ThirdCardForLawyer = ({
   errors,
   watchedSpecializations,
   setValue,
-  isSubmitting,
   goToPreviousStep,
 }: Props) => {
   const { push } = useRouter();

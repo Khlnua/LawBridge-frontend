@@ -4,7 +4,6 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { ApolloWrapper } from "@/providers/ApolloWrapper";
 import { type Metadata } from "next";
 import Header from "@/components/header/Header";
-import { Socket } from "dgram";
 import { SocketProvider } from "@/context/SocketContext";
 import { Toaster } from "sonner";
 

@@ -65,13 +65,12 @@ export interface UseChatRoomState {
 }
 
 export default function useChatRoomState(chatRoomId: string): UseChatRoomState {
-  const { user, isLoaded } = useUser();
+  const { user } = useUser();
   const { getToken } = useAuth();
   const { socket, isConnected, joinRoom, leaveRoom, emitTyping } = useSocket();
   const [messages, setMessages] = useState<MessageType[]>([]);
   const [isSending, setIsSending] = useState(false);
   const [typingUsers, setTypingUsers] = useState<Record<string, string>>({});
-  const [isTyping, setIsTyping] = useState(false);
   const [liveKitToken, setLiveKitToken] = useState<string | null>(null);
   const [isJoiningCall, setIsJoiningCall] = useState(false);
   const [isCallConnected, setIsCallConnected] = useState(false);
@@ -191,7 +190,7 @@ export default function useChatRoomState(chatRoomId: string): UseChatRoomState {
     [user, chatRoomId, createMessage, isSending, refetch]
   );
 
-  const handleSendFile = useCallback(async (file: File) => {
+  const handleSendFile = useCallback(async () => {
     // Implement file upload logic if needed
   }, []);
 

@@ -27,7 +27,6 @@ const FirstCardForLawyer = ({
   errors,
   goToNextStep,
   setValue,
-  getValues,
 }: Props) => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [localPreview, setLocalPreview] = useState<string | null>(null);
