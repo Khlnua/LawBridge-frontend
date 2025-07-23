@@ -554,6 +554,7 @@ export type Query = {
   getLawyersByStatus: Array<Lawyer>;
   getMessages: Array<Message>;
   getPostById?: Maybe<Post>;
+  getPosts: Array<Post>;
   getPostsByLawyer: Array<Post>;
   getPostsBySpecializationId: Array<Post>;
   getReviewsByLawyer: Array<Review>;
@@ -716,6 +717,7 @@ export enum ReviewStatus {
 export type Specialization = {
   __typename?: 'Specialization';
   _id: Scalars['ID']['output'];
+  categoryName?: Maybe<Scalars['String']['output']>;
   lawyerId: Scalars['ID']['output'];
   pricePerHour?: Maybe<Scalars['Int']['output']>;
   specializationId: Scalars['ID']['output'];
