@@ -32,7 +32,7 @@ export const LawyerProfileHeader = ({ lawyerId }: LawyerProfileHeaderProps) => {
   const [localPreview, setLocalPreview] = useState<string | null>(null);
 
   const { data, loading } = useQuery(GET_LAWYER_BY_ID_QUERY, {
-    variables: { lawyerId },
+    variables: { lawyerId: "688034a4021434498c5dca18" },
   });
 
   const lawyer = data?.getLawyerById;
@@ -165,12 +165,13 @@ export const LawyerProfileHeader = ({ lawyerId }: LawyerProfileHeaderProps) => {
             <p className="text-green-700">{form.specialization}</p>
             <div className="text-sm text-gray-500">
               <div className="flex gap-1 justify-start items-center">
-                {" "}
                 <University /> {form.university}
               </div>
               <div className="flex gap-1 justify-start items-center">
-                {" "}
                 <MailIcon /> {form.email}
+              </div>
+              <div  className="flex gap-1 justify-start items-center">
+                {form.bio}
               </div>
             </div>
             <p className="text-sm text-muted-foreground mt-2">{form.bio}</p>

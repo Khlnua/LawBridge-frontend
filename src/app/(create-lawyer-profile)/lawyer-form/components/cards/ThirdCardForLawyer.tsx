@@ -70,7 +70,7 @@ const ThirdCardForLawyer = ({
       await createLawyer({
         variables: {
           input: {
-            lawyerId,
+            lawyerId: user?.id,
             email: EmailAddress,
             firstName: formData.firstName,
             lastName: formData.lastName,
