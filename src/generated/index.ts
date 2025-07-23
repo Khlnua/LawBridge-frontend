@@ -51,25 +51,53 @@ export type Appointment = {
   clientId: Scalars['String']['output'];
   createdAt?: Maybe<Scalars['String']['output']>;
   endedAt?: Maybe<Scalars['String']['output']>;
-  isFree: Scalars['Boolean']['output'];
+  id: Scalars['ID']['output'];
   lawyerId: Scalars['String']['output'];
+  notes?: Maybe<Scalars['String']['output']>;
   price?: Maybe<Scalars['Int']['output']>;
   schedule: Scalars['String']['output'];
-  specializationId: Scalars['String']['output'];
+  slot: AvailableDay;
+  specialization?: Maybe<Specialization>;
+  specializationId: Scalars['ID']['output'];
   status: AppointmentStatus;
+  subscription: Scalars['Boolean']['output'];
 };
 
 export enum AppointmentStatus {
+  Cancelled = 'CANCELLED',
   Completed = 'COMPLETED',
+  Confirmed = 'CONFIRMED',
   Pending = 'PENDING'
 }
 
 export type Availability = {
   __typename?: 'Availability';
-  day: DayOfWeek;
+  availableDays: Array<Scalars['String']['output']>;
+  day: Scalars['String']['output'];
   endTime: Scalars['String']['output'];
   lawyerId: Scalars['String']['output'];
   startTime: Scalars['String']['output'];
+};
+
+export type AvailabilitySchedule = {
+  __typename?: 'AvailabilitySchedule';
+  _id: Scalars['ID']['output'];
+  availableDays: Array<AvailableDay>;
+  lawyerId: Scalars['String']['output'];
+};
+
+export type AvailableDay = {
+  __typename?: 'AvailableDay';
+  booked: Scalars['Boolean']['output'];
+  day: Scalars['String']['output'];
+  endTime: Scalars['String']['output'];
+  startTime: Scalars['String']['output'];
+};
+
+export type AvailableDayInput = {
+  day: Scalars['String']['input'];
+  endTime: Scalars['String']['input'];
+  startTime: Scalars['String']['input'];
 };
 
 export type ChatHistory = {
@@ -116,10 +144,10 @@ export type CreateAchievementInput = {
 
 export type CreateAppointmentInput = {
   clientId: Scalars['String']['input'];
-  createdAt: Scalars['String']['input'];
-  endedAt: Scalars['String']['input'];
   lawyerId: Scalars['String']['input'];
-  schedule: Scalars['String']['input'];
+  notes?: InputMaybe<Scalars['String']['input']>;
+  slot: AvailableDayInput;
+  specializationId: Scalars['ID']['input'];
 };
 
 export type CreateChatRoomInput = {
@@ -177,16 +205,6 @@ export type CreateSpecializationInput = {
   specializationId: Scalars['ID']['input'];
   subscription: Scalars['Boolean']['input'];
 };
-
-export enum DayOfWeek {
-  Friday = 'FRIDAY',
-  Monday = 'MONDAY',
-  Saturday = 'SATURDAY',
-  Sunday = 'SUNDAY',
-  Thursday = 'THURSDAY',
-  Tuesday = 'TUESDAY',
-  Wednesday = 'WEDNESDAY'
-}
 
 export type DeleteCommentInput = {
   commentId: Scalars['ID']['input'];
@@ -277,7 +295,7 @@ export type Mutation = {
   adminCreateSpecialization: AdminSpecialization;
   clearChatHistory: Scalars['Boolean']['output'];
   createAchievement: Achievement;
-  createAppointment?: Maybe<Appointment>;
+  createAppointment: Appointment;
   createChatRoom?: Maybe<Scalars['String']['output']>;
   createChatRoomAfterAppointment: ChatRoom;
   createComment: Comment;
@@ -299,7 +317,7 @@ export type Mutation = {
   markNotificationAsRead: Notification;
   reviewDocument: Document;
   saveChatHistory: ChatHistory;
-  setAvailability?: Maybe<Availability>;
+  setAvailability: AvailabilitySchedule;
   updateAchievement: Achievement;
   updateChatRoom: ChatRoom;
   updateComment: Comment;
@@ -434,10 +452,7 @@ export type MutationSaveChatHistoryArgs = {
 
 
 export type MutationSetAvailabilityArgs = {
-  day: DayOfWeek;
-  endTime: Scalars['String']['input'];
-  lawyerId: Scalars['String']['input'];
-  startTime: Scalars['String']['input'];
+  input: SetAvailabilityInput;
 };
 
 
@@ -587,8 +602,8 @@ export type QueryGetAppointmentsByUserArgs = {
 
 
 export type QueryGetAvailabilityArgs = {
-  day: DayOfWeek;
-  lawyerId: Scalars['String']['input'];
+  day?: InputMaybe<Scalars['String']['input']>;
+  lawyerId?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -714,6 +729,10 @@ export enum ReviewStatus {
   Reviewed = 'REVIEWED'
 }
 
+export type SetAvailabilityInput = {
+  availableDays: Array<AvailableDayInput>;
+};
+
 export type Specialization = {
   __typename?: 'Specialization';
   _id: Scalars['ID']['output'];
@@ -798,7 +817,7 @@ export type CreateAppointmentMutationVariables = Exact<{
 }>;
 
 
-export type CreateAppointmentMutation = { __typename?: 'Mutation', createAppointment?: { __typename?: 'Appointment', lawyerId: string, schedule: string, status: AppointmentStatus, chatRoomId?: string | null } | null };
+export type CreateAppointmentMutation = { __typename?: 'Mutation', createAppointment: { __typename?: 'Appointment', lawyerId: string, schedule: string, status: AppointmentStatus, chatRoomId?: string | null } };
 
 export type SaveChatHistoryMutationVariables = Exact<{
   input: ChatHistoryInput;
