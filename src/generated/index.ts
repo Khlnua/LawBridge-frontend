@@ -51,17 +51,22 @@ export type Appointment = {
   clientId: Scalars['String']['output'];
   createdAt?: Maybe<Scalars['String']['output']>;
   endedAt?: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
   lawyerId: Scalars['String']['output'];
+  notes?: Maybe<Scalars['String']['output']>;
   price?: Maybe<Scalars['Int']['output']>;
   schedule: Scalars['String']['output'];
-  specialization?: Maybe<AdminSpecialization>;
+  slot: AvailableDay;
+  specialization?: Maybe<Specialization>;
   specializationId: Scalars['ID']['output'];
   status: AppointmentStatus;
   subscription: Scalars['Boolean']['output'];
 };
 
 export enum AppointmentStatus {
+  Cancelled = 'CANCELLED',
   Completed = 'COMPLETED',
+  Confirmed = 'CONFIRMED',
   Pending = 'PENDING'
 }
 
@@ -83,6 +88,7 @@ export type AvailabilitySchedule = {
 
 export type AvailableDay = {
   __typename?: 'AvailableDay';
+  booked: Scalars['Boolean']['output'];
   day: Scalars['String']['output'];
   endTime: Scalars['String']['output'];
   startTime: Scalars['String']['output'];
@@ -138,10 +144,9 @@ export type CreateAchievementInput = {
 
 export type CreateAppointmentInput = {
   clientId: Scalars['String']['input'];
-  createdAt: Scalars['String']['input'];
-  endedAt: Scalars['String']['input'];
   lawyerId: Scalars['String']['input'];
-  schedule: Scalars['String']['input'];
+  notes?: InputMaybe<Scalars['String']['input']>;
+  slot: AvailableDayInput;
   specializationId: Scalars['ID']['input'];
 };
 
@@ -290,7 +295,7 @@ export type Mutation = {
   adminCreateSpecialization: AdminSpecialization;
   clearChatHistory: Scalars['Boolean']['output'];
   createAchievement: Achievement;
-  createAppointment?: Maybe<Appointment>;
+  createAppointment: Appointment;
   createChatRoom?: Maybe<Scalars['String']['output']>;
   createChatRoomAfterAppointment: ChatRoom;
   createComment: Comment;
@@ -812,7 +817,7 @@ export type CreateAppointmentMutationVariables = Exact<{
 }>;
 
 
-export type CreateAppointmentMutation = { __typename?: 'Mutation', createAppointment?: { __typename?: 'Appointment', lawyerId: string, schedule: string, status: AppointmentStatus, chatRoomId?: string | null } | null };
+export type CreateAppointmentMutation = { __typename?: 'Mutation', createAppointment: { __typename?: 'Appointment', lawyerId: string, schedule: string, status: AppointmentStatus, chatRoomId?: string | null } };
 
 export type SaveChatHistoryMutationVariables = Exact<{
   input: ChatHistoryInput;

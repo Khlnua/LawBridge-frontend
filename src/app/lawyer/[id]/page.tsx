@@ -2,23 +2,84 @@
 
 import { useState } from "react";
 import { Mail, Phone, Star, Clock, FileText } from "lucide-react";
+import BookAppointmentModal from "@/components/booking/BookAppointmentModal";
+import { useQuery, useMutation, gql } from "@apollo/client";
+import { Input, Button } from "@/components/ui";
 
+const GET_AVAILABILITY = gql`
+  query GetAvailability($lawyerId: String!) {
+    getAvailability(lawyerId: $lawyerId) {
+      day
+      startTime
+      endTime
+      availableDays
+    }
+  }
+`;
+
+const CREATE_APPOINTMENT = gql`
+  mutation CreateAppointment($input: CreateAppointmentInput!) {
+    createAppointment(input: $input) {
+      lawyerId
+      schedule
+      status
+      chatRoomId
+    }
+  }
+`;
 
 const LawyerProfile = () => {
   // const { id } = params;
 
-  const [activeTab, setActiveTab] = useState<"posts" | "reviews" | "book">("posts");
+  const [activeTab, setActiveTab] = useState<"posts" | "reviews" | "book">(
+    "posts"
+  );
+  const [appointmentStatus, setAppointmentStatus] = useState<string | null>(null);
 
   const lawyer = {
+    id: "lawyer123", // placeholder
     name: "Б. Номин",
     specialization: "Эрүүгийн эрх зүй, Гэр бүлийн эрх зүй",
+    specializationId: "spec123", // placeholder
     location: "Улаанбаатар",
     email: "nomin@example.com",
     phone: "99112233",
     rating: 4.9,
     reviews: 27,
     avatar: "/lawyer-avatar.jpg",
-    description: "10 жилийн туршлагатай, хууль зүйн салбарт үр дүнтэй зөвлөгөө өгдөг өмгөөлөгч.",
+    description:
+      "10 жилийн туршлагатай, хууль зүйн салбарт үр дүнтэй зөвлөгөө өгдөг өмгөөлөгч.",
+  };
+  const clientId = "client123"; // placeholder, replace with real user id
+
+  const { data: availabilityData, refetch } = useQuery<{
+    getAvailability: Array<{
+      day: string;
+      startTime: string;
+      endTime: string;
+      availableDays: string[];
+    }>;
+  }>(GET_AVAILABILITY, { variables: { lawyerId: lawyer.id } });
+  const [createAppointment, { loading: creating }] = useMutation(CREATE_APPOINTMENT);
+
+  // Handler for creating appointment
+  const handleCreateAppointment = async (day: string, startTime: string, endTime: string) => {
+    try {
+      await createAppointment({
+        variables: {
+          input: {
+            clientId,
+            lawyerId: lawyer.id,
+            specializationId: lawyer.specializationId,
+            slot: { day, startTime, endTime },
+            notes: "", // Optionally add notes
+          },
+        },
+      });
+      setAppointmentStatus("Амжилттай захиаллаа!");
+    } catch (err) {
+      setAppointmentStatus("Захиалга үүсгэхэд алдаа гарлаа.");
+    }
   };
 
   const renderTabContent = () => {
@@ -27,8 +88,12 @@ const LawyerProfile = () => {
         return (
           <div className="space-y-4 text-center">
             <h3 className="font-semibold text-lg">Нийтлэлүүд</h3>
-            <div className="bg-gray-50 p-4 rounded-lg shadow">📌 Эрүүгийн хэргүүдийн шийдвэрлэлт ба эрх зүйн зөвлөгөө</div>
-            <div className="bg-gray-50 p-4 rounded-lg shadow">📌 Гэр бүл салалттай холбоотой анхаарах зүйлс</div>
+            <div className="bg-gray-50 p-4 rounded-lg shadow">
+              📌 Эрүүгийн хэргүүдийн шийдвэрлэлт ба эрх зүйн зөвлөгөө
+            </div>
+            <div className="bg-gray-50 p-4 rounded-lg shadow">
+              📌 Гэр бүл салалттай холбоотой анхаарах зүйлс
+            </div>
           </div>
         );
       case "reviews":
@@ -36,17 +101,37 @@ const LawyerProfile = () => {
           <div className="space-y-4 text-center">
             <h3 className="font-semibold text-lg">Үйлчлүүлэгчдийн сэтгэгдэл</h3>
             <div className="bg-green-50 p-4 rounded-lg shadow">
-              ⭐⭐⭐⭐⭐ — &quot;Маш найдвартай, үр дүнтэй зөвлөгөө өгсөн. Баярлалаа!&quot;
+              ⭐⭐⭐⭐⭐ — &quot;Маш найдвартай, үр дүнтэй зөвлөгөө өгсөн.
+              Баярлалаа!&quot;
             </div>
-            <div className="bg-green-50 p-4 rounded-lg shadow">⭐⭐⭐⭐ — &quot;Тодорхой тайлбарлаж, хурдан шийдсэн.&quot;</div>
+            <div className="bg-green-50 p-4 rounded-lg shadow">
+              ⭐⭐⭐⭐ — &quot;Тодорхой тайлбарлаж, хурдан шийдсэн.&quot;
+            </div>
           </div>
         );
       case "book":
         return (
-          <div className="space-y-4 text-center">
-            <h3 className="font-semibold text-lg">Цаг захиалах</h3>
-            <p className="text-sm text-gray-600">Энд цаг захиалах форм эсвэл товч байрлана.</p>
-            <button className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition">Цаг захиалах</button>
+          <div className="space-y-6">
+            <h3 className="font-semibold text-lg text-center">Боломжит өдрүүд ба цагууд</h3>
+            {appointmentStatus && (
+              <div className="text-center text-green-600 font-semibold">{appointmentStatus}</div>
+            )}
+            <div className="flex flex-col gap-2 items-center">
+              {availabilityData?.getAvailability.length ? (
+                availabilityData.getAvailability.map((slot, idx) => (
+                  <div
+                    key={idx}
+                    className="bg-blue-50 rounded p-3 w-full max-w-md flex flex-col items-center cursor-pointer hover:bg-blue-100 transition"
+                    onClick={() => handleCreateAppointment(slot.day, slot.startTime, slot.endTime)}
+                  >
+                    <span className="font-medium">{slot.day}</span>
+                    <span>Эхлэх: {slot.startTime} — Дуусах: {slot.endTime}</span>
+                  </div>
+                ))
+              ) : (
+                <div className="text-gray-500">Одоогоор боломжит цаг байхгүй байна.</div>
+              )}
+            </div>
           </div>
         );
     }
@@ -56,9 +141,15 @@ const LawyerProfile = () => {
     <div className="w-full px-4 py-8 flex flex-col items-center space-y-6">
       {/* Profile Section */}
       <div className="bg-white shadow rounded-xl p-6 w-full max-w-2xl flex flex-col items-center space-y-3">
-        <img src={lawyer.avatar} alt="avatar" className="w-32 h-32 rounded-full object-cover border" />
+        <img
+          src={lawyer.avatar}
+          alt="avatar"
+          className="w-32 h-32 rounded-full object-cover border"
+        />
         <h1 className="text-2xl font-bold text-center">{lawyer.name}</h1>
-        <p className="text-green-700 font-medium text-center">{lawyer.specialization}</p>
+        <p className="text-green-700 font-medium text-center">
+          {lawyer.specialization}
+        </p>
 
         <div className="text-sm text-gray-500 text-center">
           <div className="flex items-center justify-center gap-2">
@@ -82,7 +173,9 @@ const LawyerProfile = () => {
         <button
           onClick={() => setActiveTab("posts")}
           className={`flex items-center gap-1 px-5 py-2 rounded-md text-sm font-medium ${
-            activeTab === "posts" ? "bg-blue-600 text-white" : "bg-gray-100 text-gray-600"
+            activeTab === "posts"
+              ? "bg-blue-600 text-white"
+              : "bg-gray-100 text-gray-600"
           }`}
         >
           <FileText size={16} /> Posts
@@ -90,7 +183,9 @@ const LawyerProfile = () => {
         <button
           onClick={() => setActiveTab("reviews")}
           className={`flex items-center gap-1 px-5 py-2 rounded-md text-sm font-medium ${
-            activeTab === "reviews" ? "bg-blue-600 text-white" : "bg-gray-100 text-gray-600"
+            activeTab === "reviews"
+              ? "bg-blue-600 text-white"
+              : "bg-gray-100 text-gray-600"
           }`}
         >
           <Star size={16} /> Reviews
@@ -98,7 +193,9 @@ const LawyerProfile = () => {
         <button
           onClick={() => setActiveTab("book")}
           className={`flex items-center gap-1 px-5 py-2 rounded-md text-sm font-medium ${
-            activeTab === "book" ? "bg-blue-600 text-white" : "bg-gray-100 text-gray-600"
+            activeTab === "book"
+              ? "bg-blue-600 text-white"
+              : "bg-gray-100 text-gray-600"
           }`}
         >
           <Clock size={16} /> Book
