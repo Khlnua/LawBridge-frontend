@@ -170,9 +170,6 @@ export const LawyerProfileHeader = ({ lawyerId }: LawyerProfileHeaderProps) => {
               <div className="flex gap-1 justify-start items-center">
                 <MailIcon /> {form.email}
               </div>
-              <div  className="flex gap-1 justify-start items-center">
-                {form.bio}
-              </div>
             </div>
             <p className="text-sm text-muted-foreground mt-2">{form.bio}</p>
             <Button
