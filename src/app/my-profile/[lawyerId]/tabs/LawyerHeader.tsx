@@ -4,22 +4,13 @@ import { useState, useEffect } from "react";
 import { MailIcon, Pencil, Save, University, X } from "lucide-react";
 import { useUploadAvatar } from "@/app/(create-lawyer-profile)/lawyer-form/hooks";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardContent,
-  CardFooter,
-} from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
-import {
-  GET_LAWYER_BY_ID_QUERY,
-  UPDATE_LAWYER_MUTATION,
-} from "@/graphql/lawyer";
+import { GET_LAWYER_BY_LAWYERID_QUERY, UPDATE_LAWYER_MUTATION } from "@/graphql/lawyer";
 import { useQuery, useMutation } from "@apollo/client";
 
 type LawyerProfileHeaderProps = {
@@ -31,7 +22,7 @@ export const LawyerProfileHeader = ({ lawyerId }: LawyerProfileHeaderProps) => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [localPreview, setLocalPreview] = useState<string | null>(null);
 
-  const { data, loading } = useQuery(GET_LAWYER_BY_ID_QUERY, {
+  const { data, loading } = useQuery(GET_LAWYER_BY_LAWYERID_QUERY, {
     variables: { lawyerId },
   });
 
@@ -63,18 +54,13 @@ export const LawyerProfileHeader = ({ lawyerId }: LawyerProfileHeaderProps) => {
     }
   }, [lawyer]);
 
-  const [updateLawyer, { loading: updating }] = useMutation(
-    UPDATE_LAWYER_MUTATION
-  );
+  const [updateLawyer, { loading: updating }] = useMutation(UPDATE_LAWYER_MUTATION);
 
-  const { fileInputRef, uploading, openBrowse, uploadToServer } =
-    useUploadAvatar({
-      onUpload: () => {},
-    });
+  const { fileInputRef, uploading, openBrowse, uploadToServer } = useUploadAvatar({
+    onUpload: () => {},
+  });
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
   };
@@ -128,11 +114,7 @@ export const LawyerProfileHeader = ({ lawyerId }: LawyerProfileHeaderProps) => {
       <CardHeader className="flex flex-col items-center text-center gap-4">
         <div className="relative group">
           <Avatar className="w-28 h-28 border">
-            <AvatarImage
-              src={localPreview || form.avatar}
-              alt="Avatar"
-              className="object-cover border-none"
-            />
+            <AvatarImage src={localPreview || form.avatar} alt="Avatar" className="object-cover border-none" />
             <AvatarFallback>NB</AvatarFallback>
           </Avatar>
 
@@ -146,13 +128,7 @@ export const LawyerProfileHeader = ({ lawyerId }: LawyerProfileHeaderProps) => {
               >
                 <Pencil size={16} />
               </button>
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                onChange={handleFileSelect}
-                hidden
-              />
+              <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileSelect} hidden />
             </>
           )}
         </div>
@@ -174,12 +150,7 @@ export const LawyerProfileHeader = ({ lawyerId }: LawyerProfileHeaderProps) => {
               </div>
             </div>
             <p className="text-sm text-muted-foreground mt-2">{form.bio}</p>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setIsEditing(true)}
-              className="mt-2 border-none bg-[#83bce5] text-[#0b1536]"
-            >
+            <Button variant="outline" size="sm" onClick={() => setIsEditing(true)} className="mt-2 border-none bg-[#83bce5] text-[#0b1536]">
               <Pencil size={14} className="mr-1" />
               Шинэчлэх
             </Button>
@@ -193,19 +164,11 @@ export const LawyerProfileHeader = ({ lawyerId }: LawyerProfileHeaderProps) => {
           <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <Label>Нэр</Label>
-              <Input
-                name="firstName"
-                value={form.firstName}
-                onChange={handleChange}
-              />
+              <Input name="firstName" value={form.firstName} onChange={handleChange} />
             </div>
             <div>
               <Label>Овог</Label>
-              <Input
-                name="lastName"
-                value={form.lastName}
-                onChange={handleChange}
-              />
+              <Input name="lastName" value={form.lastName} onChange={handleChange} />
             </div>
             <div>
               <Label>Имэйл</Label>
@@ -213,19 +176,11 @@ export const LawyerProfileHeader = ({ lawyerId }: LawyerProfileHeaderProps) => {
             </div>
             <div>
               <Label>Утас</Label>
-              <Input
-                name="phone"
-                value={form.university}
-                onChange={handleChange}
-              />
+              <Input name="phone" value={form.university} onChange={handleChange} />
             </div>
             <div className="md:col-span-2">
               <Label>Мэргэжлийн чиглэл</Label>
-              <Input
-                name="specialization"
-                value={form.specialization}
-                onChange={handleChange}
-              />
+              <Input name="specialization" value={form.specialization} onChange={handleChange} />
             </div>
             <div className="md:col-span-2">
               <Label>Танилцуулга</Label>
