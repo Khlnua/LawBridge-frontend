@@ -29,7 +29,8 @@ interface Lawyer {
   lastName: string;
   profilePicture?: string;
   status?: string;
-  specialty?: string;
+  specialty?: string | string[];
+  specialization?: { categoryName: string }[];
   rating?: number;
   reviewCount?: number;
 }
@@ -128,7 +129,13 @@ const FilteredByCategories = () => {
             name={lawyer.firstName + " " + lawyer.lastName}
             avatarImage={lawyer.profilePicture || ""}
             status={lawyer.status || ""}
-            specialty={lawyer.specialty ? [lawyer.specialty] : []}
+            specialty={
+              typeof lawyer.specialty === "string"
+                ? [lawyer.specialty]
+                : Array.isArray(lawyer.specialty)
+                ? lawyer.specialty
+                : []
+            }
             rating={lawyer.rating ?? 0}
             reviewCount={lawyer.reviewCount ?? 0}
           />
