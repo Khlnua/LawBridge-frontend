@@ -6,7 +6,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 type LawyerCardProps = {
-  _id?: string;
+  id: string;
   name: string;
   status: string;
   avatarImage?: string;
@@ -16,7 +16,7 @@ type LawyerCardProps = {
   hourlyRate?: number[];
 };
 
-const LawyerCard = ({ name, status, avatarImage, specialty, rating, reviewCount, hourlyRate }: LawyerCardProps) => {
+const LawyerCard = ({ id, name, status, avatarImage, specialty, rating, reviewCount, hourlyRate }: LawyerCardProps) => {
   const [activeSpecialtyIndex, setActiveSpecialtyIndex] = useState<number | null>(null);
 
   const handleClick = (index: number) => {
@@ -26,7 +26,7 @@ const LawyerCard = ({ name, status, avatarImage, specialty, rating, reviewCount,
   const router = useRouter();
 
   const handleDelgerenguiClick = () => {
-    router.push(`/lawyer/${name.replace(/\s+/g, "-").toLowerCase()}`);
+    router.push(`/lawyer/${id}`);
   };
 
   return (
@@ -42,7 +42,7 @@ const LawyerCard = ({ name, status, avatarImage, specialty, rating, reviewCount,
     >
       <div className="mb-4">
         <div className="w-20 h-20 bg-[#8bc34a] rounded-full mx-auto mb-3">
-          <img src={avatarImage} alt="" />
+          {avatarImage && <img src={process.env.R2_PUBLIC_DOMAIN + "/" + avatarImage} className="size-full rounded-full " />}
         </div>
         <h3 className="text-xl font-semibold text-[#333333] mb-0.5">{name}</h3>
         <div className="p-2">
