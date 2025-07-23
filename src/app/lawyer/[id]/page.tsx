@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { useQuery, useMutation, gql } from "@apollo/client";
 import { use } from "react";
+import { useUser } from "@clerk/nextjs";
 
 const GET_LAWYER_BY_LAWYERID_QUERY = gql`
   query GetLawyerById($lawyerId: ID!) {
@@ -63,6 +64,19 @@ const GET_AVAILABILITY = gql`
   }
 `;
 
+const GET_SPECIALIZATIONS_BY_LAWYER = gql`
+  query GetSpecializationsByLawyer($lawyerId: ID!) {
+    getSpecializationsByLawyer(lawyerId: $lawyerId) {
+      _id
+      lawyerId
+      specializationId
+      categoryName
+      subscription
+      pricePerHour
+    }
+  }
+`;
+
 const CREATE_APPOINTMENT = gql`
   mutation CreateAppointment($input: CreateAppointmentInput!) {
     createAppointment(input: $input) {
@@ -71,9 +85,7 @@ const CREATE_APPOINTMENT = gql`
       lawyerId
       status
       chatRoomId
-      price
       subscription
-      specializationId
       slot {
         day
         startTime
@@ -81,22 +93,15 @@ const CREATE_APPOINTMENT = gql`
         booked
       }
       specialization {
-        id
-        name
+        _id
+        lawyerId
+        specializationId
+        categoryName
+        subscription
+        pricePerHour
       }
-      createdAt
       notes
-    }
-  }
-`;
-
-const GET_USER_PROFILE = gql`
-  query GetUserProfile {
-    getCurrentUser {
-      id
-      firstName
-      lastName
-      email
+      specializationId
     }
   }
 `;
@@ -131,7 +136,18 @@ const LawyerProfile = ({ params }: Props) => {
     skip: false,
   });
 
-  const { data: userData } = useQuery(GET_USER_PROFILE);
+  const { data: specializationsData, loading: specializationsLoading } = useQuery<{
+    getSpecializationsByLawyer: Array<{
+      _id: string;
+      lawyerId: string;
+      specializationId: string;
+      categoryName?: string;
+      subscription: boolean;
+      pricePerHour?: number;
+    }>;
+  }>(GET_SPECIALIZATIONS_BY_LAWYER, { variables: { lawyerId: id } });
+
+  const { user: currentUser, isSignedIn } = useUser();
 
   const [activeTab, setActiveTab] = useState<"overview" | "reviews" | "book">(
     "overview"
@@ -145,6 +161,7 @@ const LawyerProfile = ({ params }: Props) => {
     message: string;
   }>({ type: null, message: "" });
   const [showBookingModal, setShowBookingModal] = useState(false);
+  const [selectedSpecializationId, setSelectedSpecializationId] = useState<string>("");
 
   const [createAppointment, { loading: creatingAppointment }] = useMutation(
     CREATE_APPOINTMENT,
@@ -208,7 +225,10 @@ const LawyerProfile = ({ params }: Props) => {
   }
 
   const lawyer = lawyerData.getLawyerById;
-  const currentUser = userData?.getCurrentUser;
+  // Show a login prompt if not signed in
+  if (!isSignedIn) {
+    return <div className="text-center py-12 text-lg">Та нэвтэрч орсны дараа цаг захиалах боломжтой.</div>;
+  }
 
   // Format date for display
   const formatDate = (dateString: string) => {
@@ -232,7 +252,7 @@ const LawyerProfile = ({ params }: Props) => {
 
   // Handle appointment creation
   const handleCreateAppointment = async () => {
-    console.log("Booking appointment for slot:", selectedSlot, "user:", currentUser);
+    console.log("Booking appointment for slot:", selectedSlot, "user:", currentUser, "lawyerId:", lawyer._id, "specializationId:", selectedSpecializationId);
     if (!selectedSlot || !currentUser) {
       setAppointmentStatus({
         type: "error",
@@ -240,14 +260,20 @@ const LawyerProfile = ({ params }: Props) => {
       });
       return;
     }
-
+    if (!selectedSpecializationId) {
+      setAppointmentStatus({
+        type: "error",
+        message: "Та мэргэжлийн чиглэлээ сонгоно уу.",
+      });
+      return;
+    }
     try {
       await createAppointment({
         variables: {
           input: {
             clientId: currentUser.id,
-            lawyerId: lawyer._id,
-            specializationId: lawyer.specializationId,
+            lawyerId: id,
+            specializationId: selectedSpecializationId,
             slot: {
               day: selectedSlot.day,
               startTime: selectedSlot.startTime,
@@ -258,9 +284,18 @@ const LawyerProfile = ({ params }: Props) => {
         },
       });
     } catch (error) {
+      let message = "Appointment creation error: ";
+      if (error instanceof Error) {
+        message += error.message;
+        if (error.message.includes("not available")) {
+          message = "Сонгосон цаг аль хэдийн захиалагдсан байна эсвэл олдсонгүй.";
+        }
+      } else {
+        message += String(error);
+      }
       setAppointmentStatus({
         type: "error",
-        message: `Appointment creation error: ${error instanceof Error ? error.message : String(error)}`,
+        message,
       });
       console.error("Appointment creation error:", error);
     }
@@ -428,6 +463,25 @@ const LawyerProfile = ({ params }: Props) => {
               <p className="text-gray-600">
                 Боломжит цагуудаас сонгон цаг захиална уу
               </p>
+            </div>
+            {/* Specialization selection */}
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Мэргэжлийн чиглэлээ сонгоно уу
+              </label>
+              <select
+                value={selectedSpecializationId}
+                onChange={e => setSelectedSpecializationId(e.target.value)}
+                className="w-full p-2 border border-gray-300 rounded-lg"
+                disabled={specializationsLoading}
+              >
+                <option value="">-- Сонгох --</option>
+                {specializationsData?.getSpecializationsByLawyer.map(spec => (
+                  <option key={spec._id} value={spec.specializationId}>
+                    {spec.categoryName || spec.specializationId}
+                  </option>
+                ))}
+              </select>
             </div>
 
             {/* Status Messages */}

@@ -4,12 +4,16 @@ import { useState } from "react";
 import { FileText, Star, Calendar, MessageCircleMoreIcon } from "lucide-react";
 import { LawyerPosts } from "./LawyerPosts";
 import { LawyerReviews } from "./LawyerReviews";
-import { LawyerSchedule } from "./LawyerSchedule";
+import LawyerSchedule from "./LawyerSchedule";
 import { LawyerClients } from "./LawyerClients";
 
 type TabType = "posts" | "reviews" | "schedule" | "clients";
 
-const SidebarTabs = () => {
+type SidebarTabsProps = {
+  lawyerId: string;
+};
+
+const SidebarTabs = ({ lawyerId }: SidebarTabsProps) => {
   const [activeTab, setActiveTab] = useState<TabType>("posts");
 
   const tabItems: { id: TabType; label: string; icon: React.ReactNode }[] = [
@@ -62,7 +66,7 @@ const SidebarTabs = () => {
       <section className="flex-1 bg-white border rounded-xl shadow-sm p-6">
         {activeTab === "posts" && <LawyerPosts />}
         {activeTab === "reviews" && <LawyerReviews />}
-        {activeTab === "schedule" && <LawyerSchedule />}
+        {activeTab === "schedule" && <LawyerSchedule lawyerId={lawyerId} />}
         {activeTab === "clients" && <LawyerClients />}
       </section>
     </div>

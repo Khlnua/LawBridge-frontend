@@ -71,11 +71,8 @@ export enum AppointmentStatus {
 
 export type Availability = {
   __typename?: 'Availability';
-  availableDays: Array<Scalars['String']['output']>;
-  day: Scalars['String']['output'];
-  endTime: Scalars['String']['output'];
+  availableDays: Array<AvailableDay>;
   lawyerId: Scalars['String']['output'];
-  startTime: Scalars['String']['output'];
 };
 
 export type AvailabilitySchedule = {

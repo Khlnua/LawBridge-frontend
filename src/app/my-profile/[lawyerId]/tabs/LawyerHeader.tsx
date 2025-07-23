@@ -24,13 +24,14 @@ import { useQuery, useMutation } from "@apollo/client";
 import { GET_SPECIALIZATION_BY_LAWYER_ID } from "@/graphql/specializationsbylawyer";
 import { useUser } from "@clerk/nextjs";
 
-export const LawyerProfileHeader = () => {
+type LawyerProfileHeaderProps = {
+  lawyerId: string;
+};
+
+export const LawyerProfileHeader = ({ lawyerId }: LawyerProfileHeaderProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [localPreview, setLocalPreview] = useState<string | null>(null);
-
-  const { user } = useUser();
-  const lawyerId = user?.id;
 
   const { data, loading } = useQuery(GET_LAWYER_BY_LAWYERID_QUERY, {
     variables: { lawyerId },
