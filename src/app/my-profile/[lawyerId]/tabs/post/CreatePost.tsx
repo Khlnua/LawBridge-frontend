@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useMutation, useQuery } from "@apollo/client";
+import { useMutation } from "@apollo/client";
 import { CREATE_POST } from "@/graphql/post";
 import { useGetAdminSpecializationsQuery } from "@/generated";
 import { Button } from "@/components/ui/button";
@@ -127,9 +127,9 @@ const CreatePost = ({ onCreate }: CreatePostProps) => {
             )
           }
         >
-          {specData?.getAdminSpecializations?.map((spec: any) => (
+          {specData?.getAdminSpecializations?.map((spec: { id: string; categoryName: string }) => (
             <option key={spec.id} value={spec.id}>
-              {spec.name}
+              {spec.categoryName}
             </option>
           ))}
         </select>

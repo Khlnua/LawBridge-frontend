@@ -35,7 +35,17 @@ const CLEAR_CHAT_HISTORY = gql`
 export default function useLawBridgeChat() {
   const { user, isLoaded } = useUser();
   const { getToken } = useAuth();
-  const [messages, setMessages] = useState<any[]>([]);
+  type Message = {
+    id: number;
+    text: string;
+    sender: "user" | "bot";
+    timestamp: Date;
+    sourceDocuments?: any[];
+    metadata?: Record<string, unknown>;
+    isError?: boolean;
+  };
+
+  const [messages, setMessages] = useState<Message[]>([]);
   const [inputMessage, setInputMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [sessionId] = useState(
@@ -52,18 +62,12 @@ export default function useLawBridgeChat() {
   const [clearChatHistoryMutation] = useMutation(CLEAR_CHAT_HISTORY);
   const { data, loading, error, refetch } = useQuery(GET_CHAT_HISTORY_BY_USER, {
     variables: { userId: user?.id || "" },
-    skip: !user?.id,
-    fetchPolicy: "cache-and-network",
-  });
-
-  useEffect(() => {
-    if (data?.getChatHistoryByUser) {
-      const history = [...data.getChatHistoryByUser].sort(
-        (a, b) =>
-          new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
-      );
-      const loadedMessages: any[] = [];
-      history.forEach((item: any, index: number) => {
+      const loadedMessages: Message[] = [];
+      history.forEach((item: {
+        userMessage: string;
+        botResponse: string;
+        createdAt: string;
+      }, index: number) => {
         loadedMessages.push({
           id: index * 2,
           text: item.userMessage,
@@ -72,6 +76,16 @@ export default function useLawBridgeChat() {
         });
         let botText = item.botResponse;
         try {
+          const parsed = JSON.parse(botText);
+          botText = parsed.answer || JSON.stringify(parsed);
+        } catch {}
+        loadedMessages.push({
+          id: index * 2 + 1,
+          text: botText,
+          sender: "bot",
+          timestamp: new Date(item.createdAt),
+        });
+      });
           const parsed = JSON.parse(botText);
           botText = parsed.answer || JSON.stringify(parsed);
         } catch {}
@@ -150,21 +164,7 @@ export default function useLawBridgeChat() {
       };
       setMessages((prev) => [...prev, botMessage]);
       await saveChatHistory({
-        variables: {
-          input: {
-            userId: String(user.id),
-            sessionId: String(sessionId),
-            userMessage: String(userMessage.text).trim(),
-            botResponse: JSON.stringify(botMessage.text),
-          },
-        },
-      });
-      setStats((prev) => ({
-        ...prev,
-        messageCount: prev.messageCount + 1,
-        lastMessageTime: new Date().toISOString(),
-      }));
-    } catch (error: any) {
+    } catch {
       setConnectionError("Connection failed");
       setMessages((prev) => [
         ...prev,
@@ -176,6 +176,20 @@ export default function useLawBridgeChat() {
           isError: true,
         },
       ]);
+    } finally {
+      setIsLoading(false);
+    }
+      setConnectionError("Connection failed");
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: Date.now() + 1,
+          text: "I apologize, but I encountered an error processing your request. Please try again.",
+          sender: "bot",
+          timestamp: new Date(),
+    } catch {
+      setConnectionError("Failed to clear chat history");
+    }
     } finally {
       setIsLoading(false);
     }

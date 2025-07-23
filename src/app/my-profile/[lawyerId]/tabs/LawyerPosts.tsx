@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import CreatePost from "@/components/post/CreatePost";
 import { PostCard } from "./post";
 
 interface CommentType {
@@ -23,7 +22,7 @@ export interface PostType {
 }
 
 export const LawyerPosts = () => {
-  const [posts, setPosts] = useState<PostType[]>([
+  const [posts, ] = useState<PostType[]>([
     {
       id: 1,
       title: "Автомашин хураалгах үед юу хийх вэ?",

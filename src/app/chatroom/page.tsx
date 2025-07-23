@@ -1,5 +1,4 @@
 "use client";
-import { useParams } from "next/navigation";
 import useChatRoomState from "@/app/chatroom/hooks/useChatRoomState";
 import ChatRoom from "@/components/chat/ChatRoom";
 import ConnectionStatus from "@/components/chat/ConnectionStatus";

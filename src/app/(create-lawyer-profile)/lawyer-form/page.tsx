@@ -9,7 +9,6 @@ import { schemaLawyerProfile } from "./actions/schema";
 import FirstCardForLawyer from "./components/cards/FirstCardForLawyer";
 import SecondCardForLawyer from "./components/cards/SecondCardForLawyer";
 import ThirdCardForLawyer from "./components/cards/ThirdCardForLawyer";
-import { RedirectToSignUp, SignedIn, SignedOut } from "@clerk/nextjs";
 
 export type FormData = z.infer<typeof schemaLawyerProfile>;
 
@@ -60,27 +59,6 @@ const LawyerRegistrationForm = () => {
     SecondCardForLawyer,
     ThirdCardForLawyer,
   ][currentStep];
-
-  const propsForStep: Record<number, any> = {
-    0: {
-      register: methods.register,
-      errors,
-      setValue: methods.setValue,
-      goToNextStep,
-    },
-    1: {
-      errors,
-      goToNextStep,
-      goToPreviousStep,
-    },
-    2: {
-      errors,
-      watchedSpecializations,
-      setValue: methods.setValue,
-      isSubmitting,
-      goToPreviousStep,
-    },
-  };
 
   const onSubmit = (data: FormData) => {
     console.log("Form submitted:", data);

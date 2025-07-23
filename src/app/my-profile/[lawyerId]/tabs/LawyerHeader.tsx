@@ -32,7 +32,7 @@ export const LawyerProfileHeader = ({ lawyerId }: LawyerProfileHeaderProps) => {
   const [localPreview, setLocalPreview] = useState<string | null>(null);
 
   const { data, loading } = useQuery(GET_LAWYER_BY_ID_QUERY, {
-    variables: { lawyerId: "687f6d16eceb8aaddbd4e14d" },
+    variables: { lawyerId },
   });
 
   const lawyer = data?.getLawyerById;

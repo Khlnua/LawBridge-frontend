@@ -21,6 +21,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ success: true });
   } catch (error) {
+    console.error("OTP илгээхэд алдаа гарлаа:", error);
     return NextResponse.json({ message: "OTP илгээхэд алдаа гарлаа" }, { status: 500 });
   }
 }
