@@ -70,8 +70,7 @@ const LawyerCard = ({ id, name, status, avatarImage, specialty, rating, reviewCo
       <div className="w-full mb-5 text-left pl-4 mt-auto">
         <p className="flex items-center text-gray-700 text-sm mb-1.5">
           <span className={`mr-1.5 text-lg flex ${status?.toLowerCase() === "verified" ? "text-green-500" : "text-yellow-500"}`}>
-            {status}
-            {rating} ({reviewCount})
+            {status ? status : rating + " " + reviewCount}
           </span>
         </p>
       </div>
