@@ -6,7 +6,7 @@ import { useSignIn } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import OtpInput from "@/components/OtpInput";
 import Image from "next/image";
 import Link from "next/link";
@@ -16,14 +16,14 @@ export default function LoginPage() {
   const [phoneOrEmail, setPhoneOrEmail] = useState("");
   const [otp, setOtp] = useState("");
   const [pending, setPending] = useState(false);
-  const [error, setError] = useState("");
+  const [errorMsg, setErrorMsg] = useState("");
   const { signIn, setActive } = useSignIn();
 
   const isPhone = phoneOrEmail.startsWith("+976");
 
   const sendOtpOrStartSignIn = async (e: FormEvent) => {
     e.preventDefault();
-    setError("");
+    setErrorMsg("");
 
     if (isPhone) {
       
@@ -37,12 +37,12 @@ export default function LoginPage() {
         setPending(true);
       } else {
         const data = await res.json();
-        setError(data.message || "OTP илгээхэд алдаа гарлаа.");
+        setErrorMsg(data.message || "OTP илгээхэд алдаа гарлаа.");
       }
     } else {
       
       if (!signIn) {
-        setError("SignIn функц ачаалагдаагүй байна.");
+        setErrorMsg("SignIn функц ачаалагдаагүй байна.");
         return;
       }
 
@@ -55,18 +55,22 @@ export default function LoginPage() {
         if (result.status === "needs_first_factor") {
           setPending(true);
         } else {
-          setError("Нэвтрэхэд алдаа гарлаа.");
+          setErrorMsg("Нэвтрэхэд алдаа гарлаа.");
         }
-      } catch (err: any) {
-        console.error("Email login error:", err);
-        setError(err.errors?.[0]?.message || "Нэвтрэхэд алдаа гарлаа.");
+      } catch (err: unknown) {
+        if (err instanceof Error) {
+          console.error("Email login error:", err.message);
+          setErrorMsg("Email login error: " + err.message);
+        } else {
+          setErrorMsg("Email login error");
+        }
       }
     }
   };
 
   const verifyOtpOrEmailCode = async (e: FormEvent) => {
     e.preventDefault();
-    setError("");
+    setErrorMsg("");
 
     if (isPhone) {
       // Утасны OTP шалгах
@@ -80,7 +84,7 @@ export default function LoginPage() {
 
       if (res.ok) {
         if (!setActive) {
-          setError("Системийн алдаа: setActive боломжгүй байна.");
+          setErrorMsg("Системийн алдаа: setActive боломжгүй байна.");
           return;
         }
 
@@ -89,15 +93,15 @@ export default function LoginPage() {
           router.push("/");
         } catch (err) {
           console.error("setActive error:", err);
-          setError("Нэвтрэхэд алдаа гарлаа.");
+          setErrorMsg("Нэвтрэхэд алдаа гарлаа.");
         }
       } else {
-        setError(data.message || "OTP шалгахад алдаа гарлаа.");
+        setErrorMsg(data.message || "OTP шалгахад алдаа гарлаа.");
       }
     } else {
       
       if (!signIn) {
-        setError("SignIn функц ачаалагдаагүй байна.");
+        setErrorMsg("SignIn функц ачаалагдаагүй байна.");
         return;
       }
 
@@ -111,11 +115,15 @@ export default function LoginPage() {
           await setActive?.({ session: result.createdSessionId });
           router.push("/");
         } else {
-          setError("Код шалгахад алдаа гарлаа.");
+          setErrorMsg("Код шалгахад алдаа гарлаа.");
         }
-      } catch (err: any) {
-        console.error("Code verification error:", err);
-        setError(err.errors?.[0]?.message || "Код шалгахад алдаа гарлаа.");
+      } catch (err: unknown) {
+        if (err instanceof Error) {
+          console.error("Code verification error:", err.message);
+          setErrorMsg("Код шалгахад алдаа гарлаа: " + err.message);
+        } else {
+          setErrorMsg("Код шалгахад алдаа гарлаа.");
+        }
       }
     }
   };
@@ -165,11 +173,14 @@ export default function LoginPage() {
         </Link>
         <div className="text-sm text-center mt-4">
           Шинэ хэрэглэгч үү?{" "}
-          <a href="/sign-up/user" className="underline text-blue-600">
+          <Link href="/sign-up/user" className="underline text-blue-600">
             Бүртгүүлэх
-          </a>
+          </Link>
         </div>
       </form>
+      {errorMsg && (
+        <div className="text-red-600 text-sm text-center mt-2">{errorMsg}</div>
+      )}
     </div>
   </Card>
 </div>)

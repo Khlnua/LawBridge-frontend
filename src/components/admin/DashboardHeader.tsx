@@ -1,6 +1,6 @@
 "use client";
 import { useQuery, gql } from "@apollo/client";
-import { Calendar, MessageCircle, Users, FileText } from "lucide-react";
+import { Calendar, MessageCircle, FileText } from "lucide-react";
 
 const GET_APPOINTMENTS = gql`
   query GetAppointments {

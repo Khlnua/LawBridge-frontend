@@ -9,9 +9,12 @@ documents:
 generates:
   ./src/generated/index.ts:
     config:
+      scalars:
+      Date: string
       reactApolloVersion: 3
       withHooks: true
     plugins:
       - "typescript"
       - "typescript-operations"
       - "typescript-react-apollo"
+      

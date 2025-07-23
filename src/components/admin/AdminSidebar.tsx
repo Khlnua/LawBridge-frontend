@@ -3,13 +3,10 @@ import {
   LayoutDashboard,
   Users,
   Gavel,
-  Bell,
-  LogOut
 } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
-  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
@@ -17,8 +14,6 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
 
 type AdminSidebarProps = {
   activeSection: string;

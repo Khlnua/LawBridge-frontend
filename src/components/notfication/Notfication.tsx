@@ -58,6 +58,15 @@ const NOTIFICATION_LABELS = {
   REVIEW_RECEIVED: "Review Received",
 };
 
+interface Notification {
+  id: string;
+  recipientId: string;
+  type: "LAWYER_APPROVED" | "APPOINTMENT_CREATED" | "APPOINTMENT_REMINDER" | "APPOINTMENT_STARTED" | "REVIEW_RECEIVED";
+  content: string;
+  read: boolean;
+  createdAt: string;
+}
+
 export default function Notfication() {
   const [showUnreadOnly, setShowUnreadOnly] = useState(false);
   const { data, loading, error, refetch } = useQuery(GET_NOTIFICATIONS, {
@@ -68,8 +77,8 @@ export default function Notfication() {
   const [markAllAsRead] = useMutation(MARK_ALL_AS_READ);
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
 
-  const notifications = data?.myNotifications || [];
-  const unreadCount = notifications.filter((n: any) => !n.read).length;
+  const notifications: Notification[] = data?.myNotifications || [];
+  const unreadCount = notifications.filter((n: Notification) => !n.read).length;
 
   const handleMarkAsRead = async (id: string) => {
     await markAsRead({ variables: { notificationId: id } });
@@ -143,10 +152,10 @@ export default function Notfication() {
             <div className="bg-white rounded-xl p-8 shadow-lg border border-slate-200 text-center">
               <Bell className="h-10 w-10 text-slate-400 mx-auto mb-2" />
               <h3 className="text-lg font-semibold text-slate-700 mb-1">No Notifications</h3>
-              <p className="text-slate-500">You're all caught up!</p>
+              <p className="text-slate-500">You&apos;re all caught up!</p>
             </div>
           ) : (
-            notifications.map((n: any) => (
+            notifications.map((n: Notification) => (
               <div
                 key={n.id}
                 className={`flex items-start gap-4 bg-white rounded-xl shadow border border-slate-200 p-4 transition-all duration-200 ${n.read ? "opacity-70" : ""}`}

@@ -1,7 +1,6 @@
 "use client";
 
 import { Button, Badge } from "@/components/ui";
-import { Star } from "lucide-react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 

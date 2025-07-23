@@ -120,7 +120,7 @@ export default function DashBoardCharts() {
               outerRadius={70}
               label
             >
-              {lawyerStatusData.map((entry, idx) => (
+              {lawyerStatusData.map((entry) => (
                 <Cell
                   key={`cell-${entry.status}`}
                   fill={STATUS_COLORS[entry.status as keyof typeof STATUS_COLORS] || "#a3a3a3"}
