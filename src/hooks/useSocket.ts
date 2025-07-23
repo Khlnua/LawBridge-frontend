@@ -28,7 +28,7 @@ export const useSocket = (): UseSocketReturn => {
         }
 
         // Create socket connection
-        const newSocket = io("http://localhost:4000", {
+        const newSocket = io("https://lawbridge-server.onrender.com", {
           path: "/socket.io",
           auth: {
             token: token,

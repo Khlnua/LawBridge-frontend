@@ -22,6 +22,8 @@ const RecommendLawyers = () => {
         {TestingFakeLawyers.slice(0, 3).map((lawyer, index) => (
           <LawyerCard
             key={index}
+            id={String(index)} // Use index as a string id
+            status={lawyer.statusText || ""}
             name={lawyer.name}
             specialty={lawyer.specialty}
             rating={lawyer.rating}

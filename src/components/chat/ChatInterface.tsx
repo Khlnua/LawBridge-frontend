@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { LiveKitRoom } from "@livekit/components-react";
 import { VideoCallModal } from "./VideoCallModal";
 import { ChatHeader } from "./ChatHeader";
-import Chat from "./Chat";
+// import { Chat } from "./Chat";
 
 import "@livekit/components-styles";
 
@@ -19,7 +19,11 @@ interface ChatInterfaceProps {
   };
 }
 
-const ChatInterface = ({ currentUserId, roomName, otherUser }: ChatInterfaceProps) => {
+const ChatInterface = ({
+  currentUserId,
+  roomName,
+  otherUser,
+}: ChatInterfaceProps) => {
   const [token, setToken] = useState<string | null>(null);
   const [activeCall, setActiveCall] = useState<"video" | "audio" | null>(null);
   const [isVideoCallOpen, setIsVideoCallOpen] = useState(false);
@@ -95,11 +99,11 @@ const ChatInterface = ({ currentUserId, roomName, otherUser }: ChatInterfaceProp
               isVideoCallOpen ? "w-full md:w-1/3 h-1/2 md:h-auto" : "w-full"
             }`}
           >
-            <Chat
+            {/* <Chat
               currentUserId={currentUserId}
               targetUserId={otherUser.id}
               chatRoomId={roomName}
-            />
+            /> */}
           </div>
         </div>
       </div>

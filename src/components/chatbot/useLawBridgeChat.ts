@@ -37,7 +37,6 @@ type Message = {
   text: string;
   sender: "user" | "bot";
   timestamp: Date;
-  sourceDocuments?: any[];
   metadata?: Record<string, unknown>;
   isError?: boolean;
 };
@@ -135,7 +134,8 @@ export default function useLawBridgeChat() {
       };
       const response = await fetch(
         `${
-          process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000"
+          process.env.NEXT_PUBLIC_API_URL ||
+          "https://lawbridge-server.onrender.com"
         }/api/chat`,
         {
           method: "POST",
@@ -159,7 +159,6 @@ export default function useLawBridgeChat() {
           "I received your message but couldn't generate a response.",
         sender: "bot",
         timestamp: new Date(),
-        sourceDocuments: data.sourceDocuments || [],
         metadata: data.metadata || {},
       };
       setMessages((prev) => [...prev, botMessage]);

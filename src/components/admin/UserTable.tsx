@@ -10,8 +10,6 @@ import {
   Star,
   Search,
   MoreVertical,
-  Eye,
-  Edit,
   Grid,
   List,
   SortAsc,
@@ -90,7 +88,7 @@ export default function LawyersManagementDashboard() {
 
   // Filter and sort logic
   const filteredAndSortedLawyers = useMemo(() => {
-    let filtered = lawyers.filter((lawyer) => {
+    const filtered = lawyers.filter((lawyer) => {
       const matchesSearch =
         `${lawyer.firstName} ${lawyer.lastName}`
           .toLowerCase()

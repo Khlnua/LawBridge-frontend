@@ -16,8 +16,28 @@ import { useQuery } from "@apollo/client";
 import { GET_ALL_LAWYERS } from "@/graphql/lawyer";
 import Link from "next/link";
 
+// Define types for category and lawyer
+interface Category {
+  id: string;
+  categoryName: string;
+}
+
+interface Lawyer {
+  id: string;
+  lawyerId: string;
+  firstName: string;
+  lastName: string;
+  profilePicture?: string;
+  status?: string;
+  specialty?: string;
+  rating?: number;
+  reviewCount?: number;
+}
+
 const FilteredByCategories = () => {
-  const [selectedSpecialty, setSelectedSpecialty] = useState<string | null>(null);
+  const [selectedSpecialty, setSelectedSpecialty] = useState<string | null>(
+    null
+  );
 
   const { data } = useGetAdminSpecializationsQuery();
   const {
@@ -29,9 +49,12 @@ const FilteredByCategories = () => {
   if (allLawyersLoading) return <div>Түр хүлээнэ үү...</div>;
   if (allLawyersError) return <div>Алдаа гарлаа.</div>;
 
-  const lawyers = [...(allLawyersData?.getLawyers || []), ...TestingFakeLawyers];
+  const lawyers = [
+    ...(allLawyersData?.getLawyers || []),
+    ...TestingFakeLawyers,
+  ];
 
-  const filteredLawyers = lawyers.filter((lawyer: any) => {
+  const filteredLawyers = lawyers.filter((lawyer: Lawyer) => {
     if (!selectedSpecialty) return true;
 
     // Real lawyers: specialization is an array of objects
@@ -41,7 +64,7 @@ const FilteredByCategories = () => {
       );
     }
 
-    // Fake lawyers: specialty is array of strings
+ 
     if (Array.isArray(lawyer.specialty)) {
       return lawyer.specialty.includes(selectedSpecialty);
     }
@@ -64,18 +87,25 @@ const FilteredByCategories = () => {
       <div className="w-70 h-200 flex flex-col space-y-5 fixed left-20 top-30">
         <p className="text-lg font-semibold text-[#333]">Шүүлтүүр</p>
 
-        <Select onValueChange={handleSpecaltyChange} value={selectedSpecialty || ""}>
+        <Select
+          onValueChange={handleSpecaltyChange}
+          value={selectedSpecialty || ""}
+        >
           <SelectTrigger className="w-[180px]">
             <SelectValue placeholder="Чиглэл сонгоно уу" />
           </SelectTrigger>
           <SelectContent className="bg-white">
             <SelectGroup>
-              <SelectItem value="Бүх чиглэл" className="cursor-pointer hover:bg-gray-100">
+              <SelectItem
+                value="Бүх чиглэл"
+                className="cursor-pointer hover:bg-gray-100"
+              >
                 Бүх чиглэл
               </SelectItem>
             </SelectGroup>
             <SelectGroup>
               {specializations.map((spec: { id: string; categoryName: string }) => (
+
                 <SelectItem
                   key={spec.id}
                   value={spec.categoryName}
@@ -90,28 +120,19 @@ const FilteredByCategories = () => {
       </div>
 
       {filteredLawyers?.length > 0 ? (
-        filteredLawyers.map((lawyer: any, index) => {
-          const lawyerId = lawyer.lawyerId || lawyer._id || index;
 
-          return (
-            <Link
-            key={lawyerId}
-            href={`/lawyer/${lawyerId}`}
-            className="block hover:opacity-90 transition-all"
-            >
-            <LawyerCard
-              name={lawyer.firstName + " " + lawyer.lastName}
-              avatarImage={lawyer.profilePicture}
-              status={lawyer.status}
-              specialty={lawyer.specialty}
-              rating={lawyer.rating}
-              reviewCount={lawyer.reviewCount}
-              hourlyRate={lawyer.hourlyRate}
-            />
-          </Link>
-
-          );
-        })
+        filteredLawyers.map((lawyer: Lawyer, index) => (
+          <LawyerCard
+            id={lawyer.lawyerId}
+            key={lawyer.lawyerId || index}
+            name={lawyer.firstName + " " + lawyer.lastName}
+            avatarImage={lawyer.profilePicture || ""}
+            status={lawyer.status || ""}
+            specialty={lawyer.specialty ? [lawyer.specialty] : []}
+            rating={lawyer.rating ?? 0}
+            reviewCount={lawyer.reviewCount ?? 0}
+          />
+        ))
       ) : (
         <p className="text-gray-600 text-lg md:col-span-full text-center">
           Энэ чиглэлээр хуульч олдсонгүй.

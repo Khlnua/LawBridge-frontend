@@ -3,13 +3,10 @@ import {
   LayoutDashboard,
   Users,
   Gavel,
-  Bell,
-  LogOut
 } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
-  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
@@ -17,8 +14,6 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
 
 type AdminSidebarProps = {
   activeSection: string;
@@ -46,16 +41,11 @@ const menuItems = [
 export function AdminSidebar({ activeSection, onSectionChange }: AdminSidebarProps) {
   return (
     <Sidebar className="border-r bg-white">
-      <div className="p-6 border-b">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-            <LayoutDashboard className="w-5 h-5 text-white" />
-          </div>
-          <span className="text-xl font-bold">LawBridge</span>
-        </div>
+      <div className="p-10">
+    
       </div>
       
-      <SidebarContent className="px-4 py-6">
+      <SidebarContent className="px-4 py-10">
         <SidebarGroup>
           <SidebarGroupLabel className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4">
             Үндсэн цэс
@@ -82,21 +72,6 @@ export function AdminSidebar({ activeSection, onSectionChange }: AdminSidebarPro
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter className="p-4 border-t">
-        <div className="flex items-center gap-3 p-3 rounded-lg bg-gray-50">
-          <Avatar className="w-10 h-10">
-            <AvatarImage src="/placeholder.svg" />
-            <AvatarFallback className="bg-blue-600 text-white">JD</AvatarFallback>
-          </Avatar>
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-gray-900 truncate">Админ</p>
-            <p className="text-xs text-gray-500 truncate">Тавтай Морил</p>
-          </div>
-          <Button variant="ghost" size="sm" className="p-1">
-            <LogOut className="w-4 h-4" />
-          </Button>
-        </div>
-      </SidebarFooter>
     </Sidebar>
   );
 }
