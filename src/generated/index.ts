@@ -172,7 +172,7 @@ export type CreateReviewInput = {
 };
 
 export type CreateSpecializationInput = {
-  lawyerId?: InputMaybe<Scalars['ID']['input']>;
+  lawyerId: Scalars['ID']['input'];
   pricePerHour?: InputMaybe<Scalars['Int']['input']>;
   specializationId: Scalars['ID']['input'];
   subscription: Scalars['Boolean']['input'];
@@ -275,7 +275,6 @@ export type Message = {
 export type Mutation = {
   __typename?: 'Mutation';
   adminCreateSpecialization: AdminSpecialization;
-  clearChatHistory: Scalars['Boolean']['output'];
   createAchievement: Achievement;
   createAppointment?: Maybe<Appointment>;
   createChatRoom?: Maybe<Scalars['String']['output']>;
@@ -312,11 +311,6 @@ export type Mutation = {
 
 export type MutationAdminCreateSpecializationArgs = {
   input: AdminCreateSpecializationInput;
-};
-
-
-export type MutationClearChatHistoryArgs = {
-  userId: Scalars['String']['input'];
 };
 
 
@@ -511,7 +505,7 @@ export type Post = {
   createdAt: Scalars['Date']['output'];
   id: Scalars['ID']['output'];
   lawyerId: Scalars['ID']['output'];
-  specialization: Array<AdminSpecialization>;
+  specialization: Array<Specialization>;
   title: Scalars['String']['output'];
   type: MediaType;
   updatedAt?: Maybe<Scalars['Date']['output']>;

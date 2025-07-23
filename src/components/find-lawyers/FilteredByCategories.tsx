@@ -112,7 +112,10 @@ const FilteredByCategories = () => {
       {filteredLawyers?.length > 0 ? (
         filteredLawyers.map((lawyer: Lawyer, index) => (
           <LawyerCard
-            key={lawyer.id || index}
+
+            id={lawyer.lawyerId}
+            key={lawyer.lawyerId || index}
+
             name={lawyer.firstName + " " + lawyer.lastName}
             avatarImage={lawyer.profilePicture || ""}
             status={lawyer.status || ""}
