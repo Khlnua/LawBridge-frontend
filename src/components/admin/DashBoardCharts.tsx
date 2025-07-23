@@ -1,75 +1,151 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
+"use client";
+import { useQuery, gql } from "@apollo/client";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+  Legend,
+  LineChart,
+  Line,
+  CartesianGrid,
+} from "recharts";
 
-const barData = [
-  { name: "Нэг сар", revenue: 4000, orders: 240 },
-  { name: "Хоёр сар", revenue: 3000, orders: 139 },
-  { name: "Гурван сар", revenue: 2000, orders: 980 },
-  { name: "Дөрвөн сар", revenue: 2780, orders: 390 },
-  { name: "Таван сар", revenue: 1890, orders: 480 },
-  { name: "Зургаан сар", revenue: 2390, orders: 380 },
-];
+const GET_APPOINTMENTS = gql`
+  query GetAppointments {
+    getAppointments {
+      createdAt
+      status
+    }
+  }
+`;
 
-const pieData = [
-  { name: "Компьютер", value: 400, color: "#3B82F6" },
-  { name: "Мобайл", value: 300, color: "#10B981" },
-  { name: "Таблет", value: 200, color: "#F59E0B" },
-  { name: "Бусад", value: 100, color: "#EF4444" },
-];
+const GET_LAWYERS = gql`
+  query GetLawyers {
+    getLawyers {
+      _id
+      status
+    }
+  }
+`;
 
-export function DashboardCharts() {
+const GET_POSTS = gql`
+  query GetPosts {
+    getPosts {
+      createdAt
+    }
+  }
+`;
+
+const STATUS_COLORS = {
+  VERIFIED: "#22c55e",
+  PENDING: "#f59e42",
+  REJECTED: "#ef4444",
+};
+
+function groupByMonth(data: { createdAt: string }[]) {
+  const result: Record<string, number> = {};
+  data.forEach((item) => {
+    const date = new Date(item.createdAt);
+    const key = `${date.getFullYear()}-${(date.getMonth() + 1)
+      .toString()
+      .padStart(2, "0")}`;
+    result[key] = (result[key] || 0) + 1;
+  });
+  return Object.entries(result)
+    .map(([month, count]) => ({ month, count }))
+    .sort((a, b) => a.month.localeCompare(b.month));
+}
+
+export default function DashBoardCharts() {
+  const { data: appointmentsData } = useQuery(GET_APPOINTMENTS);
+  const { data: lawyersData } = useQuery(GET_LAWYERS);
+  const { data: postsData } = useQuery(GET_POSTS);
+
+  // Appointments per month
+  const appointmentsPerMonth = appointmentsData?.getAppointments
+    ? groupByMonth(appointmentsData.getAppointments)
+    : [];
+
+  // Posts per month
+  const postsPerMonth = postsData?.getPosts
+    ? groupByMonth(postsData.getPosts)
+    : [];
+
+  // Lawyer status distribution
+  const lawyerStatusCounts = lawyersData?.getLawyers
+    ? lawyersData.getLawyers.reduce(
+        (acc: Record<string, number>, l: { status: string }) => {
+          acc[l.status] = (acc[l.status] || 0) + 1;
+          return acc;
+        },
+        {}
+      )
+    : {};
+  const lawyerStatusData = Object.entries(lawyerStatusCounts).map(
+    ([status, value]) => ({ status, value })
+  );
+
   return (
-    <div className="space-y-6">
-      <Card className="bg-white border shadow-sm">
-        <CardHeader>
-          <CardTitle>Нийт орлого</CardTitle>
-          <CardDescription>Сар бүрийн орлого болон захиалгын статистик</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={barData}>
-              <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
-              <XAxis dataKey="name" tick={{ fontSize: 12 }} />
-              <YAxis tick={{ fontSize: 12 }} />
-              <Tooltip 
-                contentStyle={{ 
-                  backgroundColor: 'white', 
-                  border: '1px solid #e5e7eb', 
-                  borderRadius: '8px',
-                  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
-                }} 
-              />
-              <Bar dataKey="revenue" fill="#3B82F6" radius={4} />
-            </BarChart>
-          </ResponsiveContainer>
-        </CardContent>
-      </Card>
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+      {/* Appointments per Month Bar Chart */}
+      <div className="bg-white rounded-xl p-6 shadow border border-slate-200">
+        <h3 className="text-lg font-semibold mb-4 text-slate-800">Appointments per Month</h3>
+        <ResponsiveContainer width="100%" height={220}>
+          <BarChart data={appointmentsPerMonth}>
+            <XAxis dataKey="month" stroke="#64748b" />
+            <YAxis allowDecimals={false} stroke="#64748b" />
+            <Tooltip />
+            <Bar dataKey="count" fill="#2563eb" radius={[4, 4, 0, 0]} />
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
 
-      <Card className="bg-white border shadow-sm">
-        <CardHeader>
-          <CardTitle>Хандагч</CardTitle>
-          <CardDescription>Хэрэглэгчийн хандалт төхөөрөмжийн төрөл</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <ResponsiveContainer width="100%" height={250}>
-            <PieChart>
-              <Pie
-                data={pieData}
-                cx="50%"
-                cy="50%"
-                outerRadius={80}
-                dataKey="value"
-                label={({ name, percent }) => `${name} ${((percent ?? 0) * 100).toFixed(0)}%`}
-              >
-                {pieData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={entry.color} />
-                ))}
-              </Pie>
-              <Tooltip />
-            </PieChart>
-          </ResponsiveContainer>
-        </CardContent>
-      </Card>
+      {/* Lawyer Status Pie Chart */}
+      <div className="bg-white rounded-xl p-6 shadow border border-slate-200">
+        <h3 className="text-lg font-semibold mb-4 text-slate-800">Lawyer Status Distribution</h3>
+        <ResponsiveContainer width="100%" height={220}>
+          <PieChart>
+            <Pie
+              data={lawyerStatusData}
+              dataKey="value"
+              nameKey="status"
+              cx="50%"
+              cy="50%"
+              outerRadius={70}
+              label
+            >
+              {lawyerStatusData.map((entry, idx) => (
+                <Cell
+                  key={`cell-${entry.status}`}
+                  fill={STATUS_COLORS[entry.status as keyof typeof STATUS_COLORS] || "#a3a3a3"}
+                />
+              ))}
+            </Pie>
+            <Legend />
+            <Tooltip />
+          </PieChart>
+        </ResponsiveContainer>
+      </div>
+
+      {/* Posts per Month Line Chart */}
+      <div className="bg-white rounded-xl p-6 shadow border border-slate-200">
+        <h3 className="text-lg font-semibold mb-4 text-slate-800">Posts per Month</h3>
+        <ResponsiveContainer width="100%" height={220}>
+          <LineChart data={postsPerMonth}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="month" stroke="#64748b" />
+            <YAxis allowDecimals={false} stroke="#64748b" />
+            <Tooltip />
+            <Line type="monotone" dataKey="count" stroke="#a21caf" strokeWidth={2} dot={{ r: 3 }} />
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
     </div>
   );
 }

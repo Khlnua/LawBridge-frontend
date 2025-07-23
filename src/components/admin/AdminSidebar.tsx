@@ -3,8 +3,6 @@ import {
   LayoutDashboard,
   Users,
   Gavel,
-  Settings,
-  FileText,
   Bell,
   LogOut
 } from "lucide-react";
@@ -34,29 +32,14 @@ const menuItems = [
     icon: LayoutDashboard,
   },
   {
-    title: "Хэрэглэгчид",
-    section: "users",
+    title: "Хуульчид",
+    section: "lawyers",
     icon: Users,
   },
   {
     title: "Хуульчийн баталгаажуулалт",
     section: "lawyeraprroval",
     icon: Gavel,
-  },
-  {
-    title: "Тайлан",
-    section: "report",
-    icon: FileText,
-  },
-  {
-    title: "Мэдэгдлүүд",
-    section: "notifications",
-    icon: Bell,
-  },
-  {
-    title: "Тохиргоо",
-    section: "settings",
-    icon: Settings,
   },
 ];
 
