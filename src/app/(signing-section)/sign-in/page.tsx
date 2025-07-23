@@ -5,138 +5,68 @@ import { useState, FormEvent } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import OtpInput from "@/components/OtpInput";
 import { ClerkAPIError } from "@clerk/types";
+import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
   const { signIn, isLoaded, setActive } = useSignIn();
+  const router = useRouter();
   const [identifier, setIdentifier] = useState("");
   const [otpCode, setOtpCode] = useState("");
   const [pending, setPending] = useState(false);
-
   const [errorMsg, setErrorMsg] = useState("");
-  const { signIn, setActive } = useSignIn();
 
   const isPhone = /^\+?[0-9]{8,15}$/.test(identifier);
   const strategy = isPhone ? "phone_code" : "email_code";
 
-
   const handleIdentifierSubmit = async (e: FormEvent) => {
     e.preventDefault();
-
-    if (!isLoaded) return;
-
-
+    setErrorMsg("");
+    if (!isLoaded || !signIn) return;
     try {
       const res = await signIn.create({
         identifier,
         strategy,
       });
-
       if (res.status === "needs_first_factor") {
         setPending(true);
-
       } else {
-        const data = await res.json();
-        setErrorMsg(data.message || "OTP илгээхэд алдаа гарлаа.");
-      }
-    } else {
-      
-      if (!signIn) {
-        setErrorMsg("SignIn функц ачаалагдаагүй байна.");
-        return;
-      }
-
-      try {
-        const result = await signIn.create({
-          identifier: phoneOrEmail,
-          strategy: "email_code",
-        });
-
-        if (result.status === "needs_first_factor") {
-          setPending(true);
-        } else {
-          setErrorMsg("Нэвтрэхэд алдаа гарлаа.");
-        }
-      } catch (err: unknown) {
-        if (err instanceof Error) {
-          console.error("Email login error:", err.message);
-          setErrorMsg("Email login error: " + err.message);
-        } else {
-          setErrorMsg("Email login error");
-        }
-
-
+        // @ts-expect-error: Clerk may not always return .json()
+        const data = typeof res.json === "function" ? await res.json() : res;
+        setErrorMsg(data?.message || "OTP илгээхэд алдаа гарлаа.");
       }
     } catch (err) {
       const error = err as ClerkAPIError;
-      setError(error?.message || "Код илгээхэд алдаа гарлаа.");
+      setErrorMsg(error?.message || "Код илгээхэд алдаа гарлаа.");
     }
   };
 
   const handleOTPSubmit = async (e: FormEvent) => {
     e.preventDefault();
-
-    if (!isLoaded) return;
     setErrorMsg("");
-
-
+    if (!isLoaded || !signIn) return;
     try {
       const res = await signIn.attemptFirstFactor({
         strategy,
         code: otpCode,
       });
-
-      const data = await res.json();
-
-      if (res.ok) {
+      // @ts-expect-error: Clerk may not always return .json()
+      const data = typeof res.json === "function" ? await res.json() : res;
+      if (res.status === "complete") {
         if (!setActive) {
           setErrorMsg("Системийн алдаа: setActive боломжгүй байна.");
           return;
         }
-
-        try {
-          await setActive({ session: data.sessionId });
-          router.push("/");
-        } catch (err) {
-          console.error("setActive error:", err);
-          setErrorMsg("Нэвтрэхэд алдаа гарлаа.");
-        }
+        await setActive({ session: data.sessionId || data.createdSessionId });
+        router.push("/");
       } else {
-        setErrorMsg(data.message || "OTP шалгахад алдаа гарлаа.");
-      }
-    } else {
-      
-      if (!signIn) {
-        setErrorMsg("SignIn функц ачаалагдаагүй байна.");
-        return;
-      }
-
-      try {
-        const result = await signIn.attemptFirstFactor({
-          strategy: "email_code",
-          code: otp,
-        });
-
-        if (result.status === "complete") {
-          await setActive?.({ session: result.createdSessionId });
-          router.push("/");
-        } else {
-          setErrorMsg("Код шалгахад алдаа гарлаа.");
-        }
-      } catch (err: unknown) {
-        if (err instanceof Error) {
-          console.error("Code verification error:", err.message);
-          setErrorMsg("Код шалгахад алдаа гарлаа: " + err.message);
-        } else {
-          setErrorMsg("Код шалгахад алдаа гарлаа.");
-        }
-
+        setErrorMsg(data?.message || "OTP шалгахад алдаа гарлаа.");
       }
     } catch (err) {
       const error = err as ClerkAPIError;
-      setError(error?.message || "OTP код буруу байна.");
+      setErrorMsg(error?.message || "OTP код буруу байна.");
     }
   };
 
@@ -150,7 +80,6 @@ export default function LoginPage() {
               alt="Image"
               className="absolute inset-0 h-full w-full object-cover"
             />
-
           </div>
           <div className="p-6 md:p-8 flex flex-col justify-center">
             <form
@@ -163,7 +92,6 @@ export default function LoginPage() {
                   Login to your LawBridge account
                 </p>
               </div>
-
               {!pending ? (
                 <>
                   <div className="grid gap-3">
@@ -198,9 +126,8 @@ export default function LoginPage() {
                   </Button>
                 </>
               )}
-
-              {error && (
-                <p className="text-sm text-red-500 text-center">{error}</p>
+              {errorMsg && (
+                <p className="text-sm text-red-500 text-center">{errorMsg}</p>
               )}
             </form>
             <div className="flex justify-center text-center text-sm mt-4 gap-1">
@@ -212,7 +139,6 @@ export default function LoginPage() {
           </div>
         </CardContent>
       </Card>
-
     </div>
   );
 }

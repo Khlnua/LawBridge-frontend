@@ -17,7 +17,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
 import {
-  GET_LAWYER_BY_ID_QUERY,
+  GET_LAWYER_BY_LAWYERID_QUERY,
   UPDATE_LAWYER_MUTATION,
 } from "@/graphql/lawyer";
 import { useQuery, useMutation } from "@apollo/client";
@@ -31,7 +31,7 @@ export const LawyerProfileHeader = ({ lawyerId }: LawyerProfileHeaderProps) => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [localPreview, setLocalPreview] = useState<string | null>(null);
 
-  const { data, loading } = useQuery(GET_LAWYER_BY_ID_QUERY, {
+  const { data, loading } = useQuery(GET_LAWYER_BY_LAWYERID_QUERY, {
     variables: { lawyerId },
   });
 

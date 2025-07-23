@@ -2,16 +2,9 @@
 
 import { useState } from "react";
 import { Mail, Phone, Star, Clock, FileText } from "lucide-react";
-import { GET_LAWYER_BY_LAWYERID_QUERY } from "@/graphql/lawyer";
-import { useQuery } from "@apollo/client";
 
-type Props = {
-  params: {
-    id: string;
-  };
-};
 
-const LawyerProfile = ({ params }: Props) => {
+const LawyerProfile = () => {
   // const { id } = params;
 
   const [activeTab, setActiveTab] = useState<"posts" | "reviews" | "book">("posts");
