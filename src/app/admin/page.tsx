@@ -5,8 +5,7 @@ import { useRouter } from "next/navigation"
 const AdminPage = () => {
   const { push } = useRouter();
   return (
-    <div className="flex">AdminPage 
-      <AdminDashboard/> 
+    <div className="flex">      <AdminDashboard/> 
       </div>
   )
 }
