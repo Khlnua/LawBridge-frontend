@@ -6,11 +6,7 @@ const LOCALSTORAGE_KEY = "avatar_image_key";
 const LOCALSTORAGE_EXP = "avatar_image_key_exp";
 const CACHE_MINUTES = 15;
 
-export const useUploadAvatar = ({
-  onUpload,
-}: {
-  onUpload: (key: string) => void;
-}) => {
+export const useUploadAvatar = ({ onUpload }: { onUpload: (key: string) => void }) => {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [imageKey, setImageKey] = useState<string>("");
 
@@ -35,10 +31,7 @@ export const useUploadAvatar = ({
   const [uploading, setUploading] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
 
-  const getPreviewLink = (key: string) =>
-    key
-      ? `/lawyer-form/api/get?key=${encodeURIComponent(key)}&t=${Date.now()}`
-      : "";
+  const getPreviewLink = (key: string) => (key ? `/lawyer-form/api/get?key=${encodeURIComponent(key)}&t=${Date.now()}` : "");
 
   const openBrowse = () => fileInputRef.current?.click();
 
@@ -63,17 +56,30 @@ export const useUploadAvatar = ({
       localStorage.setItem(LOCALSTORAGE_KEY, key);
       localStorage.setItem(LOCALSTORAGE_EXP, exp.toString());
 
-      const timeout = setTimeout(() => {
+      setTimeout(() => {
         deleteImage();
       }, CACHE_MINUTES * 60 * 1000);
 
-      return () => clearTimeout(timeout);
+      return key;
     } catch (err) {
       console.error("Upload failed", err);
       alert("Failed to upload image");
+      return "";
     } finally {
       setUploading(false);
     }
+
+    //   const timeout = setTimeout(() => {
+    //     deleteImage();
+    //   }, CACHE_MINUTES * 60 * 1000);
+
+    //   return () => clearTimeout(timeout);
+    // } catch (err) {
+    //   console.error("Upload failed", err);
+    //   alert("Failed to upload image");
+    // } finally {
+    //   setUploading(false);
+    // }
   };
 
   const handleFileSelect = () => {};

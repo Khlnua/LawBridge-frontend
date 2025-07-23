@@ -6,14 +6,17 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 type LawyerCardProps = {
+  _id?: string;
   name: string;
+  status: string;
+  avatarImage?: string;
   specialty?: string[];
-  rating: number;
-  reviewCount: number;
-  hourlyRate: number[];
+  rating?: number;
+  reviewCount?: number;
+  hourlyRate?: number[];
 };
 
-const LawyerCard = ({ name, specialty, rating, reviewCount, hourlyRate }: LawyerCardProps) => {
+const LawyerCard = ({ name, status, avatarImage, specialty, rating, reviewCount, hourlyRate }: LawyerCardProps) => {
   const [activeSpecialtyIndex, setActiveSpecialtyIndex] = useState<number | null>(null);
 
   const handleClick = (index: number) => {
@@ -38,7 +41,9 @@ const LawyerCard = ({ name, specialty, rating, reviewCount, hourlyRate }: Lawyer
   "
     >
       <div className="mb-4">
-        <div className="w-20 h-20 bg-[#8bc34a] rounded-full mx-auto mb-3"></div>
+        <div className="w-20 h-20 bg-[#8bc34a] rounded-full mx-auto mb-3">
+          <img src={avatarImage} alt="" />
+        </div>
         <h3 className="text-xl font-semibold text-[#333333] mb-0.5">{name}</h3>
         <div className="p-2">
           {specialty?.map((spec, index) => (
@@ -53,7 +58,11 @@ const LawyerCard = ({ name, specialty, rating, reviewCount, hourlyRate }: Lawyer
               `}
             >
               {spec}
-              {activeSpecialtyIndex === index && hourlyRate[index] !== undefined && <span className="ml-1">₮{hourlyRate[index]}/цаг</span>}
+              {activeSpecialtyIndex === index && hourlyRate?.[index] !== undefined ? (
+                <span className="ml-1">₮{hourlyRate[index]}/цаг</span>
+              ) : (
+                ""
+              )}
             </Badge>
           ))}
         </div>
@@ -61,8 +70,8 @@ const LawyerCard = ({ name, specialty, rating, reviewCount, hourlyRate }: Lawyer
 
       <div className="w-full mb-5 text-left pl-4 mt-auto">
         <p className="flex items-center text-gray-700 text-sm mb-1.5">
-          <span className="mr-1.5 text-lg text-yellow-500 flex">
-            <Star />
+          <span className={`mr-1.5 text-lg flex ${status?.toLowerCase() === "verified" ? "text-green-500" : "text-yellow-500"}`}>
+            {status}
             {rating} ({reviewCount})
           </span>
         </p>
