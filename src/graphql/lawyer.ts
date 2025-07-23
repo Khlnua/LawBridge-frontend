@@ -101,3 +101,33 @@ export const UPDATE_LAWYER_MUTATION = gql`
     }
   }
 `;
+
+export const GET_ALL_LAWYERS = gql`
+  query GetLawyers {
+    getLawyers {
+      _id
+      lawyerId
+      clerkUserId
+      clientId
+      firstName
+      lastName
+      email
+      licenseNumber
+      bio
+      university
+      achievements {
+        _id
+        title
+        description
+        threshold
+        icon
+      }
+      status
+      document
+      rating
+      profilePicture
+      createdAt
+      updatedAt
+    }
+  }
+`;
