@@ -1,37 +1,79 @@
-import { Bell, Search, Menu } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import { SidebarTrigger } from "@/components/ui/sidebar";
+"use client";
+import { useQuery, gql } from "@apollo/client";
+import { Calendar, MessageCircle, Users, FileText } from "lucide-react";
 
-export function DashboardHeader() {
+const GET_APPOINTMENTS = gql`
+  query GetAppointments {
+    getAppointments {
+      clientId
+      lawyerId
+      schedule
+      status
+      chatRoomId
+      price
+      isFree
+      specializationId
+      createdAt
+      endedAt
+    }
+  }
+`;
+
+const GET_POSTS = gql`
+  query GetPosts {
+    getPosts {
+      _id
+      id
+      lawyerId
+      title
+      createdAt
+    }
+  }
+`;
+
+const GET_CHAT_HISTORY = gql`
+  query GetChatHistory {
+    getChatHistory {
+      userId
+      _id
+    }
+  }
+`;
+
+export default function DashboardHeader() {
+  const { data: appointmentsData } = useQuery(GET_APPOINTMENTS);
+  const { data: postsData } = useQuery(GET_POSTS);
+  const { data: chatHistoryData } = useQuery(GET_CHAT_HISTORY);
+
+  const totalAppointments = appointmentsData?.getAppointments?.length || 0;
+  const totalPosts = postsData?.getPosts?.length || 0;
+  // Count unique userIds who have chatted with the bot
+  const uniqueChatUsers = chatHistoryData?.getChatHistory
+    ? Array.from(new Set(chatHistoryData.getChatHistory.map((msg: { userId: string }) => msg.userId))).length
+    : 0;
+
   return (
-    <div className="flex items-center justify-between bg-white rounded-lg p-6 shadow-sm border">
-      <div className="flex items-center gap-4">
-        <SidebarTrigger className="lg:hidden">
-          <Menu className="w-5 h-5" />
-        </SidebarTrigger>
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 pt-5">
+      <div className="bg-white rounded-xl p-6 shadow flex items-center gap-4 border border-slate-200">
+        <Calendar className="h-10 w-10 text-blue-600" />
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Хянах самбар</h1>
-          <p className="text-gray-600">Тавтай Морил, Админ! Өнөөдрын мэдээлэл.</p>
+          <p className="text-sm text-slate-500 font-medium">Appointments Booked</p>
+          <p className="text-3xl font-bold text-slate-800">{totalAppointments}</p>
         </div>
       </div>
-      
-      <div className="flex items-center gap-4">
-        <div className="relative hidden md:block">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-          <Input
-            placeholder="Хайх..."
-            className="pl-10 w-64"
-          />
+      <div className="bg-white rounded-xl p-6 shadow flex items-center gap-4 border border-slate-200">
+        <MessageCircle className="h-10 w-10 text-green-600" />
+        <div>
+          <p className="text-sm text-slate-500 font-medium">Chatbot Users</p>
+          <p className="text-3xl font-bold text-slate-800">{uniqueChatUsers}</p>
         </div>
-        
-        <Button variant="outline" size="sm" className="relative">
-          <Bell className="w-4 h-4" />
-          <Badge className="absolute -top-1 -right-1 w-5 h-5 rounded-full p-0 flex items-center justify-center text-xs bg-red-500">
-            3
-          </Badge>
-        </Button>
+      </div>
+      <div className="bg-white rounded-xl p-6 shadow flex items-center gap-4 border border-slate-200">
+        <FileText className="h-10 w-10 text-purple-600" />
+        <div>
+          <p className="text-sm text-slate-500 font-medium">Posts</p>
+          <p className="text-3xl font-bold text-slate-800">{totalPosts}</p>
+        </div>
       </div>
     </div>
   );
