@@ -2,8 +2,18 @@
 
 import { useState } from "react";
 import { Mail, Phone, Star, Clock, FileText } from "lucide-react";
+import { GET_LAWYER_BY_LAWYERID_QUERY } from "@/graphql/lawyer";
+import { useQuery } from "@apollo/client";
 
-const LawyerProfile = () => {
+type Props = {
+  params: {
+    id: string;
+  };
+};
+
+const LawyerProfile = ({ params }: Props) => {
+  // const { id } = params;
+
   const [activeTab, setActiveTab] = useState<"posts" | "reviews" | "book">("posts");
 
   const lawyer = {
@@ -15,8 +25,7 @@ const LawyerProfile = () => {
     rating: 4.9,
     reviews: 27,
     avatar: "/lawyer-avatar.jpg",
-    description:
-      "10 жилийн туршлагатай, хууль зүйн салбарт үр дүнтэй зөвлөгөө өгдөг өмгөөлөгч.",
+    description: "10 жилийн туршлагатай, хууль зүйн салбарт үр дүнтэй зөвлөгөө өгдөг өмгөөлөгч.",
   };
 
   const renderTabContent = () => {
@@ -36,9 +45,7 @@ const LawyerProfile = () => {
             <div className="bg-green-50 p-4 rounded-lg shadow">
               ⭐⭐⭐⭐⭐ — &quot;Маш найдвартай, үр дүнтэй зөвлөгөө өгсөн. Баярлалаа!&quot;
             </div>
-            <div className="bg-green-50 p-4 rounded-lg shadow">
-              ⭐⭐⭐⭐ — &quot;Тодорхой тайлбарлаж, хурдан шийдсэн.&quot;
-            </div>
+            <div className="bg-green-50 p-4 rounded-lg shadow">⭐⭐⭐⭐ — &quot;Тодорхой тайлбарлаж, хурдан шийдсэн.&quot;</div>
           </div>
         );
       case "book":
@@ -46,9 +53,7 @@ const LawyerProfile = () => {
           <div className="space-y-4 text-center">
             <h3 className="font-semibold text-lg">Цаг захиалах</h3>
             <p className="text-sm text-gray-600">Энд цаг захиалах форм эсвэл товч байрлана.</p>
-            <button className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition">
-              Цаг захиалах
-            </button>
+            <button className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition">Цаг захиалах</button>
           </div>
         );
     }
@@ -58,16 +63,11 @@ const LawyerProfile = () => {
     <div className="w-full px-4 py-8 flex flex-col items-center space-y-6">
       {/* Profile Section */}
       <div className="bg-white shadow rounded-xl p-6 w-full max-w-2xl flex flex-col items-center space-y-3">
-        <img
-          src={lawyer.avatar}
-          alt="avatar"
-          className="w-32 h-32 rounded-full object-cover border"
-        />
+        <img src={lawyer.avatar} alt="avatar" className="w-32 h-32 rounded-full object-cover border" />
         <h1 className="text-2xl font-bold text-center">{lawyer.name}</h1>
         <p className="text-green-700 font-medium text-center">{lawyer.specialization}</p>
 
         <div className="text-sm text-gray-500 text-center">
-          
           <div className="flex items-center justify-center gap-2">
             <Mail size={16} />
             <span>{lawyer.email}</span>
@@ -121,4 +121,3 @@ const LawyerProfile = () => {
 };
 
 export default LawyerProfile;
-
