@@ -134,7 +134,8 @@ export default function useLawBridgeChat() {
       };
       const response = await fetch(
         `${
-          process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000"
+          process.env.NEXT_PUBLIC_API_URL ||
+          "https://lawbridge-server.onrender.com"
         }/api/chat`,
         {
           method: "POST",

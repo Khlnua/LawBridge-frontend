@@ -65,7 +65,8 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
         }
 
         const newSocket = io(
-          process.env.NEXT_PUBLIC_SERVER_URL || "http://localhost:4000",
+          process.env.NEXT_PUBLIC_SERVER_URL ||
+            "https://lawbridge-server.onrender.com",
           {
             path: "/socket.io",
             auth: {

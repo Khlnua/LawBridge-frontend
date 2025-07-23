@@ -5,16 +5,19 @@ export async function fetchLiveKitToken(
   clerkToken: string
 ): Promise<string> {
   try {
-    const response = await fetch("http://localhost:4000/api/livekit-token", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${clerkToken}`, // Authenticates the user
-      },
-      body: JSON.stringify({
-        room: roomName, // The server expects a 'room' property
-      }),
-    });
+    const response = await fetch(
+      "https://lawbridge-server.onrender.com/api/livekit-token",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${clerkToken}`, // Authenticates the user
+        },
+        body: JSON.stringify({
+          room: roomName, // The server expects a 'room' property
+        }),
+      }
+    );
 
     if (!response.ok) {
       // The new server code provides a JSON error object, which is more useful.
