@@ -41,8 +41,13 @@ export default function RootLayout({
             {!hideHeader && <Header />}
             <SocketProvider>
               <Toaster richColors position="top-right" />
+
               {!chatbotHide && <FloatingChatbotButton onClick={() => push("/chatbot")} />}
               <main className="flex justify-center items-center min-h-[calc(100vh-4rem)]">
+
+
+              <main className="flex mt-3 md:mt-10 lg:mt-15 justify-center items-start min-h-[calc(100vh-4rem)]">
+
                 <AuthRedirectGuard />
                 {children}
               </main>

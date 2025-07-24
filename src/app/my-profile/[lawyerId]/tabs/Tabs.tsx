@@ -9,20 +9,31 @@ import { LawyerProfileHeader } from "@/app/my-profile/[lawyerId]/tabs/LawyerHead
 import { Button } from "@/components";
 import CreatePost from "./post/CreatePost";
 
-type TabType = "profile" | "posts" | "reviews" | "schedule" | "clients" | "createPost";
+type TabType =
+  | "profile"
+  | "posts"
+  | "reviews"
+  | "schedule"
+  | "clients"
+  | "createPost";
 
 type SidebarTabsProps = {
   lawyerId: string;
 };
 
 const SidebarTabs = ({ lawyerId }: SidebarTabsProps) => {
-  const [activeTab, setActiveTab] = useState<TabType>("posts");
+  const [activeTab, setActiveTab] = useState<TabType>("profile");
 
   const tabItems: { id: TabType; label: string; icon: React.ReactNode }[] = [
     {
       id: "profile",
       label: "Профайл",
       icon: <UserPenIcon className="w-4 h-4" />,
+    },
+    {
+      id: "createPost",
+      label: "Нийтлэл үүсгэх",
+      icon: <Newspaper className="w-4 h-4" />,
     },
     {
       id: "schedule",
@@ -39,11 +50,6 @@ const SidebarTabs = ({ lawyerId }: SidebarTabsProps) => {
       label: "Сэтгэгдлүүд",
       icon: <Star className="w-4 h-4" />,
     },
-    {
-      id: "createPost",
-      label: "Нийтлэл үүсгэх",
-      icon: <Newspaper className="w-4 h-4" />,
-    },
   ];
 
   return (
@@ -55,8 +61,12 @@ const SidebarTabs = ({ lawyerId }: SidebarTabsProps) => {
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={`flex items-center gap-2 px-4 py-2 rounded-md transition-all duration-150 text-sm w-full justify-start hover:cursor-pointer
-                ${activeTab === tab.id ? "bg-[#316eea] text-white shadow-sm" : "text-gray-700 hover:bg-gray-100"} ${
-                tab.id === "createPost" ? "bg-green-700 text-white shadow-2xl hover:bg-green-600" : ""
+                ${
+                  activeTab === tab.id
+                    ? "bg-[#316eea] text-white shadow-sm"
+                    : "text-gray-700 hover:bg-gray-100"
+                } ${
+                tab.id === "profile" ? "bg-[#316eea]  hover:bg-gray-100" : ""
               }`}
             >
               {tab.icon}

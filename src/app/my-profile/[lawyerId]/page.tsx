@@ -1,11 +1,7 @@
 import { currentUser } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
-// import { LawyerProfileHeader } from "./tabs";
-import SidebarTabs from "./tabs/Tabs";
 
-// type SidebarTabsProps = {
-//   lawyerId: string;
-// };
+import SidebarTabs from "./tabs/Tabs";
 
 const LawyerProfilePageForLawyers = async ({ params }: { params: any }) => {
   const user = await currentUser();
@@ -24,7 +20,6 @@ const LawyerProfilePageForLawyers = async ({ params }: { params: any }) => {
 
   return (
     <div className="w-full max-w-6xl mx-auto px-4 py-8 space-y-6 border-none">
-      {/* <LawyerProfileHeader lawyerId={requestedLawyerId} /> */}
       <SidebarTabs lawyerId={requestedLawyerId} />
     </div>
   );
