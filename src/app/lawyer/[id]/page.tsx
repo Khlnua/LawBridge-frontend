@@ -1,12 +1,11 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState } from "react";
 import {
   Mail,
   Phone,
   Star,
   Clock,
-  FileText,
   MapPin,
   Calendar,
   MessageCircle,
@@ -166,7 +165,7 @@ const LawyerProfile = ({ params }: Props) => {
   const [createAppointment, { loading: creatingAppointment }] = useMutation(
     CREATE_APPOINTMENT,
     {
-      onCompleted: (data) => {
+      onCompleted: () => {
         setAppointmentStatus({
           type: "success",
           message:

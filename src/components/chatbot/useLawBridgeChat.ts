@@ -133,10 +133,7 @@ export default function useLawBridgeChat() {
         options: chatOptions,
       };
       const response = await fetch(
-        `${
-          process.env.NEXT_PUBLIC_API_URL ||
-          "https://lawbridge-server.onrender.com"
-        }/api/chat`,
+        `${process.env.NEXT_PUBLIC_API_URL || "https://lawbridge-server.onrender.com"}/api/chat`,
         {
           method: "POST",
           headers: {

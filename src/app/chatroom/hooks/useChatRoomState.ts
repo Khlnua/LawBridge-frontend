@@ -78,6 +78,7 @@ export interface UseChatRoomState {
 }
 
 export default function useChatRoomState(chatRoomId: string): UseChatRoomState {
+  console.log("useChatRoomState initialized for chatRoomId:", chatRoomId);
   const { user } = useClerkUser();
   const { getToken } = useAuth();
   const { socket, isConnected, joinRoom, leaveRoom, emitTyping } = useSocket();
