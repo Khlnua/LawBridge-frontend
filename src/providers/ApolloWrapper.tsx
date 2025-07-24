@@ -42,7 +42,6 @@ export const ApolloWrapper = ({ children }: { children: ReactNode }) => {
     initApolloClient();
   }, [getToken]);
 
-  if (!client) return null; // Or loading spinner
-
+  if (!client) return null;
   return <ApolloProvider client={client}>{children}</ApolloProvider>;
 };

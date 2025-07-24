@@ -82,14 +82,16 @@ const ThirdCardForLawyer = ({
           },
         },
       });
-
       await Promise.all(
         watchedSpecializations.map(async (specId) => {
-          const price = parseInt(
-            hourlyRates[specId].split(" ")[1].replace(/'/g, "")
-          );
-
           const sub = recommendPaid[specId] ?? false;
+
+          let price = 0;
+
+          if (sub) {
+            const raw = hourlyRates[specId].split(" ")[1].replace(/'/g, "");
+            price = parseInt(raw, 10);
+          }
 
           await createSpecialization({
             variables: {
@@ -99,7 +101,7 @@ const ThirdCardForLawyer = ({
                     lawyerId: lawyerId,
                     specializationId: specId,
                     subscription: sub,
-                    pricePerHour: sub ? price : 0,
+                    pricePerHour: price,
                   },
                 ],
               },
