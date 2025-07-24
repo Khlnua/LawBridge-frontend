@@ -133,12 +133,15 @@ export const LawyerProfileHeader = ({ lawyerId }: LawyerProfileHeaderProps) => {
   if (loading) return <p className="text-center py-8">Ачааллаж байна...</p>;
 
   return (
-    <Card className="w-full p-6 space-y-4 border-none bg-[#d6ebf7]">
+    <div className="w-full p-6 space-y-4 border-none ">
       <CardHeader className="flex flex-col items-center text-center gap-4">
         <div className="relative group">
           <Avatar className="w-28 h-28 border">
             <AvatarImage
-              src={localPreview || form.avatar}
+              src={
+                localPreview ||
+                `${process.env?.R2_PUBLIC_DOMAIN}/${form.avatar}`
+              }
               alt="Avatar"
               className="object-cover border-none"
             />
@@ -279,6 +282,6 @@ export const LawyerProfileHeader = ({ lawyerId }: LawyerProfileHeaderProps) => {
           </CardFooter>
         </>
       )}
-    </Card>
+    </div>
   );
 };

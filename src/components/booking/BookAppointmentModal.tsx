@@ -67,7 +67,10 @@ export default function BookAppointmentModal({ lawyerId, clientId, specializatio
       onClose();
     } catch (err) {
       setError("Захиалга үүсгэхэд алдаа гарлаа.");
-    }
+      if (err instanceof Error) {
+        setError(err.message);
+      }
+    } 
   };
 
   if (loading) return <div>Ачааллаж байна...</div>;

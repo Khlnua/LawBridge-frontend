@@ -23,7 +23,7 @@ const RecommendLawyers = () => {
   if (allLawyersError) return <div>Алдаа гарлаа.</div>;
 
   const lawyers = [...(allLawyersData?.getLawyers || [])];
-  const specializations = data?.getAdminSpecializations || [];
+  // const specializations = data?.getAdminSpecializations || [];
 
   return (
     <div className="container mx-auto px-4 py-8 sm:px-6 md:px-8 lg:px-10 text-center flex flex-col items-center">

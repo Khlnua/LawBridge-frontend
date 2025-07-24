@@ -1,21 +1,15 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState } from "react";
 import {
   Mail,
-  Phone,
   Star,
   Clock,
-  FileText,
   MapPin,
   Calendar,
-  MessageCircle,
   CheckCircle,
   XCircle,
   User,
-  Briefcase,
-  Award,
-  DollarSign,
 } from "lucide-react";
 import { useQuery, useMutation, gql } from "@apollo/client";
 import { use } from "react";
@@ -136,16 +130,17 @@ const LawyerProfile = ({ params }: Props) => {
     skip: false,
   });
 
-  const { data: specializationsData, loading: specializationsLoading } = useQuery<{
-    getSpecializationsByLawyer: Array<{
-      _id: string;
-      lawyerId: string;
-      specializationId: string;
-      categoryName?: string;
-      subscription: boolean;
-      pricePerHour?: number;
-    }>;
-  }>(GET_SPECIALIZATIONS_BY_LAWYER, { variables: { lawyerId: id } });
+  const { data: specializationsData, loading: specializationsLoading } =
+    useQuery<{
+      getSpecializationsByLawyer: Array<{
+        _id: string;
+        lawyerId: string;
+        specializationId: string;
+        categoryName?: string;
+        subscription: boolean;
+        pricePerHour?: number;
+      }>;
+    }>(GET_SPECIALIZATIONS_BY_LAWYER, { variables: { lawyerId: id } });
 
   const { user: currentUser, isSignedIn } = useUser();
 
@@ -161,12 +156,13 @@ const LawyerProfile = ({ params }: Props) => {
     message: string;
   }>({ type: null, message: "" });
   const [showBookingModal, setShowBookingModal] = useState(false);
-  const [selectedSpecializationId, setSelectedSpecializationId] = useState<string>("");
+  const [selectedSpecializationId, setSelectedSpecializationId] =
+    useState<string>("");
 
   const [createAppointment, { loading: creatingAppointment }] = useMutation(
     CREATE_APPOINTMENT,
     {
-      onCompleted: (data) => {
+      onCompleted: () => {
         setAppointmentStatus({
           type: "success",
           message:
@@ -225,9 +221,12 @@ const LawyerProfile = ({ params }: Props) => {
   }
 
   const lawyer = lawyerData.getLawyerById;
-  // Show a login prompt if not signed in
   if (!isSignedIn) {
-    return <div className="text-center py-12 text-lg">Та нэвтэрч орсны дараа цаг захиалах боломжтой.</div>;
+    return (
+      <div className="text-center py-12 text-lg">
+        Та нэвтэрч орсны дараа цаг захиалах боломжтой.
+      </div>
+    );
   }
 
   // Format date for display
@@ -235,7 +234,11 @@ const LawyerProfile = ({ params }: Props) => {
     // Handle 'YYYY.M.D' format (e.g., '2025.7.26')
     if (/^\d{4}\.\d{1,2}\.\d{1,2}$/.test(dateString)) {
       const [year, month, day] = dateString.split(".");
-      return new Date(Number(year), Number(month) - 1, Number(day)).toLocaleDateString("mn-MN", {
+      return new Date(
+        Number(year),
+        Number(month) - 1,
+        Number(day)
+      ).toLocaleDateString("mn-MN", {
         year: "numeric",
         month: "long",
         day: "numeric",
@@ -252,7 +255,16 @@ const LawyerProfile = ({ params }: Props) => {
 
   // Handle appointment creation
   const handleCreateAppointment = async () => {
-    console.log("Booking appointment for slot:", selectedSlot, "user:", currentUser, "lawyerId:", lawyer._id, "specializationId:", selectedSpecializationId);
+    console.log(
+      "Booking appointment for slot:",
+      selectedSlot,
+      "user:",
+      currentUser,
+      "lawyerId:",
+      lawyer._id,
+      "specializationId:",
+      selectedSpecializationId
+    );
     if (!selectedSlot || !currentUser) {
       setAppointmentStatus({
         type: "error",
@@ -288,7 +300,8 @@ const LawyerProfile = ({ params }: Props) => {
       if (error instanceof Error) {
         message += error.message;
         if (error.message.includes("not available")) {
-          message = "Сонгосон цаг аль хэдийн захиалагдсан байна эсвэл олдсонгүй.";
+          message =
+            "Сонгосон цаг аль хэдийн захиалагдсан байна эсвэл олдсонгүй.";
         }
       } else {
         message += String(error);
@@ -322,66 +335,17 @@ const LawyerProfile = ({ params }: Props) => {
       case "overview":
         return (
           <div className="space-y-6">
-            {/* About Section */}
-            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-xl">
+            {/* About Section with responsiveness */}
+            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-xl md:flex md:flex-col md:gap-4 md:w-full sm:w-full">
               <h3 className="font-bold text-xl mb-4 text-gray-800">
                 Танилцуулга
               </h3>
-              <p className="text-gray-700 leading-relaxed">
+              <p className="text-gray-700 leading-relaxed md:w-full sm:w-full">
                 {lawyer.bio || "Танилцуулга байхгүй байна."}
               </p>
             </div>
-
-            {/* Experience & Education */}
-            <div className="grid md:grid-cols-2 gap-6">
-              {lawyer.experience && (
-                <div className="bg-white border border-gray-200 p-6 rounded-xl shadow-sm">
-                  <div className="flex items-center mb-3">
-                    <Briefcase className="h-5 w-5 text-blue-600 mr-2" />
-                    <h4 className="font-semibold text-gray-800">Туршлага</h4>
-                  </div>
-                  <p className="text-gray-600">{lawyer.experience}</p>
-                </div>
-              )}
-
-              {lawyer.education && (
-                <div className="bg-white border border-gray-200 p-6 rounded-xl shadow-sm">
-                  <div className="flex items-center mb-3">
-                    <Award className="h-5 w-5 text-green-600 mr-2" />
-                    <h4 className="font-semibold text-gray-800">Боловсрол</h4>
-                  </div>
-                  <p className="text-gray-600">{lawyer.education}</p>
-                </div>
-              )}
-            </div>
-
-            {/* Languages & Price */}
-            <div className="grid md:grid-cols-2 gap-6">
-              {lawyer.languages && (
-                <div className="bg-white border border-gray-200 p-6 rounded-xl shadow-sm">
-                  <div className="flex items-center mb-3">
-                    <MessageCircle className="h-5 w-5 text-purple-600 mr-2" />
-                    <h4 className="font-semibold text-gray-800">Хэлүүд</h4>
-                  </div>
-                  <p className="text-gray-600">{lawyer.languages}</p>
-                </div>
-              )}
-
-              {lawyer.price && (
-                <div className="bg-white border border-gray-200 p-6 rounded-xl shadow-sm">
-                  <div className="flex items-center mb-3">
-                    <DollarSign className="h-5 w-5 text-green-600 mr-2" />
-                    <h4 className="font-semibold text-gray-800">Үнэ</h4>
-                  </div>
-                  <p className="text-gray-600">
-                    {lawyer.price.toLocaleString()}₮ / цаг
-                  </p>
-                </div>
-              )}
-            </div>
           </div>
         );
-
       case "reviews":
         return (
           <div className="space-y-6">
@@ -406,83 +370,38 @@ const LawyerProfile = ({ params }: Props) => {
                 </span>
               </div>
             </div>
-
-            {/* Mock reviews - replace with real data */}
-            <div className="space-y-4">
-              {[
-                {
-                  id: 1,
-                  rating: 5,
-                  comment:
-                    "Маш найдвартай, үр дүнтэй зөвлөгөө өгсөн. Баярлалаа!",
-                  author: "Б.Болд",
-                  date: "2024-01-15",
-                },
-                {
-                  id: 2,
-                  rating: 4,
-                  comment: "Тодорхой тайлбарлаж, хурдан шийдсэн.",
-                  author: "Д.Дорж",
-                  date: "2024-01-10",
-                },
-              ].map((review) => (
-                <div
-                  key={review.id}
-                  className="bg-white border border-gray-200 p-6 rounded-xl shadow-sm"
-                >
-                  <div className="flex items-start justify-between mb-3">
-                    <div className="flex items-center gap-2">
-                      <div className="flex text-yellow-400">
-                        {[...Array(5)].map((_, i) => (
-                          <Star
-                            key={i}
-                            className={`h-4 w-4 ${
-                              i < review.rating ? "fill-current" : ""
-                            }`}
-                          />
-                        ))}
-                      </div>
-                      <span className="font-medium">{review.author}</span>
-                    </div>
-                    <span className="text-sm text-gray-500">
-                      {formatDate(review.date)}
-                    </span>
-                  </div>
-                  <p className="text-gray-700">{review.comment}</p>
-                </div>
-              ))}
-            </div>
           </div>
         );
-
       case "book":
         return (
           <div className="space-y-6">
-            <div className="text-center">
+            <div className="text-center mb-4">
               <h3 className="font-bold text-xl mb-2">Цаг захиалах</h3>
               <p className="text-gray-600">
                 Боломжит цагуудаас сонгон цаг захиална уу
               </p>
             </div>
-            {/* Specialization selection */}
+            {/* Specialization selector - full width */}
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Мэргэжлийн чиглэлээ сонгоно уу
               </label>
               <select
                 value={selectedSpecializationId}
-                onChange={e => setSelectedSpecializationId(e.target.value)}
+                onChange={(e) => setSelectedSpecializationId(e.target.value)}
                 className="w-full p-2 border border-gray-300 rounded-lg"
                 disabled={specializationsLoading}
               >
                 <option value="">-- Сонгох --</option>
-                {specializationsData?.getSpecializationsByLawyer.map(spec => (
+                {specializationsData?.getSpecializationsByLawyer.map((spec) => (
                   <option key={spec._id} value={spec.specializationId}>
                     {spec.categoryName || spec.specializationId}
                   </option>
                 ))}
               </select>
             </div>
+
+            {/* Status message remains same */}
 
             {/* Status Messages */}
             {appointmentStatus.type && (
@@ -569,12 +488,12 @@ const LawyerProfile = ({ params }: Props) => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-white">
       <div className="max-w-4xl mx-auto px-4 py-8">
         {/* Header Section */}
-        <div className="bg-white shadow-lg rounded-2xl overflow-hidden mb-8">
-          <div className="bg-gradient-to-r from-blue-600 to-indigo-600 px-8 py-6">
-            <div className="flex flex-col md:flex-row items-center gap-6">
+        <div className="bg-white shadow-lg rounded-2xl overflow-hidden mb-8  md:w-200 flex flex-col justify-center items-center">
+          <div className="bg-gradient-to-r from-blue-600 to-indigo-600 px-8 py-6 w-full">
+            <div className="flex justify-center flex-col md:flex-row items-center gap-6">
               <div className="relative">
                 <img
                   src={
@@ -616,26 +535,15 @@ const LawyerProfile = ({ params }: Props) => {
           </div>
 
           {/* Contact Info */}
-          <div className="px-8 py-6 bg-gray-50 border-t">
-            <div className="grid md:grid-cols-2 gap-4">
-              <div className="flex items-center gap-3 text-gray-600">
-                <Mail className="h-5 w-5 text-blue-600" />
-                <a
-                  href={`mailto:${lawyer.email}`}
-                  className="hover:text-blue-600 transition-colors"
-                >
-                  {lawyer.email}
-                </a>
-              </div>
-              <div className="flex items-center gap-3 text-gray-600">
-                <Phone className="h-5 w-5 text-green-600" />
-                <a
-                  href={`tel:${lawyer.phone}`}
-                  className="hover:text-green-600 transition-colors"
-                >
-                  {lawyer.phone}
-                </a>
-              </div>
+          <div className="px-8 py-6 bg-gray-50 border-t w-full">
+            <div className="flex justify-center  items-center gap-3 text-gray-600">
+              <Mail className="h-5 w-5 text-blue-600" />
+              <a
+                href={`mailto:${lawyer.email}`}
+                className="hover:text-blue-600 transition-colors"
+              >
+                {lawyer.email}
+              </a>
             </div>
           </div>
         </div>

@@ -54,6 +54,19 @@ const LawyerCard = ({ id, name, status, avatarImage, rating, reviewCount }: Lawy
           )}
         </div>
         <h3 className="text-xl font-semibold text-[#333333] mb-0.5">{name}</h3>
+        <div className="w-full mb-5 text-left pl-4 mt-auto">
+          <p className="flex justify-center items-center text-gray-700 text-sm mb-1.5">
+            <span
+              className={`mr-1.5 font-extrabold text-lg flex ${
+                status?.toLowerCase() === "verified"
+                  ? "text-green-800"
+                  : "text-yellow-800"
+              }`}
+            >
+              {status ? status : `${rating ?? 0} ★ (${reviewCount ?? 0})`}
+            </span>
+          </p>
+        </div>
         <div className="p-2">
           {specialLoad ? (
             <p className="text-center py-2 text-sm">Ачааллаж байна...</p>
@@ -93,6 +106,7 @@ const LawyerCard = ({ id, name, status, avatarImage, rating, reviewCount }: Lawy
           )}
         </div>
       </div>
+
 
       <div className="w-full mb-5 text-left pl-4 mt-auto">
         <p className="flex items-center text-gray-700 text-sm mb-1.5">

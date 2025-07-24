@@ -75,15 +75,17 @@ export const LawyerReviews = () => {
         </div>
       </div>
 
-      <hr />
+      <hr className="text-gray-100" />
 
       {/* Reviews List */}
       <div className="space-y-4">
-        <h2 className="text-xl font-semibold text-center">Үйлчлүүлэгчдийн сэтгэгдэл</h2>
+        <h2 className="text-xl font-semibold text-center">
+          Үйлчлүүлэгчдийн сэтгэгдэл
+        </h2>
         {reviews.map((review, i) => (
           <div
             key={i}
-            className="bg-gray-50 border rounded-lg p-4 shadow-sm space-y-1"
+            className="bg-gray-50 border rounded-lg p-4 shadow-sm space-y-1 border-gray-200"
           >
             <div className="text-sm text-gray-500">
               👤 {review.client} — {review.date}
@@ -97,4 +99,4 @@ export const LawyerReviews = () => {
       </div>
     </div>
   );
-}
+};

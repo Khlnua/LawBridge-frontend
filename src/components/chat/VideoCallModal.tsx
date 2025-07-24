@@ -199,11 +199,13 @@ export const VideoCallModal: React.FC<VideoCallModalProps> = ({
         <div className="flex items-center justify-between text-white">
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-2">
-              <img
-                src={user.avatar}
-                alt={user.name}
-                className="w-8 h-8 rounded-full border-2 border-white/30"
-              />
+              {user.avatar ? (
+                <img
+                  src={user.avatar}
+                  alt={user.name}
+                  className="w-8 h-8 rounded-full border-2 border-white/30"
+                />
+              ) : null}
               <div>
                 <h3 className="font-semibold text-sm">{user.name}</h3>
                 <p className="text-xs text-slate-300">
@@ -250,11 +252,13 @@ export const VideoCallModal: React.FC<VideoCallModalProps> = ({
           <div className="flex flex-col items-center gap-6 p-8">
             <div className="relative">
               <div className="w-32 h-32 md:w-40 md:h-40 rounded-full bg-gradient-to-br from-slate-700 to-slate-800 flex items-center justify-center border-4 border-slate-600 shadow-2xl">
-                <img
-                  src={user.avatar}
-                  alt={user.name}
-                  className="w-full h-full rounded-full object-cover"
-                />
+                {user.avatar ? (
+                  <img
+                    src={user.avatar}
+                    alt={user.name}
+                    className="w-full h-full rounded-full object-cover"
+                  />
+                ) : null}
               </div>
               {remoteParticipants.length === 0 && (
                 <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-yellow-500 rounded-full flex items-center justify-center animate-pulse">
