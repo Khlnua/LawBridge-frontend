@@ -53,16 +53,6 @@ const GET_CHAT_ROOMS = gql`
       participants
       appointmentId
       allowedMedia
-      lastMessage {
-        chatRoomId
-        ChatRoomsMessages {
-          _id
-          userId
-          type
-          content
-          createdAt
-        }
-      }
     }
   }
 `;
@@ -113,10 +103,7 @@ export default function MessengerLayout() {
     [userId, user]
   );
 
-  const chatRooms: ChatRoom[] = useMemo(
-    () => data?.getChatRoomByUser || [],
-    [data]
-  );
+  const chatRooms: ChatRoom[] = useMemo(() => data?.getChatRoomByUser || [], [data]);
 
   const filteredRooms: ChatRoom[] = useMemo(() => {
     if (!searchQuery.trim()) return chatRooms;
