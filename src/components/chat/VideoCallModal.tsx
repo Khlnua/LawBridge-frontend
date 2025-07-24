@@ -44,6 +44,21 @@ export const VideoCallModal: React.FC<VideoCallModalProps> = ({
   const remoteParticipants = useRemoteParticipants();
   const connectionState = useConnectionState();
 
+  // Debug: log connection state changes
+  useEffect(() => {
+    console.log("[LiveKit] Connection state:", connectionState);
+  }, [connectionState]);
+
+  useEffect(() => {
+    console.log("[LiveKit] VideoCallModal mounted");
+  }, []);
+
+  useEffect(() => {
+    if (remoteParticipants.length > 0) {
+      console.log("[LiveKit] Remote participant joined:", remoteParticipants.map(p => p.identity));
+    }
+  }, [remoteParticipants.length]);
+
   // Find all tracks in the room
   const tracks = useTracks();
   const remoteVideoTrackRef = tracks.find(

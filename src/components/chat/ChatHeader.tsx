@@ -19,16 +19,28 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
   isCallActive,
   onEndCall,
 }) => {
+  // Improved: fallback for missing avatar, show initials, and more distinct header
   return (
-    <div className="bg-white border-b border-slate-200 px-4 sm:px-6 py-3 shadow-sm">
+    <div className="bg-gradient-to-r from-blue-50 to-indigo-100 border-b border-slate-200 px-4 sm:px-6 py-3 shadow-sm">
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-3 sm:space-x-4">
           <div className="relative flex-shrink-0">
-            <img
-              src={user.avatar}
-              alt={user.name}
-              className="w-10 h-10 md:w-12 md:h-12 rounded-full object-cover"
-            />
+            {user.avatar ? (
+              <img
+                src={user.avatar}
+                alt={user.name}
+                className="w-10 h-10 md:w-12 md:h-12 rounded-full object-cover border-2 border-blue-200 shadow"
+              />
+            ) : (
+              <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-gradient-to-br from-blue-400 to-purple-400 flex items-center justify-center text-white font-bold border-2 border-blue-200 shadow">
+                {user.name
+                  .split(' ')
+                  .map((n) => n[0])
+                  .join('')
+                  .toUpperCase()
+                  .slice(0, 2)}
+              </div>
+            )}
             <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></div>
           </div>
           <div>
