@@ -228,7 +228,7 @@ export default function LawyerSchedule({ lawyerId }: LawyerScheduleProps) {
   const maxDate = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
 
   return (
-    <div className="max-w-6xl mx-auto p-6 space-y-6">
+    <div className="max-w-7xl mx-auto  space-y-6">
       {/* Header */}
       <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-6 rounded-2xl shadow-lg">
         <div className="flex items-center gap-3 mb-2">
