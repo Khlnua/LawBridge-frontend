@@ -35,6 +35,7 @@ export async function fetchLiveKitToken(
           error: "Failed to parse error JSON",
           raw: await response.text(),
         };
+        console.log(jsonErr);
       }
       console.error("[fetchLiveKitToken] Error response:", errorData);
       throw new Error(errorData.error || "An unknown error occurred.");

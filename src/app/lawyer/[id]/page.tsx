@@ -169,7 +169,7 @@ const LawyerProfile = ({ params }: Props) => {
         setAppointmentStatus({
           type: "success",
           message:
-            "Цаг захиалга амжилттай үүслээ! Танд имэйлээр мэдэгдэл илгээгдэх болно.",
+            "Цаг захиалга амжилттай үүслээ!",
         });
         setSelectedSlot(null);
         setAppointmentNotes("");
@@ -626,15 +626,7 @@ const LawyerProfile = ({ params }: Props) => {
                   {lawyer.email}
                 </a>
               </div>
-              <div className="flex items-center gap-3 text-gray-600">
-                <Phone className="h-5 w-5 text-green-600" />
-                <a
-                  href={`tel:${lawyer.phone}`}
-                  className="hover:text-green-600 transition-colors"
-                >
-                  {lawyer.phone}
-                </a>
-              </div>
+              
             </div>
           </div>
         </div>
