@@ -46,9 +46,9 @@ const ArticlesPage = () => {
 
   if (specLoading || postLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 flex items-center justify-center">
-        <div className="text-center space-y-4">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+      <div className="min-h-screen md:mt-100 mt-20 bg-transparent ">
+        <div className="text-center space-y-4 bg-transparent">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto bg-transparent"></div>
           <p className="text-gray-600 text-lg">Ачааллаж байна...</p>
         </div>
       </div>
@@ -171,10 +171,8 @@ const ArticlesPage = () => {
               })}
               {searchTerm && (
                 <div className="flex items-center gap-2 bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm">
-
                   <Search className="h-3 w-3" />"{searchTerm}"
                   <button onClick={() => setSearchTerm("")} className="hover:text-green-900">
-
                     <X className="h-3 w-3" />
                   </button>
                 </div>
