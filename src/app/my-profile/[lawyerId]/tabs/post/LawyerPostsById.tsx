@@ -13,7 +13,9 @@ interface CommentType {
 interface PostType {
   id: number | string;
   title: string;
-  content: string;
+  content: {
+    text: string;
+  };
   specialization: string;
   mediaUrl?: string;
   mediaType?: "image" | "video";
@@ -53,8 +55,6 @@ export const PostCard = ({ post }: { post: PostType }) => {
 
   const comments: CommentType[] = data?.getCommentsByPost ?? post.comments ?? [];
 
-  const article = post.content || { text: "" };
-
   return (
     <div className="bg-white border rounded-md p-4 shadow-sm space-y-4">
       <div className="flex justify-between text-sm text-gray-500 mb-1">
@@ -63,7 +63,7 @@ export const PostCard = ({ post }: { post: PostType }) => {
       </div>
 
       <h3 className="text-lg font-semibold">{post.title}</h3>
-      {typeof article === "string" && <p className="text-gray-700 whitespace-pre-line">{article}</p>}
+      {<p className="text-gray-700 whitespace-pre-line">{post.content.text}</p>}
 
       {post.mediaType === "image" && post.mediaUrl && (
         <img src={post.mediaUrl} alt="attached" className="w-full rounded-md max-h-60 object-cover mt-2" />
