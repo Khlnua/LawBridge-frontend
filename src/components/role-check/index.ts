@@ -1,1 +1,2 @@
-export * from "./RoleProtection"
+export * from "./RoleProtection";
+export * from "./AuthRedirectGuard";

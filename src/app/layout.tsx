@@ -7,6 +7,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { ApolloWrapper } from "@/providers/ApolloWrapper";
 import Header from "@/components/header/Header";
 import { SocketProvider } from "@/context/SocketContext";
+import { AuthRedirectGuard } from "@/components";
 import { Toaster } from "sonner";
 
 const geistSans = Geist({
@@ -39,6 +40,7 @@ export default function RootLayout({
               <Toaster richColors position="top-right" />
 
               <main className="flex justify-center items-center min-h-[calc(100vh-4rem)]">
+                <AuthRedirectGuard />
                 {children}
               </main>
             </SocketProvider>
