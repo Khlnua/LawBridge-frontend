@@ -19,14 +19,14 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-
-
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   const pathname = usePathname();
+  const hideHeader =
+    pathname.startsWith("/chat") || pathname.startsWith("/admin");
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
       <body
@@ -34,7 +34,7 @@ export default function RootLayout({
       >
         <ClerkProvider signInUrl="/sign-in" signUpUrl="/sign-up">
           <ApolloWrapper>
-            {pathname !== "/admin" && <Header />}
+            {!hideHeader && <Header />}
             <SocketProvider>
               <Toaster richColors position="top-right" />
 

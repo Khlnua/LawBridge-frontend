@@ -118,7 +118,17 @@ export type ChatRoom = {
   _id: Scalars['String']['output'];
   allowedMedia?: Maybe<AllowedMediaEnum>;
   appointmentId: Scalars['String']['output'];
+  lastMessage?: Maybe<Message>;
   participants: Array<Scalars['String']['output']>;
+};
+
+export type ChatRoomsMessages = {
+  __typename?: 'ChatRoomsMessages';
+  _id: Scalars['ID']['output'];
+  content: Scalars['String']['output'];
+  createdAt: Scalars['String']['output'];
+  type: MediaType;
+  userId: Scalars['String']['output'];
 };
 
 export type Comment = {
@@ -197,7 +207,7 @@ export type CreateReviewInput = {
 
 export type CreateSpecializationInput = {
   lawyerId?: InputMaybe<Scalars['ID']['input']>;
-  pricePerHour?: InputMaybe<Scalars['Int']['input']>;
+  pricePerHour: Scalars['Int']['input'];
   specializationId: Scalars['ID']['input'];
   subscription: Scalars['Boolean']['input'];
 };
@@ -241,6 +251,7 @@ export type Lawyer = {
   licenseNumber: Scalars['String']['output'];
   profilePicture: Scalars['String']['output'];
   rating?: Maybe<Scalars['Int']['output']>;
+  specialization: Array<Specialization>;
   status?: Maybe<LawyerRequestStatus>;
   university?: Maybe<Scalars['String']['output']>;
   updatedAt?: Maybe<Scalars['Date']['output']>;
@@ -280,10 +291,8 @@ export enum MediaType {
 
 export type Message = {
   __typename?: 'Message';
+  ChatRoomsMessages: Array<ChatRoomsMessages>;
   chatRoomId: Scalars['ID']['output'];
-  content?: Maybe<Scalars['String']['output']>;
-  type: MediaType;
-  userId: Scalars['String']['output'];
 };
 
 export type Mutation = {
@@ -560,6 +569,7 @@ export type Query = {
   getAvailability?: Maybe<Array<Maybe<Availability>>>;
   getChatHistoryByUser: Array<ChatHistory>;
   getChatRoomById?: Maybe<ChatRoom>;
+  getChatRoomByUser: Array<ChatRoom>;
   getChatRoomsByAppointment: Array<ChatRoom>;
   getCommentsByPost: Array<Comment>;
   getDocumentsByStatus: Array<Document>;
@@ -616,6 +626,11 @@ export type QueryGetChatHistoryByUserArgs = {
 
 export type QueryGetChatRoomByIdArgs = {
   _id: Scalars['String']['input'];
+};
+
+
+export type QueryGetChatRoomByUserArgs = {
+  userId: Scalars['String']['input'];
 };
 
 
@@ -747,16 +762,6 @@ export type Specialization = {
 
 export type SpecializationInput = {
   specializations: Array<CreateSpecializationInput>;
-};
-
-export type Subscription = {
-  __typename?: 'Subscription';
-  messageAdded?: Maybe<Message>;
-};
-
-
-export type SubscriptionMessageAddedArgs = {
-  chatRoomId: Scalars['ID']['input'];
 };
 
 export type UpdateAchievementInput = {

@@ -1,20 +1,20 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { useUser, useAuth } from "@clerk/nextjs";
+import { useUser as useClerkUser, useAuth } from "@clerk/nextjs";
 import { useQuery, useMutation, gql } from "@apollo/client";
 import { useSocket } from "@/context/SocketContext";
 import { fetchLiveKitToken } from "@/lib/livekit";
-import {
-  Message as MessageType,
-  User as ChatUser,
-} from "@/app/chatroom/types/chat";
+import { User as ChatUser } from "@/app/chatroom/types/chat";
 
 const GET_MESSAGES = gql`
   query getMessages($chatRoomId: ID!) {
     getMessages(chatRoomId: $chatRoomId) {
       chatRoomId
-      userId
-      type
-      content
+      ChatRoomsMessages {
+        userId
+        type
+        content
+        createdAt
+      }
     }
   }
 `;
@@ -33,12 +33,25 @@ const CREATE_MESSAGE = gql`
       content: $content
     ) {
       chatRoomId
-      userId
-      type
-      content
+      ChatRoomsMessages {
+        userId
+        type
+        content
+        createdAt
+      }
     }
   }
 `;
+
+// Update MessageType to match expected Message type
+export interface MessageType {
+  id: string;
+  chatRoomId: string;
+  userId: string;
+  type: "TEXT" | "IMAGE" | "FILE";
+  content: string;
+  createdAt: string;
+}
 
 export interface UseChatRoomState {
   user: ChatUser | null;
@@ -65,7 +78,7 @@ export interface UseChatRoomState {
 }
 
 export default function useChatRoomState(chatRoomId: string): UseChatRoomState {
-  const { user } = useUser();
+  const { user } = useClerkUser();
   const { getToken } = useAuth();
   const { socket, isConnected, joinRoom, leaveRoom, emitTyping } = useSocket();
   const [messages, setMessages] = useState<MessageType[]>([]);
@@ -80,14 +93,7 @@ export default function useChatRoomState(chatRoomId: string): UseChatRoomState {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-
-  // Replace with real user fetching logic
-  const otherUser: ChatUser = {
-    id: "user_mock_lawyer_123",
-    name: "Sarah Connor, Esq.",
-    avatar: "https://i.pravatar.cc/150?u=sarah_connor",
-    isLawyer: true,
-  };
+  const [otherUser, setOtherUser] = useState<ChatUser | null>(null);
 
   // Apollo: fetch previous messages for this chatroom
   const {
@@ -108,12 +114,40 @@ export default function useChatRoomState(chatRoomId: string): UseChatRoomState {
 
   // Load previous messages when data is available
   useEffect(() => {
-    if (chatData?.getMessages) {
-      setMessages(chatData.getMessages as MessageType[]);
+    if (chatData?.getMessages && chatData.getMessages.length > 0) {
+      // Map ChatRoomsMessages to include id from _id and chatRoomId, and cast type
+      const mapped = chatData.getMessages[0].ChatRoomsMessages.map(
+        (msg: any, idx: number) => ({
+          id: msg._id ? msg._id : `${msg.userId}-${msg.createdAt || idx}`,
+          chatRoomId: chatData.getMessages[0].chatRoomId,
+          userId: msg.userId,
+          type: msg.type as "TEXT" | "IMAGE" | "FILE",
+          content: msg.content,
+          createdAt: msg.createdAt,
+        })
+      );
+      setMessages(mapped);
       setIsLoading(false);
       setError(null);
     }
   }, [chatData]);
+
+  // Fetch other user info based on chatRoomId and messages
+  useEffect(() => {
+    if (!user || !chatRoomId || !messages.length) return;
+    // Find the other participant's userId
+    const otherUserId = messages.find((msg) => msg.userId !== user.id)?.userId;
+    if (!otherUserId) return;
+    // Try to fetch user profile from Clerk (if available)
+    // If Clerk is not used for other users, fallback to minimal info
+    // TODO: Replace with real user fetching logic if you have a user API
+    setOtherUser({
+      id: otherUserId,
+      name: `User ${otherUserId.slice(-4)}`,
+      avatar: "/default-avatar.png",
+      isLawyer: false,
+    });
+  }, [user, chatRoomId, messages]);
 
   // Socket Effects for real-time
   useEffect(() => {
@@ -171,14 +205,31 @@ export default function useChatRoomState(chatRoomId: string): UseChatRoomState {
       if (!user || !chatRoomId || isSending || !content.trim()) return;
       setIsSending(true);
       try {
-        await createMessage({
+        const { data: mutationData } = await createMessage({
           variables: {
-            chatRoomId: "685a1b9dff6157ee051ccaaa",
+            chatRoomId,
             userId: user.id,
             type: "TEXT",
             content: content.trim(),
           },
         });
+        // Append the new message to the messages state
+        if (
+          mutationData?.createMessage?.ChatRoomsMessages &&
+          mutationData.createMessage.ChatRoomsMessages.length > 0
+        ) {
+          const mapped = mutationData.createMessage.ChatRoomsMessages.map(
+            (msg: any, idx: number) => ({
+              id: msg._id ? msg._id : `${msg.userId}-${msg.createdAt || idx}`,
+              chatRoomId,
+              userId: msg.userId,
+              type: msg.type as "TEXT" | "IMAGE" | "FILE",
+              content: msg.content,
+              createdAt: msg.createdAt,
+            })
+          );
+          setMessages((prev) => [...prev, ...mapped]);
+        }
         await refetch();
         setError(null);
       } catch (err) {
@@ -212,9 +263,12 @@ export default function useChatRoomState(chatRoomId: string): UseChatRoomState {
       if (!user || !chatRoomId || isJoiningCall) return;
       setIsJoiningCall(true);
       try {
+        console.log("Fetching LiveKit token...");
         const clerkToken = await getToken();
-        if (!clerkToken) throw new Error("Auth token not found.");
+        if (!chatRoomId || !clerkToken)
+          throw new Error("Missing chatRoomId or Clerk token");
         const token = await fetchLiveKitToken(chatRoomId, clerkToken);
+        console.log("Token received, connecting to LiveKit...");
         setActiveCallType(callType);
         setLiveKitToken(token);
       } catch (error) {
@@ -244,7 +298,7 @@ export default function useChatRoomState(chatRoomId: string): UseChatRoomState {
     handleSendFile,
     handleTyping,
     messagesEndRef: messagesEndRef as React.RefObject<HTMLDivElement>,
-    otherUser,
+    otherUser: otherUser || { id: "", name: "", avatar: "", isLawyer: false },
     handleJoinCall,
     handleLeaveCall,
     activeCallType,

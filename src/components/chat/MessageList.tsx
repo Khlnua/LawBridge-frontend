@@ -46,8 +46,7 @@ export const MessageList: React.FC<MessageListProps> = ({
 
   return (
     <div className="space-y-4">
-      {[...messages]
-        .reverse()
+      {messages
         .filter((msg) => msg && msg.userId)
         .map((msg, index) => {
           const isOwnMessage = msg.userId === (currentUserId || user?.id);

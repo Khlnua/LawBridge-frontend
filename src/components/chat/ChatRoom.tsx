@@ -1,11 +1,31 @@
-import React, { RefObject } from "react";
+import React, { RefObject, useState, useEffect } from "react";
 import { ChatHeader } from "./ChatHeader";
 import { MessageList } from "./MessageList";
 import { ChatInput } from "./ChatInput";
 import TypingIndicator from "./TypingIndicator";
 import { Message, User as ChatUser } from "@/app/chatroom/types/chat";
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import {
+  Phone,
+  Video,
+  PhoneOff,
+  VideoOff,
+  Mic,
+  MicOff,
+  Minimize2,
+  Maximize2,
+  Circle,
+  AlertCircle,
+  Volume2,
+  Search,
+} from "lucide-react";
+import { VideoCallModal } from "@/components/chat/VideoCallModal";
+import { LiveKitRoom } from "@livekit/components-react";
+import useChatRoomState from "@/app/chatroom/hooks/useChatRoomState";
 
 interface ChatRoomProps {
+  chatRoomId: string;
   messages: Message[];
   setMessages: React.Dispatch<React.SetStateAction<Message[]>>;
   user: { id: string };
@@ -22,7 +42,10 @@ interface ChatRoomProps {
   activeCallType: "video" | "audio" | null;
 }
 
+const LIVEKIT_URL = "wss://lawbridge-livekit.onrender.com";
+
 const ChatRoom: React.FC<ChatRoomProps> = ({
+  chatRoomId,
   messages,
   setMessages,
   user,
@@ -38,28 +61,106 @@ const ChatRoom: React.FC<ChatRoomProps> = ({
   handleLeaveCall,
   activeCallType,
 }) => {
+  const [showUserInfo, setShowUserInfo] = useState(false);
+  const [isCallMinimized, setIsCallMinimized] = useState(false);
+  const [isMuted, setIsMuted] = useState(false);
+  const [isVideoOff, setIsVideoOff] = useState(false);
+  const [lastSeen, setLastSeen] = useState<string>("");
+  const [connectionStatus, setConnectionStatus] = useState<
+    "connected" | "connecting" | "disconnected"
+  >("connected");
+  const { liveKitToken } = useChatRoomState(chatRoomId);
+
+  // Simulate user activity and last seen
+  useEffect(() => {
+    const updateLastSeen = () => {
+      const now = new Date();
+      const randomMinutesAgo = Math.floor(Math.random() * 30) + 1;
+      const lastSeenTime = new Date(now.getTime() - randomMinutesAgo * 60000);
+      setLastSeen(
+        lastSeenTime.toLocaleTimeString("mn-MN", {
+          hour: "2-digit",
+          minute: "2-digit",
+        })
+      );
+    };
+
+    updateLastSeen();
+    const interval = setInterval(updateLastSeen, 60000); // Update every minute
+
+    return () => clearInterval(interval);
+  }, []);
+
+  // Simulate connection status changes
+  useEffect(() => {
+    if (!isConnected) {
+      setConnectionStatus("disconnected");
+    } else {
+      setConnectionStatus("connected");
+    }
+  }, [isConnected]);
+
+  const handleCallAction = (type: "video" | "audio") => {
+    if (activeCallType) {
+      handleLeaveCall();
+    } else {
+      handleJoinCall(type);
+    }
+  };
+
+  const getConnectionStatusColor = () => {
+    switch (connectionStatus) {
+      case "connected":
+        return "text-green-500";
+      case "connecting":
+        return "text-yellow-500";
+      case "disconnected":
+        return "text-red-500";
+      default:
+        return "text-gray-500";
+    }
+  };
+
+  const getConnectionStatusText = () => {
+    switch (connectionStatus) {
+      case "connected":
+        return "Онлайн";
+      case "connecting":
+        return "Холбогдож байна...";
+      case "disconnected":
+        return "Холбоо тасарсан";
+      default:
+        return "Тодорхойгүй";
+    }
+  };
+
+  // Remove custom renderCallInterface and use VideoCallModal instead
+
   return (
-    <main className="w-full h-screen bg-white md:max-w-4xl md:mx-auto md:my-6 md:h-[calc(100vh-3rem)] md:rounded-3xl md:shadow-2xl md:border md:border-slate-200 lg:max-w-5xl lg:my-8 lg:h-[calc(100vh-4rem)] xl:max-w-6xl transition-all duration-300 ease-in-out overflow-hidden">
-      <div className="flex flex-col h-full">
-        <div className="flex-shrink-0 border-b border-slate-200/80 bg-white/95 backdrop-blur-sm">
-          <ChatHeader
-            user={otherUser}
-            onVideoCall={() => handleJoinCall("video")}
-            onAudioCall={() => handleJoinCall("audio")}
-            isCallActive={!!activeCallType}
-            onEndCall={handleLeaveCall}
-          />
-        </div>
-        <div className="flex-1 min-h-0 overflow-y-auto p-3 sm:p-4 md:p-6 bg-gradient-to-b from-slate-50/50 to-slate-100/30 scrollbar-thin scrollbar-thumb-slate-300 scrollbar-track-transparent hover:scrollbar-thumb-slate-400">
+    <>
+      <main className="w-full h-full flex flex-col bg-white dark:bg-gray-900 overflow-hidden relative">
+        {/* Chat Header (previous version) */}
+        <ChatHeader
+          user={otherUser}
+          onVideoCall={() => handleCallAction("video")}
+          onAudioCall={() => handleCallAction("audio")}
+          isCallActive={!!activeCallType}
+          onEndCall={handleLeaveCall}
+        />
+
+        {/* Messages Area */}
+        <div className="flex-1 overflow-y-auto px-4 py-4 bg-gray-50 dark:bg-gray-900 relative">
           <MessageList
             messages={messages}
             setMessages={setMessages}
-            currentUserId={user?.id}
+            currentUserId={user.id}
           />
           <TypingIndicator typingUsers={typingUsers} />
           <div ref={messagesEndRef} />
         </div>
-        <div className="flex-shrink-0 border-t border-slate-200/80 bg-white/95 backdrop-blur-sm p-3 sm:p-4 md:p-6 sticky bottom-0 z-10">
+
+        {/* Enhanced Chat Input */}
+        <div className="flex-shrink-0 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-4 z-10">
           <ChatInput
             onSend={onSend}
             onFileChange={onFileChange}
@@ -68,8 +169,78 @@ const ChatRoom: React.FC<ChatRoomProps> = ({
             disabled={!isConnected}
           />
         </div>
-      </div>
-    </main>
+
+        {/* User Info Sidebar */}
+        {showUserInfo && (
+          <div className="absolute right-0 top-0 bottom-0 w-80 bg-white dark:bg-gray-800 border-l border-gray-200 dark:border-gray-700 shadow-lg z-30 transform transition-transform duration-300">
+            <div className="p-6 border-b border-gray-200 dark:border-gray-700">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                  Хэрэглэгчийн мэдээлэл
+                </h3>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setShowUserInfo(false)}
+                >
+                  ×
+                </Button>
+              </div>
+
+              <div className="text-center">
+                <Avatar className="w-24 h-24 mx-auto mb-4 ring-4 ring-gray-200 dark:ring-gray-600">
+                  <AvatarImage src={otherUser.avatar} />
+                  <AvatarFallback className="bg-gradient-to-br from-blue-400 to-purple-500 text-white text-2xl">
+                    {otherUser.name?.charAt(0) || "U"}
+                  </AvatarFallback>
+                </Avatar>
+                <h4 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+                  {otherUser.name || "Хэрэглэгч"}
+                </h4>
+              </div>
+            </div>
+
+            {/* Quick Actions */}
+            <div className="p-4 space-y-2">
+              <Button
+                variant="outline"
+                className="w-full justify-start"
+                onClick={() => handleCallAction("audio")}
+              >
+                <Phone className="w-4 h-4 mr-3" />
+                Дуудлага хийх
+              </Button>
+              <Button
+                variant="outline"
+                className="w-full justify-start"
+                onClick={() => handleCallAction("video")}
+              >
+                <Video className="w-4 h-4 mr-3" />
+                Видео дуудлага
+              </Button>
+            </div>
+          </div>
+        )}
+      </main>
+
+      {activeCallType && liveKitToken && (
+        <LiveKitRoom token={liveKitToken} serverUrl={LIVEKIT_URL} connect>
+          <VideoCallModal
+            onEndCall={handleLeaveCall}
+            callType={activeCallType}
+            user={otherUser}
+          />
+        </LiveKitRoom>
+      )}
+
+      {/* Overlay for user info sidebar */}
+      {showUserInfo && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-30 z-20 md:hidden"
+          onClick={() => setShowUserInfo(false)}
+        />
+      )}
+    </>
   );
 };
 

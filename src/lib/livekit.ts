@@ -1,7 +1,7 @@
 // src/lib/livekit.ts (Client-side code)
 
 export async function fetchLiveKitToken(
-  roomName: string,
+  chatRoomId: string,
   clerkToken: string
 ): Promise<string> {
   try {
@@ -14,7 +14,7 @@ export async function fetchLiveKitToken(
           Authorization: `Bearer ${clerkToken}`, // Authenticates the user
         },
         body: JSON.stringify({
-          room: roomName, // The server expects a 'room' property
+          room: chatRoomId, // The server expects a 'room' property
         }),
       }
     );
