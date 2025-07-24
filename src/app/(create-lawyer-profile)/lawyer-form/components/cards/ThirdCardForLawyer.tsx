@@ -70,7 +70,7 @@ const ThirdCardForLawyer = ({
       await createLawyer({
         variables: {
           input: {
-            lawyerId,
+            lawyerId: lawyerId,
             email: EmailAddress,
             firstName: formData.firstName,
             lastName: formData.lastName,
@@ -96,7 +96,7 @@ const ThirdCardForLawyer = ({
               input: {
                 specializations: [
                   {
-                    lawyerId,
+                    lawyerId: lawyerId,
                     specializationId: specId,
                     subscription: sub,
                     pricePerHour: sub ? price : 0,
