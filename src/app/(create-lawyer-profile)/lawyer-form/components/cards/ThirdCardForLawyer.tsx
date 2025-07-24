@@ -86,9 +86,9 @@ const ThirdCardForLawyer = ({
       await Promise.all(
         watchedSpecializations.map(async (specId) => {
           const price = parseInt(
-            (hourlyRates[specId] || "0").replace(/,/g, ""),
-            10
+            hourlyRates[specId].split(" ")[1].replace(/'/g, "")
           );
+
           const sub = recommendPaid[specId] ?? false;
 
           await createSpecialization({
