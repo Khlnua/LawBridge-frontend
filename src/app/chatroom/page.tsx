@@ -67,7 +67,7 @@ export default function MessengerLayout() {
         };
       }
       return {
-        name: "Хэрэглэгч " + id.slice(-4),
+        name: id.slice(-8),
         avatar: "/default-avatar.png",
       };
     },
@@ -87,7 +87,6 @@ export default function MessengerLayout() {
   }, [searchQuery, chatRooms, userId, getProfile]);
 
   const selectedRoom = filteredRooms.find((r) => r._id === selectedRoomId);
-  const chatRoomState = useChatRoomState(selectedRoomId);
 
   const toggleSidebar = () => setSidebarOpen((prev) => !prev);
 
@@ -254,24 +253,8 @@ export default function MessengerLayout() {
 
       {/* Chat Section */}
       <main className="flex-1 flex flex-col h-full overflow-hidden">
-        {selectedRoom && chatRoomState && chatRoomState.user ? (
-          <ChatRoom
-            chatRoomId={selectedRoomId}
-            messages={chatRoomState.messages}
-            setMessages={chatRoomState.setMessages}
-            user={chatRoomState.user}
-            otherUser={chatRoomState.otherUser}
-            typingUsers={chatRoomState.typingUsers}
-            isSending={chatRoomState.isSending}
-            isConnected={chatRoomState.isConnected}
-            onSend={chatRoomState.handleSendMessage}
-            onFileChange={chatRoomState.handleSendFile}
-            onTyping={chatRoomState.handleTyping}
-            messagesEndRef={chatRoomState.messagesEndRef}
-            handleJoinCall={chatRoomState.handleJoinCall}
-            handleLeaveCall={chatRoomState.handleLeaveCall}
-            activeCallType={chatRoomState.activeCallType}
-          />
+        {selectedRoom ? (
+          <ChatRoom chatRoomId={selectedRoomId} />
         ) : (
           <div className="flex items-center justify-center flex-1 text-gray-400">
             <div className="text-center space-y-4">
