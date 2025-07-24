@@ -1,18 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import {
-  FileText,
-  Star,
-  Calendar,
-  MessageCircleMoreIcon,
-  UserPenIcon,
-  Newspaper,
-} from "lucide-react";
+import { FileText, Star, Calendar, UserPenIcon, Newspaper } from "lucide-react";
 import { ShowLawyerPosts } from "./ShowLawyerPosts";
 import { LawyerReviews } from "./LawyerReviews";
 import LawyerSchedule from "./LawyerSchedule";
-import { LawyerClients } from "./LawyerClients";
 import { LawyerProfileHeader } from "@/app/my-profile/[lawyerId]/tabs/LawyerHeader";
 import { Button } from "@/components";
 import CreatePost from "./post/CreatePost";
@@ -47,11 +39,6 @@ const SidebarTabs = ({ lawyerId }: SidebarTabsProps) => {
       id: "schedule",
       label: "Хуваарь",
       icon: <Calendar className="w-4 h-4" />,
-    },
-    {
-      id: "clients",
-      label: "Үйлчлүүлэгчид",
-      icon: <MessageCircleMoreIcon className="w-4 h-4" />,
     },
     {
       id: "posts",
@@ -92,7 +79,6 @@ const SidebarTabs = ({ lawyerId }: SidebarTabsProps) => {
       <section className="flex-1 bg-white rounded-xl shadow-sm p-6">
         {activeTab === "profile" && <LawyerProfileHeader lawyerId={lawyerId} />}
         {activeTab === "schedule" && <LawyerSchedule lawyerId={lawyerId} />}
-        {activeTab === "clients" && <LawyerClients />}
         {activeTab === "posts" && <ShowLawyerPosts lawyerId={lawyerId} />}
         {activeTab === "reviews" && <LawyerReviews />}
         {activeTab === "createPost" && <CreatePost />}

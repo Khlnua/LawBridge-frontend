@@ -10,7 +10,6 @@ import { LoaderCircle } from "lucide-react";
 
 const RecommendLawyers = () => {
   const { push } = useRouter();
-
   const { data } = useGetAdminSpecializationsQuery();
   const { data: allLawyersData, loading: allLawyersLoading, error: allLawyersError } = useQuery(GET_ALL_LAWYERS);
 

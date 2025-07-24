@@ -49,13 +49,11 @@ interface UpdateFormState {
   newEnd: string;
 }
 
-const generateTimeSlots = (startHour = 9, endHour = 17): string[] => {
+const generateHourlySlots = (startHour = 0, endHour = 24): string[] => {
   const slots: string[] = [];
   for (let hour = startHour; hour < endHour; hour++) {
-    for (let minute = 0; minute < 60; minute += 30) {
-      const timeString = `${hour.toString().padStart(2, "0")}:${minute.toString().padStart(2, "0")}`;
-      slots.push(timeString);
-    }
+    const timeString = `${hour.toString().padStart(2, "0")}:00`;
+    slots.push(timeString);
   }
   return slots;
 };
@@ -96,7 +94,7 @@ export default function LawyerSchedule({ lawyerId }: LawyerScheduleProps) {
 
   const selectedDateKey = selectedDate.toISOString().split("T")[0];
   const selectedTimeSlots = availability[selectedDateKey] || [];
-  const timeSlots = generateTimeSlots();
+  const timeSlots = generateHourlySlots();
 
   useEffect(() => {
     const now = new Date();
@@ -234,7 +232,7 @@ export default function LawyerSchedule({ lawyerId }: LawyerScheduleProps) {
   // const maxDate = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
 
   return (
-    <div className="max-w-7xl mx-auto  space-y-6">
+    <div className="max-w-9xl mx-auto  space-y-6">
       {/* Header */}
       <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-6 rounded-2xl shadow-lg">
         <div className="flex items-center gap-3 mb-2">
@@ -252,7 +250,7 @@ export default function LawyerSchedule({ lawyerId }: LawyerScheduleProps) {
         </div>
       )}
 
-      <div className="grid lg:grid-cols-3 gap-6">
+      <div className="grid-cols-3 lg:grid-cols-3 gap-6">
         {/* Calendar Section */}
         <div className="lg:col-span-1">
           <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
@@ -263,13 +261,7 @@ export default function LawyerSchedule({ lawyerId }: LawyerScheduleProps) {
 
             {/* Simple Calendar */}
             <div className="space-y-4">
-              <div className="grid grid-cols-7 gap-1 text-center text-sm font-medium text-gray-500">
-                {["Да", "Мя", "Лх", "Пү", "Ба", "Бя", "Ня"].map((day) => (
-                  <div key={day} className="p-2">
-                    {day}
-                  </div>
-                ))}
-              </div>
+             
 
               <div className="grid grid-cols-7 gap-1">
                 {Array.from({ length: 7 }, (_, i) => {
@@ -284,7 +276,7 @@ export default function LawyerSchedule({ lawyerId }: LawyerScheduleProps) {
                       key={i}
                       onClick={() => setSelectedDate(date)}
                       className={`
-                        p-3 rounded-xl text-sm font-medium transition-all duration-200 relative
+                        p-4 rounded-xl text-sm font-medium transition-all duration-200 relative
                         ${isSelected ? "bg-blue-600 text-white shadow-lg scale-105" : "bg-gray-50 hover:bg-gray-100 text-gray-700"}
                       `}
                     >
@@ -347,7 +339,7 @@ export default function LawyerSchedule({ lawyerId }: LawyerScheduleProps) {
                       }
                     `}
                   >
-                    {time}
+                    {time} - {addMinutesToTime(time, 60)}
                   </button>
                 ))}
               </div>
@@ -364,7 +356,7 @@ export default function LawyerSchedule({ lawyerId }: LawyerScheduleProps) {
                     <div className="flex flex-wrap gap-2">
                       {selectedTimeSlots.map((time) => (
                         <span key={time} className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
-                          {time} - {addMinutesToTime(time, 30)}
+                          {time} - {addMinutesToTime(time, 60)}
                         </span>
                       ))}
                     </div>
@@ -523,19 +515,17 @@ export default function LawyerSchedule({ lawyerId }: LawyerScheduleProps) {
 
       {/* All Selected Times Overview */}
       {Object.keys(availability).length > 0 && (
-        <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+        <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100 mt-8">
           <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
             <Calendar className="w-5 h-5 text-green-600" />
-            Бүх сонгосон хуваарь
+            Өмгөөлөгчийн бүх сонгосон хуваарь
           </h3>
-
           <div className="space-y-4">
             {Object.entries(availability).map(([dateKey, slots]) => (
               <div key={dateKey} className="bg-gradient-to-r from-gray-50 to-green-50 rounded-xl p-4 border border-gray-100">
                 <div className="flex items-center justify-between mb-3">
                   <h4 className="font-semibold text-gray-800">
-                    📅{" "}
-                    {new Date(dateKey).toLocaleDateString("mn-MN", {
+                    📅 {new Date(dateKey).toLocaleDateString("mn-MN", {
                       year: "numeric",
                       month: "long",
                       day: "numeric",
@@ -544,20 +534,13 @@ export default function LawyerSchedule({ lawyerId }: LawyerScheduleProps) {
                   </h4>
                   <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-medium">{slots.length} цаг</span>
                 </div>
-
                 <div className="flex flex-wrap gap-2">
                   {slots.map((slot) => (
                     <div key={slot} className="flex items-center gap-2 bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm">
                       <Clock className="w-3 h-3 text-gray-500" />
                       <span className="font-medium">
-                        {slot} - {addMinutesToTime(slot, 30)}
+                        {slot} - {addMinutesToTime(slot, 60)}
                       </span>
-                      <button
-                        onClick={() => removeTimeSlot(dateKey, slot)}
-                        className="text-red-500 hover:text-red-700 transition-colors ml-1"
-                      >
-                        <X className="w-3 h-3" />
-                      </button>
                     </div>
                   ))}
                 </div>

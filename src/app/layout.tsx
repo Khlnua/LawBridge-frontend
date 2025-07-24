@@ -1,7 +1,7 @@
 "use client";
 
 import "./globals.css";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Geist, Geist_Mono } from "next/font/google";
 import { ApolloWrapper } from "@/providers/ApolloWrapper";
@@ -9,6 +9,7 @@ import Header from "@/components/header/Header";
 import { SocketProvider } from "@/context/SocketContext";
 import { AuthRedirectGuard } from "@/components";
 import { Toaster } from "sonner";
+import FloatingChatbotButton from "@/components/FloatingChatbotButton";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -27,7 +28,9 @@ export default function RootLayout({
 }>) {
   const pathname = usePathname();
   const hideHeader =
-    pathname.startsWith("/chat") || pathname.startsWith("/admin");
+  pathname.startsWith("/admin");
+  const chatbotHide = pathname.startsWith("/chatbot");
+  const { push } = useRouter();
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
       <body
@@ -39,7 +42,12 @@ export default function RootLayout({
             <SocketProvider>
               <Toaster richColors position="top-right" />
 
+              {!chatbotHide && <FloatingChatbotButton onClick={() => push("/chatbot")} />}
+              <main className="flex justify-center items-center min-h-[calc(100vh-4rem)]">
+
+
               <main className="flex mt-3 md:mt-10 lg:mt-15 justify-center items-start min-h-[calc(100vh-4rem)]">
+
                 <AuthRedirectGuard />
                 {children}
               </main>

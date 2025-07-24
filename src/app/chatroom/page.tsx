@@ -4,7 +4,6 @@ import { useUser } from "@clerk/nextjs";
 import { useQuery, gql } from "@apollo/client";
 import { useState, useMemo, useEffect, useCallback } from "react";
 import ChatRoom from "@/components/chat/ChatRoom";
-import useChatRoomState from "@/app/chatroom/hooks/useChatRoomState";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -68,7 +67,7 @@ export default function MessengerLayout() {
       }
       return {
         name: id.slice(-8),
-        avatar: "/default-avatar.png",
+        avatar: "",
       };
     },
     [userId, user]
@@ -98,7 +97,7 @@ export default function MessengerLayout() {
   const handleRetry = () => refetch();
 
   return (
-    <div className="flex h-screen w-screen bg-gray-50 text-gray-800">
+    <div className="flex h-screen w-screen bg-gray-50 text-gray-800 pt-14">
       {/* Sidebar */}
       <div
         className={`transform transition-transform duration-300 ease-in-out ${
