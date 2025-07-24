@@ -1,4 +1,4 @@
-import React, { RefObject, useState, useEffect } from "react";
+import React, { RefObject, useState } from "react";
 import { ChatHeader } from "./ChatHeader";
 import { MessageList } from "./MessageList";
 import { ChatInput } from "./ChatInput";
@@ -6,20 +6,7 @@ import TypingIndicator from "./TypingIndicator";
 import { Message, User as ChatUser } from "@/app/chatroom/types/chat";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import {
-  Phone,
-  Video,
-  PhoneOff,
-  VideoOff,
-  Mic,
-  MicOff,
-  Minimize2,
-  Maximize2,
-  Circle,
-  AlertCircle,
-  Volume2,
-  Search,
-} from "lucide-react";
+import { Phone, Video } from "lucide-react";
 import { VideoCallModal } from "@/components/chat/VideoCallModal";
 import { LiveKitRoom } from "@livekit/components-react";
 import useChatRoomState from "@/app/chatroom/hooks/useChatRoomState";
@@ -62,43 +49,10 @@ const ChatRoom: React.FC<ChatRoomProps> = ({
   activeCallType,
 }) => {
   const [showUserInfo, setShowUserInfo] = useState(false);
-  const [isCallMinimized, setIsCallMinimized] = useState(false);
-  const [isMuted, setIsMuted] = useState(false);
-  const [isVideoOff, setIsVideoOff] = useState(false);
-  const [lastSeen, setLastSeen] = useState<string>("");
-  const [connectionStatus, setConnectionStatus] = useState<
-    "connected" | "connecting" | "disconnected"
-  >("connected");
+  // const [isCallMinimized, setIsCallMinimized] = useState(false);
+  // const [isMuted, setIsMuted] = useState(false);
+  // const [isVideoOff, setIsVideoOff] = useState(false);
   const { liveKitToken } = useChatRoomState(chatRoomId);
-
-  // Simulate user activity and last seen
-  useEffect(() => {
-    const updateLastSeen = () => {
-      const now = new Date();
-      const randomMinutesAgo = Math.floor(Math.random() * 30) + 1;
-      const lastSeenTime = new Date(now.getTime() - randomMinutesAgo * 60000);
-      setLastSeen(
-        lastSeenTime.toLocaleTimeString("mn-MN", {
-          hour: "2-digit",
-          minute: "2-digit",
-        })
-      );
-    };
-
-    updateLastSeen();
-    const interval = setInterval(updateLastSeen, 60000); // Update every minute
-
-    return () => clearInterval(interval);
-  }, []);
-
-  // Simulate connection status changes
-  useEffect(() => {
-    if (!isConnected) {
-      setConnectionStatus("disconnected");
-    } else {
-      setConnectionStatus("connected");
-    }
-  }, [isConnected]);
 
   const handleCallAction = (type: "video" | "audio") => {
     if (activeCallType) {
@@ -108,31 +62,31 @@ const ChatRoom: React.FC<ChatRoomProps> = ({
     }
   };
 
-  const getConnectionStatusColor = () => {
-    switch (connectionStatus) {
-      case "connected":
-        return "text-green-500";
-      case "connecting":
-        return "text-yellow-500";
-      case "disconnected":
-        return "text-red-500";
-      default:
-        return "text-gray-500";
-    }
-  };
+  // const getConnectionStatusColor = () => {
+  //   switch (connectionStatus) {
+  //     case "connected":
+  //       return "text-green-500";
+  //     case "connecting":
+  //       return "text-yellow-500";
+  //     case "disconnected":
+  //       return "text-red-500";
+  //     default:
+  //       return "text-gray-500";
+  //   }
+  // };
 
-  const getConnectionStatusText = () => {
-    switch (connectionStatus) {
-      case "connected":
-        return "Онлайн";
-      case "connecting":
-        return "Холбогдож байна...";
-      case "disconnected":
-        return "Холбоо тасарсан";
-      default:
-        return "Тодорхойгүй";
-    }
-  };
+  // const getConnectionStatusText = () => {
+  //   switch (connectionStatus) {
+  //     case "connected":
+  //       return "Онлайн";
+  //     case "connecting":
+  //       return "Холбогдож байна...";
+  //     case "disconnected":
+  //       return "Холбоо тасарсан";
+  //     default:
+  //       return "Тодорхойгүй";
+  //   }
+  // };
 
   // Remove custom renderCallInterface and use VideoCallModal instead
 
@@ -224,7 +178,11 @@ const ChatRoom: React.FC<ChatRoomProps> = ({
       </main>
 
       {activeCallType && liveKitToken && (
-        <LiveKitRoom token={liveKitToken} serverUrl={LIVEKIT_URL} connect>
+        <LiveKitRoom
+          token={liveKitToken}
+          serverUrl={process.env.NEXT_PUBLIC_LIVEKIT_SERVER_URL}
+          connect
+        >
           <VideoCallModal
             onEndCall={handleLeaveCall}
             callType={activeCallType}

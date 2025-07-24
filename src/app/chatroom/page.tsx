@@ -6,45 +6,17 @@ import { useState, useMemo, useEffect, useCallback } from "react";
 import ChatRoom from "@/components/chat/ChatRoom";
 import useChatRoomState from "@/app/chatroom/hooks/useChatRoomState";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import {
   MessageCircle,
   Search,
-  Users,
   Loader2,
   AlertCircle,
-  Settings,
-  Moon,
-  Sun,
-  Bell,
-  BellOff,
-  Pin,
-  Archive,
-  MoreVertical,
   X,
   Menu,
-  Circle,
   MessageSquare,
-  Phone,
-  Video,
-  UserPlus,
-  Filter,
 } from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 
 const GET_CHAT_ROOMS = gql`
   query GetChatRoomByUser($userId: String!) {
@@ -71,7 +43,6 @@ export default function MessengerLayout() {
   const [searchQuery, setSearchQuery] = useState("");
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
-  const [isSearchFocused, setIsSearchFocused] = useState(false);
 
   const { data, loading, error, refetch } = useQuery(GET_CHAT_ROOMS, {
     variables: { userId },
@@ -163,8 +134,6 @@ export default function MessengerLayout() {
                 className="pl-10 pr-4 py-3 rounded-xl bg-gray-100 border-gray-200"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                onFocus={() => setIsSearchFocused(true)}
-                onBlur={() => setIsSearchFocused(false)}
               />
               {searchQuery && (
                 <Button

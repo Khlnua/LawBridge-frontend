@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Calendar, Clock, Plus, X, Edit3, Save, Trash2, AlertCircle } from "lucide-react";
+import { Calendar, Clock, X, Edit3, Save, Trash2, AlertCircle } from "lucide-react";
 import { useMutation, gql } from "@apollo/client";
 
 const SET_AVAILABILITY = gql`
@@ -162,6 +162,9 @@ export default function LawyerSchedule({ lawyerId }: LawyerScheduleProps) {
       showNotification("Хуваарь амжилттай хадгалагдлаа! ✅");
     } catch (error) {
       showNotification("Алдаа гарлаа. Дахин оролдоно уу.");
+      if (error instanceof Error) {
+        showNotification(error.message);
+      }
     } finally {
       setSaving(false);
     }
@@ -198,6 +201,9 @@ export default function LawyerSchedule({ lawyerId }: LawyerScheduleProps) {
       showNotification("Хуваарь амжилттай шинэчлэгдлээ! ✅");
     } catch (error) {
       showNotification("Алдаа гарлаа. Дахин оролдоно уу.");
+      if (error instanceof Error) {
+        showNotification(error.message);
+      }
     } finally {
       setSaving(false);
     }
@@ -225,7 +231,7 @@ export default function LawyerSchedule({ lawyerId }: LawyerScheduleProps) {
   };
 
   const now = new Date();
-  const maxDate = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+  // const maxDate = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
 
   return (
     <div className="max-w-6xl mx-auto p-6 space-y-6">
