@@ -685,7 +685,7 @@ export type QueryGetPostByIdArgs = {
 
 
 export type QueryGetPostsByLawyerArgs = {
-  lawyerId: Scalars['String']['input'];
+  lawyerId: Scalars['ID']['input'];
 };
 
 

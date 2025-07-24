@@ -11,7 +11,7 @@ interface CommentType {
 }
 
 interface PostType {
-  id: number;
+  id: number | string;
   title: string;
   content: string;
   specialization: string;
@@ -24,24 +24,23 @@ interface PostType {
 export const PostCard = ({ post }: { post: PostType }) => {
   const [commentText, setCommentText] = useState("");
 
-  // Коммент жагсаалт татах query
   const { data, loading, error, refetch } = useQuery(GET_COMMENTS_BY_POST, {
     variables: { postId: post.id },
   });
 
-  // Коммент үүсгэх mutation
   const [createComment, { loading: creating }] = useMutation(CREATE_COMMENT, {
-    onCompleted() {
+    onCompleted: () => {
       setCommentText("");
       refetch();
     },
-    onError(error) {
+    onError: (error: any) => {
       alert("Коммент нэмэхэд алдаа гарлаа: " + error.message);
     },
   });
 
   const handleAddComment = async () => {
     if (!commentText.trim()) return;
+
     await createComment({
       variables: {
         input: {
@@ -52,6 +51,10 @@ export const PostCard = ({ post }: { post: PostType }) => {
     });
   };
 
+  const comments: CommentType[] = data?.getCommentsByPost ?? post.comments ?? [];
+
+  const article = post.content || { text: "" };
+
   return (
     <div className="bg-white border rounded-md p-4 shadow-sm space-y-4">
       <div className="flex justify-between text-sm text-gray-500 mb-1">
@@ -60,22 +63,19 @@ export const PostCard = ({ post }: { post: PostType }) => {
       </div>
 
       <h3 className="text-lg font-semibold">{post.title}</h3>
-      <p className="text-gray-700 whitespace-pre-line">{post.content}</p>
+      {typeof article === "string" && <p className="text-gray-700 whitespace-pre-line">{article}</p>}
 
       {post.mediaType === "image" && post.mediaUrl && (
         <img src={post.mediaUrl} alt="attached" className="w-full rounded-md max-h-60 object-cover mt-2" />
       )}
-
       {post.mediaType === "video" && post.mediaUrl && (
         <div className="aspect-video mt-2">
           <video controls src={post.mediaUrl} className="w-full rounded-md" />
         </div>
       )}
 
-      {/* Комментын тоо */}
-      <div className="text-xs text-gray-400 pt-2">Сэтгэгдэл: {data?.getCommentsByPost?.length ?? post.comments.length} ширхэг</div>
+      <div className="text-xs text-gray-400 pt-2">Сэтгэгдэл: {comments.length} ширхэг</div>
 
-      {/* Коммент бичих хэсэг */}
       <div className="mt-4">
         <textarea
           placeholder="Сэтгэгдэл бичих..."
@@ -94,17 +94,21 @@ export const PostCard = ({ post }: { post: PostType }) => {
         </button>
       </div>
 
-      {/* Коммент жагсаалт */}
       <div className="mt-6 space-y-3">
         {loading && <p>Коммент уншиж байна...</p>}
         {error && <p className="text-red-500">Коммент уншихад алдаа гарлаа.</p>}
-        {data?.getCommentsByPost?.map((comment: CommentType) => (
-          <div key={comment._id} className="border rounded p-2 bg-gray-50">
-            <p className="font-semibold">{comment.author}</p>
-            <p>{comment.content}</p>
-            <p className="text-xs text-gray-400">{new Date(comment.createdAt).toLocaleString()}</p>
-          </div>
-        ))}
+        {comments.map(
+          (comment) => (
+            console.log(comment.author),
+            (
+              <div key={comment._id} className="border rounded p-2 bg-gray-200">
+                <p className="font-semibold ml-5 text-green-700">{comment.author.slice(0, 4)}</p>
+                <p>{comment.content}</p>
+                <p className="text-xs text-gray-400">{new Date(comment.createdAt).toLocaleString()}</p>
+              </div>
+            )
+          )
+        )}
       </div>
     </div>
   );

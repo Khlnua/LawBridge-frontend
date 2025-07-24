@@ -1,11 +1,6 @@
 "use client";
 
-import {
-  ApolloClient,
-  InMemoryCache,
-  ApolloProvider,
-  createHttpLink,
-} from "@apollo/client";
+import { ApolloClient, InMemoryCache, ApolloProvider, createHttpLink } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
 import { ReactNode } from "react";
 import { useAuth } from "@clerk/nextjs";
@@ -21,7 +16,7 @@ export const ApolloWrapper = ({ children }: { children: ReactNode }) => {
     return {
       headers: {
         ...headers,
-        Authorization: userId,
+        Authorization: `Bearer ${userId}`,
       },
     };
   });

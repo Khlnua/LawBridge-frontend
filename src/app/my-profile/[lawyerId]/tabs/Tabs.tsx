@@ -76,7 +76,7 @@ const SidebarTabs = ({ lawyerId }: SidebarTabsProps) => {
         {activeTab === "profile" && <LawyerProfileHeader lawyerId={lawyerId} />}
         {activeTab === "schedule" && <LawyerSchedule lawyerId={lawyerId} />}
         {activeTab === "clients" && <LawyerClients />}
-        {activeTab === "posts" && <ShowLawyerPosts />}
+        {activeTab === "posts" && <ShowLawyerPosts lawyerId={lawyerId} />}
         {activeTab === "reviews" && <LawyerReviews />}
         {activeTab === "createPost" && <CreatePost />}
       </section>
