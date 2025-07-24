@@ -19,7 +19,7 @@ const LawyerProfilePageForLawyers = async ({ params }: { params: any }) => {
   }
 
   return (
-    <div className="w-full max-w-6xl mx-auto px-4 py-8 space-y-6 border-none">
+    <div className="w-[80vh] max-w-6xl mx-auto  py-8 space-y-6 ">
       <SidebarTabs lawyerId={requestedLawyerId} />
     </div>
   );

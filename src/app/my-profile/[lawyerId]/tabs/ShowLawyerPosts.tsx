@@ -12,10 +12,13 @@ interface CommentType {
 }
 
 export interface PostType {
-  id: number;
+  id: string;
   title: string;
-  content: string;
-  specialization: string;
+  lawyerId: string;
+  content: {
+    text: string;
+  };
+
   mediaUrl?: string;
   mediaType?: "image" | "video";
   createdAt: string;
