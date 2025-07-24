@@ -6,45 +6,17 @@ import { useState, useMemo, useEffect, useCallback } from "react";
 import ChatRoom from "@/components/chat/ChatRoom";
 import useChatRoomState from "@/app/chatroom/hooks/useChatRoomState";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import {
   MessageCircle,
   Search,
-  Users,
   Loader2,
   AlertCircle,
-  Settings,
-  Moon,
-  Sun,
-  Bell,
-  BellOff,
-  Pin,
-  Archive,
-  MoreVertical,
   X,
   Menu,
-  Circle,
   MessageSquare,
-  Phone,
-  Video,
-  UserPlus,
-  Filter,
 } from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 
 const GET_CHAT_ROOMS = gql`
   query GetChatRoomByUser($userId: String!) {
@@ -71,7 +43,6 @@ export default function MessengerLayout() {
   const [searchQuery, setSearchQuery] = useState("");
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
-  const [isSearchFocused, setIsSearchFocused] = useState(false);
 
   const { data, loading, error, refetch } = useQuery(GET_CHAT_ROOMS, {
     variables: { userId },
@@ -96,7 +67,7 @@ export default function MessengerLayout() {
         };
       }
       return {
-        name: "Хэрэглэгч " + id.slice(-4),
+        name: id.slice(-8),
         avatar: "/default-avatar.png",
       };
     },
@@ -116,7 +87,6 @@ export default function MessengerLayout() {
   }, [searchQuery, chatRooms, userId, getProfile]);
 
   const selectedRoom = filteredRooms.find((r) => r._id === selectedRoomId);
-  const chatRoomState = useChatRoomState(selectedRoomId);
 
   const toggleSidebar = () => setSidebarOpen((prev) => !prev);
 
@@ -163,8 +133,6 @@ export default function MessengerLayout() {
                 className="pl-10 pr-4 py-3 rounded-xl bg-gray-100 border-gray-200"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                onFocus={() => setIsSearchFocused(true)}
-                onBlur={() => setIsSearchFocused(false)}
               />
               {searchQuery && (
                 <Button
@@ -285,24 +253,8 @@ export default function MessengerLayout() {
 
       {/* Chat Section */}
       <main className="flex-1 flex flex-col h-full overflow-hidden">
-        {selectedRoom && chatRoomState && chatRoomState.user ? (
-          <ChatRoom
-            chatRoomId={selectedRoomId}
-            messages={chatRoomState.messages}
-            setMessages={chatRoomState.setMessages}
-            user={chatRoomState.user}
-            otherUser={chatRoomState.otherUser}
-            typingUsers={chatRoomState.typingUsers}
-            isSending={chatRoomState.isSending}
-            isConnected={chatRoomState.isConnected}
-            onSend={chatRoomState.handleSendMessage}
-            onFileChange={chatRoomState.handleSendFile}
-            onTyping={chatRoomState.handleTyping}
-            messagesEndRef={chatRoomState.messagesEndRef}
-            handleJoinCall={chatRoomState.handleJoinCall}
-            handleLeaveCall={chatRoomState.handleLeaveCall}
-            activeCallType={chatRoomState.activeCallType}
-          />
+        {selectedRoom ? (
+          <ChatRoom chatRoomId={selectedRoomId} />
         ) : (
           <div className="flex items-center justify-center flex-1 text-gray-400">
             <div className="text-center space-y-4">

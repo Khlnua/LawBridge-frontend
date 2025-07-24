@@ -162,7 +162,7 @@ const LawyerProfile = ({ params }: Props) => {
   const [createAppointment, { loading: creatingAppointment }] = useMutation(
     CREATE_APPOINTMENT,
     {
-      onCompleted: (data) => {
+      onCompleted: () => {
         setAppointmentStatus({
           type: "success",
           message:

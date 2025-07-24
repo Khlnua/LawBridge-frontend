@@ -1,10 +1,7 @@
 import { currentUser } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
-import SidebarTabs from "./tabs/Tabs";
 
-type SidebarTabsProps = {
-  lawyerId: string;
-};
+import SidebarTabs from "./tabs/Tabs";
 
 const LawyerProfilePageForLawyers = async ({ params }: { params: any }) => {
   const user = await currentUser();

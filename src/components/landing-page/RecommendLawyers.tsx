@@ -21,7 +21,7 @@ const RecommendLawyers = () => {
   if (allLawyersError) return <div>Алдаа гарлаа.</div>;
 
   const lawyers = [...(allLawyersData?.getLawyers || [])];
-  const specializations = data?.getAdminSpecializations || [];
+  // const specializations = data?.getAdminSpecializations || [];
 
   console.log(lawyers);
 

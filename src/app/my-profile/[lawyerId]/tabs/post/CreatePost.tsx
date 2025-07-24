@@ -4,7 +4,7 @@ import { useMutation } from "@apollo/client";
 import { CREATE_POST } from "@/graphql/post";
 import { useGetAdminSpecializationsQuery } from "@/generated";
 import { Button, Input, Textarea, Label } from "@/components/ui";
-import { Loader2, XCircle, ImagePlus, FileVideo, AudioLinesIcon } from "lucide-react";
+import { Loader2, } from "lucide-react";
 
 const CreatePost = () => {
   const [title, setTitle] = useState("");
@@ -64,39 +64,39 @@ const CreatePost = () => {
     }
   };
 
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, type: "image" | "video" | "audio") => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    if (file.size > 15 * 1024 * 1024) {
-      setError("Файл хэтэрхий том байна. 15MB-аас бага файл сонгоно уу.");
-      if (type === "image" && imageInputRef.current) imageInputRef.current.value = "";
-      if (type === "video" && videoInputRef.current) videoInputRef.current.value = "";
-      if (type === "audio" && audioInputRef.current) audioInputRef.current.value = "";
-      return;
-    }
-    setError(null);
-    setSuccess(null);
-    const url = await uploadToCloudflare(file);
-    if (!url) return;
-    if (type === "image") setImage(url);
-    if (type === "video") setVideo(url);
-    if (type === "audio") setAudio(url);
-  };
+  // const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, type: "image" | "video" | "audio") => {
+  //   const file = e.target.files?.[0];
+  //   if (!file) return;
+  //   if (file.size > 15 * 1024 * 1024) {
+  //     setError("Файл хэтэрхий том байна. 15MB-аас бага файл сонгоно уу.");
+  //     if (type === "image" && imageInputRef.current) imageInputRef.current.value = "";
+  //     if (type === "video" && videoInputRef.current) videoInputRef.current.value = "";
+  //     if (type === "audio" && audioInputRef.current) audioInputRef.current.value = "";
+  //     return;
+  //   }
+  //   setError(null);
+  //   setSuccess(null);
+  //   const url = await uploadToCloudflare(file);
+  //   if (!url) return;
+  //   if (type === "image") setImage(url);
+  //   if (type === "video") setVideo(url);
+  //   if (type === "audio") setAudio(url);
+  // };
 
-  const removeFile = (type: "image" | "video" | "audio") => {
-    if (type === "image") {
-      setImage(null);
-      if (imageInputRef.current) imageInputRef.current.value = "";
-    }
-    if (type === "video") {
-      setVideo(null);
-      if (videoInputRef.current) videoInputRef.current.value = "";
-    }
-    if (type === "audio") {
-      setAudio(null);
-      if (audioInputRef.current) audioInputRef.current.value = "";
-    }
-  };
+  // const removeFile = (type: "image" | "video" | "audio") => {
+  //   if (type === "image") {
+  //     setImage(null);
+  //     if (imageInputRef.current) imageInputRef.current.value = "";
+  //   }
+  //   if (type === "video") {
+  //     setVideo(null);
+  //     if (videoInputRef.current) videoInputRef.current.value = "";
+  //   }
+  //   if (type === "audio") {
+  //     setAudio(null);
+  //     if (audioInputRef.current) audioInputRef.current.value = "";
+  //   }
+  // };
 
   const handleSubmit = () => {
     if (!title.trim() || !content.trim()) {
