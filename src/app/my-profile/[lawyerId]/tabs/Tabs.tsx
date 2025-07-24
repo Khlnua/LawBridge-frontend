@@ -54,7 +54,7 @@ const SidebarTabs = ({ lawyerId }: SidebarTabsProps) => {
 
   return (
     <div className="w-full flex flex-col md:flex-row gap-6">
-      <aside className="md:w-60 w-full rounded-xl bg-white  p-4 border-none">
+      <aside className="md:w-60 w-full rounded-xl bg-white  p-4 border-none ">
         <nav className="flex flex-col md:space-y-2 space-x-2 md:space-x-0 gap-3 ">
           {tabItems.map((tab) => (
             <Button
@@ -78,7 +78,7 @@ const SidebarTabs = ({ lawyerId }: SidebarTabsProps) => {
         {activeTab === "clients" && <LawyerClients />}
         {activeTab === "posts" && <ShowLawyerPosts />}
         {activeTab === "reviews" && <LawyerReviews />}
-        {activeTab === "createPost" && <CreatePost onCreate={} />}
+        {activeTab === "createPost" && <CreatePost />}
       </section>
     </div>
   );
