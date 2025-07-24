@@ -1,11 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { FileText, Star, Calendar, MessageCircleMoreIcon, UserPenIcon, Newspaper } from "lucide-react";
+
+
+
+import { FileText, Star, Calendar, UserPenIcon, Newspaper } from "lucide-react";
+
 import { ShowLawyerPosts } from "./ShowLawyerPosts";
 import { LawyerReviews } from "./LawyerReviews";
 import LawyerSchedule from "./LawyerSchedule";
-import { LawyerClients } from "./LawyerClients";
 import { LawyerProfileHeader } from "@/app/my-profile/[lawyerId]/tabs/LawyerHeader";
 import { Button } from "@/components";
 import CreatePost from "./post/CreatePost";
@@ -36,11 +39,6 @@ const SidebarTabs = ({ lawyerId }: SidebarTabsProps) => {
       icon: <Calendar className="w-4 h-4" />,
     },
     {
-      id: "clients",
-      label: "Үйлчлүүлэгчид",
-      icon: <MessageCircleMoreIcon className="w-4 h-4" />,
-    },
-    {
       id: "posts",
       label: "Нийтлэлүүд",
       icon: <FileText className="w-4 h-4" />,
@@ -61,9 +59,15 @@ const SidebarTabs = ({ lawyerId }: SidebarTabsProps) => {
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={`flex items-center gap-2 px-4 py-2 rounded-md transition-all duration-150 text-sm w-full justify-start hover:cursor-pointer
-                ${activeTab === tab.id ? "bg-[#316eea] text-white shadow-sm" : "text-gray-700 hover:bg-gray-100"} ${
-                tab.id === "profile" ? "bg-[#316eea]  hover:bg-gray-100" : ""
-              }`}
+
+     
+
+                ${
+                  activeTab === tab.id
+                    ? "bg-[#316eea] text-white shadow-sm"
+                    : "text-gray-700 hover:bg-gray-100"
+                }`}
+
             >
               {tab.icon}
               {tab.label}
@@ -75,7 +79,6 @@ const SidebarTabs = ({ lawyerId }: SidebarTabsProps) => {
       <section className="flex-1 bg-white rounded-xl ">
         {activeTab === "profile" && <LawyerProfileHeader lawyerId={lawyerId} />}
         {activeTab === "schedule" && <LawyerSchedule lawyerId={lawyerId} />}
-        {activeTab === "clients" && <LawyerClients />}
         {activeTab === "posts" && <ShowLawyerPosts lawyerId={lawyerId} />}
         {activeTab === "reviews" && <LawyerReviews />}
         {activeTab === "createPost" && <CreatePost />}

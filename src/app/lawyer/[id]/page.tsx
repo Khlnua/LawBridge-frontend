@@ -166,7 +166,7 @@ const LawyerProfile = ({ params }: Props) => {
         setAppointmentStatus({
           type: "success",
           message:
-            "Цаг захиалга амжилттай үүслээ! Танд имэйлээр мэдэгдэл илгээгдэх болно.",
+            "Цаг захиалга амжилттай үүслээ!",
         });
         setSelectedSlot(null);
         setAppointmentNotes("");
@@ -535,15 +535,17 @@ const LawyerProfile = ({ params }: Props) => {
           </div>
 
           {/* Contact Info */}
-          <div className="px-8 py-6 bg-gray-50 border-t w-full">
-            <div className="flex justify-center  items-center gap-3 text-gray-600">
-              <Mail className="h-5 w-5 text-blue-600" />
-              <a
-                href={`mailto:${lawyer.email}`}
-                className="hover:text-blue-600 transition-colors"
-              >
-                {lawyer.email}
-              </a>
+          <div className="px-8 py-6 bg-gray-50 border-t">
+            <div className="grid md:grid-cols-2 gap-4">
+              <div className="flex items-center gap-3 text-gray-600">
+                <Mail className="h-5 w-5 text-blue-600" />
+                <a
+                  href={`mailto:${lawyer.email}`}
+                  className="hover:text-blue-600 transition-colors"
+                >
+                  {lawyer.email}
+                </a>
+              </div>
             </div>
           </div>
         </div>

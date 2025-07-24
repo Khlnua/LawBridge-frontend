@@ -1,7 +1,15 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Calendar, Clock, X, Edit3, Save, Trash2, AlertCircle } from "lucide-react";
+import {
+  Calendar,
+  Clock,
+  X,
+  Edit3,
+  Save,
+  Trash2,
+  AlertCircle,
+} from "lucide-react";
 import { useMutation, gql } from "@apollo/client";
 
 const SET_AVAILABILITY = gql`
@@ -49,13 +57,12 @@ interface UpdateFormState {
   newEnd: string;
 }
 
-const generateTimeSlots = (startHour = 9, endHour = 17): string[] => {
+const generateHourlySlots = (startHour = 0, endHour = 24): string[] => {
   const slots: string[] = [];
   for (let hour = startHour; hour < endHour; hour++) {
-    for (let minute = 0; minute < 60; minute += 30) {
-      const timeString = `${hour.toString().padStart(2, "0")}:${minute.toString().padStart(2, "0")}`;
-      slots.push(timeString);
-    }
+
+    const timeString = `${hour.toString().padStart(2, "0")}:00`;
+    slots.push(timeString);
   }
   return slots;
 };
@@ -96,20 +103,31 @@ export default function LawyerSchedule({ lawyerId }: LawyerScheduleProps) {
 
   const selectedDateKey = selectedDate.toISOString().split("T")[0];
   const selectedTimeSlots = availability[selectedDateKey] || [];
-  const timeSlots = generateTimeSlots();
+  const timeSlots = generateHourlySlots();
 
   useEffect(() => {
     const now = new Date();
-    const cutoff = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
-    const weekLater = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 7);
+    const cutoff = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate() - 1
+    );
+    const weekLater = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate() + 7
+    );
 
-    const newAvailability = Object.entries(availability).reduce((acc: Availability, [dateKey, slots]) => {
-      const dateObj = new Date(dateKey);
-      if (dateObj >= cutoff && dateObj <= weekLater) {
-        acc[dateKey] = slots;
-      }
-      return acc;
-    }, {});
+    const newAvailability = Object.entries(availability).reduce(
+      (acc: Availability, [dateKey, slots]) => {
+        const dateObj = new Date(dateKey);
+        if (dateObj >= cutoff && dateObj <= weekLater) {
+          acc[dateKey] = slots;
+        }
+        return acc;
+      },
+      {}
+    );
 
     setAvailability(newAvailability);
   }, []);
@@ -122,7 +140,9 @@ export default function LawyerSchedule({ lawyerId }: LawyerScheduleProps) {
   const toggleTimeSlot = (time: string) => {
     setAvailability((prev) => {
       const current = prev[selectedDateKey] || [];
-      const updated = current.includes(time) ? current.filter((t) => t !== time) : [...current, time].sort();
+      const updated = current.includes(time)
+        ? current.filter((t) => t !== time)
+        : [...current, time].sort();
       return {
         ...prev,
         [selectedDateKey]: updated,
@@ -142,12 +162,13 @@ export default function LawyerSchedule({ lawyerId }: LawyerScheduleProps) {
   const saveAvailability = async () => {
     setSaving(true);
     try {
-      const availableDays = Object.entries(availability).flatMap(([dateKey, slots]) =>
-        slots.map((startTime) => ({
-          day: dateKey,
-          startTime,
-          endTime: addMinutesToTime(startTime, 30),
-        }))
+      const availableDays = Object.entries(availability).flatMap(
+        ([dateKey, slots]) =>
+          slots.map((startTime) => ({
+            day: dateKey,
+            startTime,
+            endTime: addMinutesToTime(startTime, 30),
+          }))
       );
 
       if (availableDays.length === 0) {
@@ -225,7 +246,9 @@ export default function LawyerSchedule({ lawyerId }: LawyerScheduleProps) {
 
     setAvailability((prev) => ({
       ...prev,
-      [selectedDateKey]: [...new Set([...(prev[selectedDateKey] || []), ...slots])].sort(),
+      [selectedDateKey]: [
+        ...new Set([...(prev[selectedDateKey] || []), ...slots]),
+      ].sort(),
     }));
     showNotification(`${startHour}:00-${endHour}:00 цагууд нэмэгдлээ`);
   };
@@ -234,9 +257,9 @@ export default function LawyerSchedule({ lawyerId }: LawyerScheduleProps) {
   // const maxDate = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
 
   return (
-    <div className="max-w-7xl mx-auto  space-y-6">
+    <div className="max-w-9xl mx-auto  space-y-6">
       {/* Header */}
-      <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-6 rounded-2xl shadow-lg">
+      <div className="bg-gradient-to-r from-blue-600 to-blue-900 text-white p-6 rounded-2xl shadow-lg">
         <div className="flex items-center gap-3 mb-2">
           <Calendar className="w-8 h-8" />
           <h1 className="text-2xl font-bold">Хуварийн удирдлага</h1>
@@ -252,7 +275,7 @@ export default function LawyerSchedule({ lawyerId }: LawyerScheduleProps) {
         </div>
       )}
 
-      <div className="grid lg:grid-cols-3 gap-6">
+      <div className="grid-cols-3 lg:grid-cols-3 gap-6">
         {/* Calendar Section */}
         <div className="lg:col-span-1">
           <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
@@ -263,13 +286,7 @@ export default function LawyerSchedule({ lawyerId }: LawyerScheduleProps) {
 
             {/* Simple Calendar */}
             <div className="space-y-4">
-              <div className="grid grid-cols-7 gap-1 text-center text-sm font-medium text-gray-500">
-                {["Да", "Мя", "Лх", "Пү", "Ба", "Бя", "Ня"].map((day) => (
-                  <div key={day} className="p-2">
-                    {day}
-                  </div>
-                ))}
-              </div>
+             
 
               <div className="grid grid-cols-7 gap-1">
                 {Array.from({ length: 7 }, (_, i) => {
@@ -285,12 +302,21 @@ export default function LawyerSchedule({ lawyerId }: LawyerScheduleProps) {
                       onClick={() => setSelectedDate(date)}
                       className={`
                         p-3 rounded-xl text-sm font-medium transition-all duration-200 relative
-                        ${isSelected ? "bg-blue-600 text-white shadow-lg scale-105" : "bg-gray-50 hover:bg-gray-100 text-gray-700"}
+                        ${
+                          isSelected
+                            ? "bg-blue-600 text-white shadow-lg scale-105"
+                            : "bg-gray-50 hover:bg-gray-100 text-gray-700"
+                        }
+
                       `}
                     >
                       {date.getDate()}
                       {hasSlots && (
-                        <div className={`absolute -top-1 -right-1 w-3 h-3 rounded-full ${isSelected ? "bg-yellow-400" : "bg-green-500"}`} />
+                        <div
+                          className={`absolute -top-1 -right-1 w-3 h-3 rounded-full ${
+                            isSelected ? "bg-yellow-400" : "bg-green-500"
+                          }`}
+                        />
                       )}
                     </button>
                   );
@@ -347,7 +373,7 @@ export default function LawyerSchedule({ lawyerId }: LawyerScheduleProps) {
                       }
                     `}
                   >
-                    {time}
+                    {time} - {addMinutesToTime(time, 60)}
                   </button>
                 ))}
               </div>
@@ -359,18 +385,22 @@ export default function LawyerSchedule({ lawyerId }: LawyerScheduleProps) {
                 {selectedTimeSlots.length > 0 ? (
                   <div>
                     <p className="text-sm text-gray-600 mb-2">
-                      <strong>{formatDate(selectedDate)}</strong> өдөр сонгосон цагууд:
+                      <strong>{formatDate(selectedDate)}</strong> өдөр сонгосон
+                      цагууд:
                     </p>
                     <div className="flex flex-wrap gap-2">
                       {selectedTimeSlots.map((time) => (
+
                         <span key={time} className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
-                          {time} - {addMinutesToTime(time, 30)}
+                          {time} - {addMinutesToTime(time, 60)}
                         </span>
                       ))}
                     </div>
                   </div>
                 ) : (
-                  <p className="text-gray-500 text-center py-4">Цаг сонгоно уу</p>
+                  <p className="text-gray-500 text-center py-4">
+                    Цаг сонгоно уу
+                  </p>
                 )}
               </div>
 
@@ -523,41 +553,40 @@ export default function LawyerSchedule({ lawyerId }: LawyerScheduleProps) {
 
       {/* All Selected Times Overview */}
       {Object.keys(availability).length > 0 && (
-        <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+        <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100 mt-8">
           <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
             <Calendar className="w-5 h-5 text-green-600" />
-            Бүх сонгосон хуваарь
+            Өмгөөлөгчийн бүх сонгосон хуваарь
           </h3>
-
           <div className="space-y-4">
             {Object.entries(availability).map(([dateKey, slots]) => (
-              <div key={dateKey} className="bg-gradient-to-r from-gray-50 to-green-50 rounded-xl p-4 border border-gray-100">
+              <div
+                key={dateKey}
+                className="bg-gradient-to-r from-gray-50 to-green-50 rounded-xl p-4 border border-gray-100"
+              >
                 <div className="flex items-center justify-between mb-3">
                   <h4 className="font-semibold text-gray-800">
-                    📅{" "}
-                    {new Date(dateKey).toLocaleDateString("mn-MN", {
+                    📅 {new Date(dateKey).toLocaleDateString("mn-MN", {
                       year: "numeric",
                       month: "long",
                       day: "numeric",
                       weekday: "long",
                     })}
                   </h4>
-                  <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-medium">{slots.length} цаг</span>
+                  <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-medium">
+                    {slots.length} цаг
+                  </span>
                 </div>
-
                 <div className="flex flex-wrap gap-2">
                   {slots.map((slot) => (
-                    <div key={slot} className="flex items-center gap-2 bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm">
+                    <div
+                      key={slot}
+                      className="flex items-center gap-2 bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm"
+                    >
                       <Clock className="w-3 h-3 text-gray-500" />
                       <span className="font-medium">
-                        {slot} - {addMinutesToTime(slot, 30)}
+                        {slot} - {addMinutesToTime(slot, 60)}
                       </span>
-                      <button
-                        onClick={() => removeTimeSlot(dateKey, slot)}
-                        className="text-red-500 hover:text-red-700 transition-colors ml-1"
-                      >
-                        <X className="w-3 h-3" />
-                      </button>
                     </div>
                   ))}
                 </div>

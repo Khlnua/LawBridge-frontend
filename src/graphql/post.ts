@@ -24,6 +24,30 @@ export const GET_LAWYER_POSTS_BY_ID = gql`
   }
 `;
 
+export const GET_ALL_POSTS = gql`
+  query GetPosts {
+    getPosts {
+      _id
+      id
+      lawyerId
+      title
+      content {
+        text
+        image
+        video
+        audio
+      }
+      specialization {
+        id
+        categoryName
+      }
+      type
+      createdAt
+      updatedAt
+    }
+  }
+`;
+
 export const CREATE_POST = gql`
   mutation CreatePost($input: CreatePostInput!) {
     createPost(input: $input) {

@@ -34,16 +34,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({ stats, connectionError, message
             <span>{stats.messageCount} messages</span>
           </div>
         )}
-        {messageCount > 0 && (
-          <button
-            onClick={onClearChat}
-            disabled={isLoading}
-            className="flex items-center space-x-2 px-3 py-2 text-sm text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            <Trash2 className="w-4 h-4" />
-            <span>Clear Chat</span>
-          </button>
-        )}
+       
       </div>
     </div>
   </div>
