@@ -5,7 +5,7 @@ import { useState } from "react";
 import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
+import { SignedIn, SignedOut, UserButton, useUser } from "@clerk/nextjs";
 
 const navLinks = [
   { label: "Өмгөөлөгчид", href: "/find-lawyers" },
@@ -15,6 +15,9 @@ const navLinks = [
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
+  const { user } = useUser();
+
+  const role = user?.publicMetadata?.role;
 
   switch (pathname) {
     case "/lawyer-form":
@@ -61,7 +64,15 @@ export default function Header() {
           </SignedOut>
 
           <SignedIn>
-            <UserButton afterSignOutUrl="/sign-in" />
+            {role === "lawyer" ? (
+              <UserButton
+                afterSignOutUrl="/sign-in"
+                userProfileMode="navigation"
+                userProfileUrl="/my-profile/me"
+              />
+            ) : (
+              <UserButton afterSignOutUrl="/sign-in" />
+            )}
           </SignedIn>
         </div>
 
@@ -71,10 +82,17 @@ export default function Header() {
           ) : (
             <div className="flex gap-2 justify-center items-center">
               <SignedIn>
-                <div className="flex justify-end">
+                {role === "lawyer" ? (
+                  <UserButton
+                    afterSignOutUrl="/sign-in"
+                    userProfileMode="navigation"
+                    userProfileUrl="/my-profile/me"
+                  />
+                ) : (
                   <UserButton afterSignOutUrl="/sign-in" />
-                </div>
+                )}
               </SignedIn>
+
               <Menu className="w-6 h-6" onClick={() => setIsOpen(!isOpen)} />
             </div>
           )}
