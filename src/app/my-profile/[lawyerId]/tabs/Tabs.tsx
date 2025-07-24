@@ -65,9 +65,7 @@ const SidebarTabs = ({ lawyerId }: SidebarTabsProps) => {
                   activeTab === tab.id
                     ? "bg-[#316eea] text-white shadow-sm"
                     : "text-gray-700 hover:bg-gray-100"
-                } ${
-                tab.id === "profile" ? "bg-[#316eea]  hover:bg-gray-100" : ""
-              }`}
+                }`}
             >
               {tab.icon}
               {tab.label}
