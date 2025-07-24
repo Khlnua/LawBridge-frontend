@@ -13,7 +13,7 @@ body {
   font-family: "roboto  ", sans-serif;
   cursor: default;
 }
-
+/* 
 :root {
   --sidebar: hsl(0 0% 98%);
   --sidebar-foreground: hsl(240 5.3% 26.1%);
@@ -51,7 +51,7 @@ body {
   /* * {
     @apply border-border outline-ring/50;
   } */
-  /* body {
+/* body {
     @apply bg-background text-foreground;
-  } */
-}
+  } 
+} */
