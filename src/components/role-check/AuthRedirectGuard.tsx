@@ -35,6 +35,10 @@ export const AuthRedirectGuard = () => {
       }
     }
 
+    if (role === "admin") {
+      router.push("/admin");
+    }
+
     // ✅ Signed in but not a lawyer
     if (role !== "lawyer") {
       // Allow everything for non-lawyers except /lawyer-form
