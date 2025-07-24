@@ -1,6 +1,3 @@
 export const LawyerClients = () => {
-  return (
-    <div>LawyerClients</div>
-  )
-}
-
+  return <div>Empty</div>;
+};

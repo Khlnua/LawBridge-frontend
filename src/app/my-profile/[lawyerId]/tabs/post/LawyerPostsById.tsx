@@ -18,7 +18,7 @@ interface PostType {
   mediaUrl?: string;
   mediaType?: "image" | "video";
   createdAt: string;
-  comments: CommentType[]; // comments array with objects
+  comments: CommentType[];
 }
 
 export const PostCard = ({ post }: { post: PostType }) => {
@@ -63,11 +63,7 @@ export const PostCard = ({ post }: { post: PostType }) => {
       <p className="text-gray-700 whitespace-pre-line">{post.content}</p>
 
       {post.mediaType === "image" && post.mediaUrl && (
-        <img
-          src={post.mediaUrl}
-          alt="attached"
-          className="w-full rounded-md max-h-60 object-cover mt-2"
-        />
+        <img src={post.mediaUrl} alt="attached" className="w-full rounded-md max-h-60 object-cover mt-2" />
       )}
 
       {post.mediaType === "video" && post.mediaUrl && (
@@ -77,10 +73,7 @@ export const PostCard = ({ post }: { post: PostType }) => {
       )}
 
       {/* Комментын тоо */}
-      <div className="text-xs text-gray-400 pt-2">
-        Сэтгэгдэл: {data?.getCommentsByPost?.length ?? post.comments.length}{" "}
-        ширхэг
-      </div>
+      <div className="text-xs text-gray-400 pt-2">Сэтгэгдэл: {data?.getCommentsByPost?.length ?? post.comments.length} ширхэг</div>
 
       {/* Коммент бичих хэсэг */}
       <div className="mt-4">
@@ -109,9 +102,7 @@ export const PostCard = ({ post }: { post: PostType }) => {
           <div key={comment._id} className="border rounded p-2 bg-gray-50">
             <p className="font-semibold">{comment.author}</p>
             <p>{comment.content}</p>
-            <p className="text-xs text-gray-400">
-              {new Date(comment.createdAt).toLocaleString()}
-            </p>
+            <p className="text-xs text-gray-400">{new Date(comment.createdAt).toLocaleString()}</p>
           </div>
         ))}
       </div>
