@@ -6,24 +6,24 @@ import { useRouter } from "next/navigation";
 import { useQuery } from "@apollo/client";
 import { GET_ALL_LAWYERS } from "@/graphql/lawyer";
 import { useGetAdminSpecializationsQuery } from "@/generated";
+import { LoaderCircle } from "lucide-react";
 
 const RecommendLawyers = () => {
   const { push } = useRouter();
 
   const { data } = useGetAdminSpecializationsQuery();
-  const {
-    data: allLawyersData,
-    loading: allLawyersLoading,
-    error: allLawyersError,
-  } = useQuery(GET_ALL_LAWYERS);
+  const { data: allLawyersData, loading: allLawyersLoading, error: allLawyersError } = useQuery(GET_ALL_LAWYERS);
 
-  if (allLawyersLoading) return <div>Түр хүлээнэ үү...</div>;
+  if (allLawyersLoading)
+    return (
+      <div className="flex justify-center items-center my-6">
+        <LoaderCircle className="animate-spin w-8 h-8 text-gray-400" />
+      </div>
+    );
   if (allLawyersError) return <div>Алдаа гарлаа.</div>;
 
   const lawyers = [...(allLawyersData?.getLawyers || [])];
   const specializations = data?.getAdminSpecializations || [];
-
-  console.log(lawyers);
 
   return (
     <div className="container mx-auto px-4 py-8 sm:px-6 md:px-8 lg:px-10 text-center flex flex-col items-center">

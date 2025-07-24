@@ -77,3 +77,27 @@ export const DELETE_POST = gql`
     deletePost(postId: $postId)
   }
 `;
+
+export const GET_ALL_POSTS_FROM_LAWYERS = gql`
+  query GetPosts {
+    getPosts {
+      _id
+      id
+      lawyerId
+      title
+      content {
+        text
+        image
+        video
+        audio
+      }
+      specialization {
+        id
+        categoryName
+      }
+      type
+      createdAt
+      updatedAt
+    }
+  }
+`;
