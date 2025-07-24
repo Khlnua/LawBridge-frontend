@@ -109,14 +109,14 @@ export const PostCard = ({ post }: { post: PostType }) => {
   };
 
   return (
-    <article
-      onClick={handleClick}
-      className="bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden"
-    >
+    <article className="bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden">
       <div className="p-4 pb-3">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
-            <div className="flex items-center gap-1 bg-blue-50 text-blue-700 px-2 py-1 rounded-full text-xs font-medium">
+            <div
+              className="flex items-center gap-1 bg-blue-50 text-blue-700 px-2 py-1 rounded-full text-xs font-medium"
+              onClick={handleClick}
+            >
               <Tag className="w-3 h-3" />
               <span>{lawyerName}</span>
             </div>
@@ -192,7 +192,7 @@ export const PostCard = ({ post }: { post: PostType }) => {
                   <button
                     onClick={handleAddComment}
                     disabled={creating || !commentText.trim()}
-                    className="absolute right-2 bottom-2 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                    className="absolute right-2 bottom-2 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all mb-2"
                   >
                     {creating ? (
                       <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
