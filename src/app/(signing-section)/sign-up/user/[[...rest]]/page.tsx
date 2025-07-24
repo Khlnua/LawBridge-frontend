@@ -63,7 +63,7 @@ export default function UserSignUpPage() {
             path="/sign-up/user"
             routing="path"
             signInUrl="/sign-in"
-            afterSignUpUrl="/"
+            afterSignUpUrl="/sign-up/role"
             appearance={{
               elements: {
                 formButtonPrimary:
