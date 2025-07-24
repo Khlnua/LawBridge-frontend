@@ -3,10 +3,28 @@
 import LawyerCard from "./LawyerCard";
 import { Button } from "@/components/ui";
 import { useRouter } from "next/navigation";
-import { TestingFakeLawyers } from "@/app/utils/fake-lawyers";
+import { useQuery } from "@apollo/client";
+import { GET_ALL_LAWYERS } from "@/graphql/lawyer";
+import { useGetAdminSpecializationsQuery } from "@/generated";
 
 const RecommendLawyers = () => {
   const { push } = useRouter();
+
+  const { data } = useGetAdminSpecializationsQuery();
+  const {
+    data: allLawyersData,
+    loading: allLawyersLoading,
+    error: allLawyersError,
+  } = useQuery(GET_ALL_LAWYERS);
+
+  if (allLawyersLoading) return <div>Түр хүлээнэ үү...</div>;
+  if (allLawyersError) return <div>Алдаа гарлаа.</div>;
+
+  const lawyers = [...(allLawyersData?.getLawyers || [])];
+  const specializations = data?.getAdminSpecializations || [];
+
+  console.log(lawyers);
+
   return (
     <div className="container mx-auto px-4 py-8 sm:px-6 md:px-8 lg:px-10 text-center flex flex-col items-center">
       <header className="mb-8 sm:mb-10 md:mb-12 w-full max-w-4xl">
@@ -19,20 +37,26 @@ const RecommendLawyers = () => {
       </header>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 md:gap-10 justify-center mb-8 sm:mb-10 w-full max-w-6xl">
-        {TestingFakeLawyers.slice(0, 3).map((lawyer, index) => (
-          <LawyerCard
-            key={index}
-            id={String(index)} // Use index as a string id
-            status={lawyer.statusText || ""}
-            name={lawyer.name}
-            specialty={lawyer.specialty}
-            rating={lawyer.rating}
-            reviewCount={lawyer.reviewCount}
-            hourlyRate={lawyer.hourlyRate}
-            // statusText={lawyer.statusText}
-            // yearsExperience={lawyer.yearsExperience}
-          />
-        ))}
+        {lawyers.slice(0, 3).map(
+          (
+            lawyer: {
+              lawyerId: string;
+              firstName: string;
+              lastName: string;
+              profilePicture: string;
+              status: string;
+            },
+            index
+          ) => (
+            <LawyerCard
+              id={lawyer.lawyerId}
+              key={lawyer.lawyerId || index}
+              name={lawyer.firstName + " " + lawyer.lastName}
+              avatarImage={lawyer.profilePicture}
+              status={lawyer.status}
+            />
+          )
+        )}
       </div>
 
       <div className="sm:mt-4">

@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import LawyerCard from "@/components/landing-page/LawyerCard";
-import { TestingFakeLawyers } from "../../app/utils/fake-lawyers";
 import {
   Select,
   SelectContent,
@@ -47,10 +46,7 @@ const FilteredByCategories = () => {
   if (allLawyersLoading) return <div>Түр хүлээнэ үү...</div>;
   if (allLawyersError) return <div>Алдаа гарлаа.</div>;
 
-  const lawyers = [
-    ...(allLawyersData?.getLawyers || []),
-    ...TestingFakeLawyers,
-  ];
+  const lawyers = [...(allLawyersData?.getLawyers || [])];
 
   const filteredLawyers = lawyers.filter((lawyer: Lawyer) => {
     if (!selectedSpecialty) return true;
