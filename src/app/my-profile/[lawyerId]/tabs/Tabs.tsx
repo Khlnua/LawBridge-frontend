@@ -30,7 +30,7 @@ type SidebarTabsProps = {
 };
 
 const SidebarTabs = ({ lawyerId }: SidebarTabsProps) => {
-  const [activeTab, setActiveTab] = useState<TabType>("posts");
+  const [activeTab, setActiveTab] = useState<TabType>("profile");
 
   const tabItems: { id: TabType; label: string; icon: React.ReactNode }[] = [
     {

@@ -42,7 +42,6 @@ export const ShowLawyerPosts = ({ lawyerId }: Props) => {
 
   return (
     <div className="space-y-6 border-none">
-      {/* <CreatePost onCreate={handleAddPost} /> */}
       <div className="space-y-4">
         {posts.map((post) => (
           <PostCard key={post.id} post={post} />

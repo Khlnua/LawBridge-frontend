@@ -15,24 +15,12 @@ type LawyerCardProps = {
   reviewCount?: number;
 };
 
-const LawyerCard = ({
-  id,
-  name,
-  status,
-  avatarImage,
-  rating,
-  reviewCount,
-}: LawyerCardProps) => {
-  const [activeSpecialtyIndex, setActiveSpecialtyIndex] = useState<
-    number | null
-  >(null);
+const LawyerCard = ({ id, name, status, avatarImage, rating, reviewCount }: LawyerCardProps) => {
+  const [activeSpecialtyIndex, setActiveSpecialtyIndex] = useState<number | null>(null);
 
-  const { data: specializationData, loading: specialLoad } = useQuery(
-    GET_SPECIALIZATION_BY_LAWYER_ID,
-    {
-      variables: { lawyerId: id },
-    }
-  );
+  const { data: specializationData, loading: specialLoad } = useQuery(GET_SPECIALIZATION_BY_LAWYER_ID, {
+    variables: { lawyerId: id },
+  });
 
   const handleClick = (index: number) => {
     setActiveSpecialtyIndex(activeSpecialtyIndex === index ? null : index);
@@ -109,11 +97,7 @@ const LawyerCard = ({
                   >
                     {spec.categoryName}
                     {activeSpecialtyIndex === index && (
-                      <span className="ml-1">
-                        {spec.pricePerHour
-                          ? `/ ₮${spec.pricePerHour}/цаг`
-                          : "/ үнэгүй"}
-                      </span>
+                      <span className="ml-1">{spec.pricePerHour ? `/ ₮${spec.pricePerHour}/цаг` : "/ үнэгүй"}</span>
                     )}
                   </Badge>
                 )
@@ -121,6 +105,15 @@ const LawyerCard = ({
             </div>
           )}
         </div>
+      </div>
+
+
+      <div className="w-full mb-5 text-left pl-4 mt-auto">
+        <p className="flex items-center text-gray-700 text-sm mb-1.5">
+          <span className={`mr-1.5 text-lg flex ${status?.toLowerCase() === "verified" ? "text-green-500" : "text-yellow-500"}`}>
+            {status ? status : `${rating ?? 0} ★ (${reviewCount ?? 0})`}
+          </span>
+        </p>
       </div>
 
       <div className="w-full flex flex-col gap-2.5 mt-auto">
