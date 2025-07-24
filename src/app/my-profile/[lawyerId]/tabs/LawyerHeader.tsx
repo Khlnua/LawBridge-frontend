@@ -22,7 +22,6 @@ import {
 } from "@/graphql/lawyer";
 import { useQuery, useMutation } from "@apollo/client";
 import { GET_SPECIALIZATION_BY_LAWYER_ID } from "@/graphql/specializationsbylawyer";
-import { useUser } from "@clerk/nextjs";
 
 type LawyerProfileHeaderProps = {
   lawyerId: string;
