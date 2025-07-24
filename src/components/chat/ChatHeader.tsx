@@ -25,13 +25,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-3 sm:space-x-4">
           <div className="relative flex-shrink-0">
-            {user.avatar ? (
-              <img
-                src={user.avatar}
-                alt={user.name}
-                className="w-10 h-10 md:w-12 md:h-12 rounded-full object-cover border-2 border-blue-200 shadow"
-              />
-            ) : (
+           
               <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-gradient-to-br from-blue-400 to-purple-400 flex items-center justify-center text-white font-bold border-2 border-blue-200 shadow">
                 {user.name
                   .split(' ')
@@ -40,7 +34,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
                   .toUpperCase()
                   .slice(0, 2)}
               </div>
-            )}
+            
             <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></div>
           </div>
           <div>

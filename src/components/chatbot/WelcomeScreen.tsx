@@ -9,24 +9,19 @@ const WelcomeScreen = () => (
           <Scale className="w-10 h-10 text-white" />
         </div>
         <h1 className="text-4xl font-bold text-gray-800 mb-4">
-          Welcome to{" "}
-          <span className="bg-gradient-to-r from-blue-600 to-purple-700 bg-clip-text text-transparent">
-            LawBridge
-          </span>
+          "LawBridge"-д тавтай морилно уу
         </h1>
         <p className="text-xl text-gray-600 mb-8">
-          Your professional legal AI assistant for document analysis and
-          consultation
+          Таны мэргэжлийн хууль зүйн AI туслах
         </p>
       </div>
       <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-8">
         <p className="text-sm text-amber-800">
-          <strong>Important:</strong> This is for informational purposes only
-          and does not constitute legal advice.
+          <strong>Чухал:</strong> Энэ нь зөвхөн мэдээллийн зориулалттай бөгөөд хууль зүйн зөвлөгөө биш юм.
         </p>
       </div>
       <div className="text-sm text-gray-500">
-        Start by typing your legal question below
+        Доор хууль зүйн асуултаа бичиж эхлээрэй
       </div>
     </div>
   </div>

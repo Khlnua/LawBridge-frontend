@@ -27,8 +27,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   const pathname = usePathname();
-  const hideHeader = pathname.startsWith("/admin");
-  const chatbotHide = pathname.startsWith("/chatbot");
+  const hideHeader =
+    pathname.startsWith("/admin") || pathname.startsWith("/pending-approval");
+  const chatbotHide =
+    pathname.startsWith("/chatbot") ||
+    pathname.startsWith("/pending-approval") ||
+    pathname.startsWith("/chatroom");
   const { push } = useRouter();
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
@@ -44,7 +48,7 @@ export default function RootLayout({
               {!chatbotHide && (
                 <FloatingChatbotButton onClick={() => push("/chatbot")} />
               )}
-              <main className="flex mt-3 md:mt-10 lg:mt-15 justify-center items-start min-h-[calc(100vh-4rem)]">
+              <main className="flex justify-center items-start min-h-[calc(100vh-4rem)]">
                 <AuthRedirectGuard />
                 {children}
               </main>
