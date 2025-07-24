@@ -98,15 +98,14 @@ const ArticlesPage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
-      {/* Header Section */}
+      {/* Header Section - Full Width */}
       <div className="bg-white shadow-sm border-b border-gray-200">
-        {/* Removed horizontal padding to eliminate side gaps */}
-        <div className="max-w-7xl mx-auto px-0 py-8">
+        <div className="w-full px-4 sm:px-6 lg:px-8 py-8">
           <div className="text-center space-y-4">
             <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
               Хуулийн нийтлэлүүд
             </h1>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            <p className="text-lg text-gray-600 max-w-4xl mx-auto">
               Хуулийн мэргэжилтнүүдийн туршлага, зөвлөгөө болон сүүлийн үеийн
               хуулийн мэдээллүүд
             </p>
@@ -114,12 +113,12 @@ const ArticlesPage = () => {
         </div>
       </div>
 
-      {/* Main content without horizontal padding */}
-      <div className="max-w-7xl mx-auto px-0 py-8 space-y-8">
+      {/* Main content - Full Width with responsive padding */}
+      <div className="w-full px-4 sm:px-6 lg:px-8 py-8 space-y-8">
         {/* Search and Filter Controls */}
-        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 space-y-6">
+        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 space-y-6 max-w-none">
           {/* Search Bar */}
-          <div className="relative">
+          <div className="relative max-w-3xl mx-auto">
             <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
               <Search className="h-5 w-5 text-gray-400" />
             </div>
@@ -163,7 +162,7 @@ const ArticlesPage = () => {
           {/* Filter Buttons */}
           {showFilters && (
             <div className="space-y-4 border-t border-gray-100 pt-6">
-              <div className="flex flex-wrap gap-3">
+              <div className="flex flex-wrap gap-3 justify-center">
                 {specializations.map(
                   (spec: { id: string; categoryName: string }) => (
                     <Button
@@ -192,7 +191,7 @@ const ArticlesPage = () => {
 
           {/* Active Filters Display */}
           {(selectedSpecName || searchTerm) && (
-            <div className="flex flex-wrap gap-3 border-t border-gray-100 pt-4">
+            <div className="flex flex-wrap gap-3 border-t border-gray-100 pt-4 justify-center">
               <span className="text-sm text-gray-500 font-medium">
                 Идэвхтэй шүүлтүүр:
               </span>
@@ -224,7 +223,7 @@ const ArticlesPage = () => {
         </div>
 
         {/* Results Summary */}
-        <div className="flex items-center justify-between px-0">
+        <div className="flex items-center justify-between">
           <h2 className="text-2xl font-semibold text-gray-800">
             {selectedSpecName
               ? `"${selectedSpecName}" ангилалын нийтлэлүүд`
@@ -237,7 +236,7 @@ const ArticlesPage = () => {
           </div>
         </div>
 
-        {/* Articles Grid */}
+        {/* Articles Grid - More responsive layout */}
         <div className="space-y-6">
           {filteredPosts.length === 0 ? (
             <div className="text-center py-16 bg-white rounded-2xl shadow-sm border border-gray-100">
@@ -260,7 +259,7 @@ const ArticlesPage = () => {
               )}
             </div>
           ) : (
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
               {filteredPosts.map((post: any, index: number) => (
                 <article
                   key={post._id}
@@ -279,14 +278,28 @@ const ArticlesPage = () => {
                       {post.content?.text}
                     </p>
 
-                    <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+                    <div className="space-y-3 pt-4 border-t border-gray-100">
                       <div className="flex items-center gap-2 text-xs text-gray-500">
                         <Calendar className="h-3 w-3" />
-                        <span>Сүүлд шинэчлэгдсэн</span>
+                        <span>
+                          {post.createdAt
+                            ? new Date(post.createdAt).toLocaleDateString(
+                                "mn-MN"
+                              )
+                            : "Сүүлд шинэчлэгдсэн"}
+                        </span>
                       </div>
-                      <div className="flex items-center gap-2 text-xs text-gray-500">
+                      <div className="flex items-center gap-2 text-xs text-gray-600">
                         <User className="h-3 w-3" />
-                        <span>Хуульч</span>
+                        <span className="font-medium">
+                          {post.author?.firstName && post.author?.lastName
+                            ? `${post.author.firstName} ${post.author.lastName}`
+                            : post.author?.name
+                            ? post.author.name
+                            : post.author?.username
+                            ? post.author.username
+                            : "Өмгөөлөгч"}
+                        </span>
                       </div>
                     </div>
 
