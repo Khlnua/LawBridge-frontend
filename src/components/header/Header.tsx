@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SignedIn, SignedOut, UserButton, useUser } from "@clerk/nextjs";
+import PrettyChatButton from "../PrettyChatButton";
 
 const navLinks = [
   { label: "Өмгөөлөгчид", href: "/find-lawyers" },
@@ -46,57 +47,61 @@ export default function Header() {
           ))}
         </nav>
 
-        <div className="hidden md:flex gap-6 items-center">
-          <SignedOut>
-            <div className="flex gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                className="border-[#003366]"
-                asChild
-              >
-                <Link href="/sign-in">Log In</Link>
-              </Button>
-              <Button size="sm" className="bg-[#003366] text-cyan-50" asChild>
-                <Link href="/sign-up">Sign Up</Link>
-              </Button>
-            </div>
-          </SignedOut>
+        <div className="flex gap-4">
+          <PrettyChatButton unreadCount={0} isOnline={true} />
 
-          <SignedIn>
-            {role === "lawyer" ? (
-              <UserButton
-                afterSignOutUrl="/sign-in"
-                userProfileMode="navigation"
-                userProfileUrl="/my-profile/me"
-              />
+          <div className="hidden md:flex gap-6 items-center">
+            <SignedOut>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="border-[#003366]"
+                  asChild
+                >
+                  <Link href="/sign-in">Log In</Link>
+                </Button>
+                <Button size="sm" className="bg-[#003366] text-cyan-50" asChild>
+                  <Link href="/sign-up">Sign Up</Link>
+                </Button>
+              </div>
+            </SignedOut>
+
+            <SignedIn>
+              {role === "lawyer" ? (
+                <UserButton
+                  afterSignOutUrl="/sign-in"
+                  userProfileMode="navigation"
+                  userProfileUrl="/my-profile/me"
+                />
+              ) : (
+                <UserButton afterSignOutUrl="/sign-in" />
+              )}
+            </SignedIn>
+          </div>
+
+          <button className="md:hidden text-gray-600">
+            {isOpen ? (
+              <X className="w-6 h-6" onClick={() => setIsOpen(!isOpen)} />
             ) : (
-              <UserButton afterSignOutUrl="/sign-in" />
+              <div className="flex gap-2 justify-center items-center">
+                <SignedIn>
+                  {role === "lawyer" ? (
+                    <UserButton
+                      afterSignOutUrl="/sign-in"
+                      userProfileMode="navigation"
+                      userProfileUrl="/my-profile/me"
+                    />
+                  ) : (
+                    <UserButton afterSignOutUrl="/sign-in" />
+                  )}
+                </SignedIn>
+
+                <Menu className="w-6 h-6" onClick={() => setIsOpen(!isOpen)} />
+              </div>
             )}
-          </SignedIn>
+          </button>
         </div>
-
-        <button className="md:hidden text-gray-600">
-          {isOpen ? (
-            <X className="w-6 h-6" onClick={() => setIsOpen(!isOpen)} />
-          ) : (
-            <div className="flex gap-2 justify-center items-center">
-              <SignedIn>
-                {role === "lawyer" ? (
-                  <UserButton
-                    afterSignOutUrl="/sign-in"
-                    userProfileMode="navigation"
-                    userProfileUrl="/my-profile/me"
-                  />
-                ) : (
-                  <UserButton afterSignOutUrl="/sign-in" />
-                )}
-              </SignedIn>
-
-              <Menu className="w-6 h-6" onClick={() => setIsOpen(!isOpen)} />
-            </div>
-          )}
-        </button>
       </div>
 
       {isOpen && (

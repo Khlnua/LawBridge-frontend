@@ -1,10 +1,11 @@
+"use client";
 import React from "react";
 import { Button } from "@/components/ui";
 import { useRouter } from "next/navigation";
 import { GET_ALL_POSTS_FROM_LAWYERS } from "@/graphql/post";
 import { useQuery } from "@apollo/client";
 import { LawyerArticleCard } from "./LawyerArticleCard";
-import { Divide, LoaderCircle } from "lucide-react";
+import { LoaderCircle } from "lucide-react";
 
 type ArticleType = {
   _id: string;
