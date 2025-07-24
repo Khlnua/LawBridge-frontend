@@ -21,8 +21,8 @@ export interface PostType {
   comments: CommentType[];
 }
 
-export const LawyerPosts = () => {
-  const [posts, ] = useState<PostType[]>([
+export const ShowLawyerPosts = () => {
+  const [posts] = useState<PostType[]>([
     {
       id: 1,
       title: "Автомашин хураалгах үед юу хийх вэ?",
@@ -49,8 +49,7 @@ export const LawyerPosts = () => {
     {
       id: 2,
       title: "Гэр бүлийн маргааныг эвлэрүүлэн зуучлах аргууд",
-      content:
-        "Эвлэрүүлэн зуучлалаар гэр бүлийн асуудлыг шийдвэрлэх нь шүүхээс илүү үр дүнтэй...",
+      content: "Эвлэрүүлэн зуучлалаар гэр бүлийн асуудлыг шийдвэрлэх нь шүүхээс илүү үр дүнтэй...",
       specialization: "Гэр бүлийн хууль",
       mediaUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
       mediaType: "video",

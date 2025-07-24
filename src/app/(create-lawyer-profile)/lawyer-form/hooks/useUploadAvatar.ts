@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 
 const LOCALSTORAGE_KEY = "avatar_image_key";
 const LOCALSTORAGE_EXP = "avatar_image_key_exp";
@@ -9,7 +9,10 @@ const CACHE_MINUTES = 15;
 export const useUploadAvatar = ({ onUpload }: { onUpload: (key: string) => void }) => {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [imageKey, setImageKey] = useState<string>("");
+  const [uploading, setUploading] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
 
+  // 1. Expiration/caching logic
   useEffect(() => {
     const cachedKey = localStorage.getItem(LOCALSTORAGE_KEY);
     const cachedExp = localStorage.getItem(LOCALSTORAGE_EXP);
@@ -26,20 +29,23 @@ export const useUploadAvatar = ({ onUpload }: { onUpload: (key: string) => void 
     } else if (cachedKey && cachedExp && Date.now() >= Number(cachedExp)) {
       deleteImage();
     }
+    // eslint-disable-next-line
   }, [onUpload]);
 
-  const [uploading, setUploading] = useState(false);
-  const [isDragging, setIsDragging] = useState(false);
+  // 2. Generate preview URL (replace with real public url if needed)
+  const getPreviewLink = useCallback(
+    (key: string) => (key ? `/lawyer-form/api/get?key=${encodeURIComponent(key)}&t=${Date.now()}` : ""),
+    []
+  );
 
-  const getPreviewLink = (key: string) => (key ? `/lawyer-form/api/get?key=${encodeURIComponent(key)}&t=${Date.now()}` : "");
-
+  // 3. Open browse
   const openBrowse = () => fileInputRef.current?.click();
 
+  // 4. Upload logic
   const uploadToServer = async (file: File) => {
     setUploading(true);
     const formData = new FormData();
     formData.append("file", file);
-
     if (imageKey) formData.append("existingKey", imageKey);
 
     try {
@@ -68,27 +74,25 @@ export const useUploadAvatar = ({ onUpload }: { onUpload: (key: string) => void 
     } finally {
       setUploading(false);
     }
-
-    //   const timeout = setTimeout(() => {
-    //     deleteImage();
-    //   }, CACHE_MINUTES * 60 * 1000);
-
-    //   return () => clearTimeout(timeout);
-    // } catch (err) {
-    //   console.error("Upload failed", err);
-    //   alert("Failed to upload image");
-    // } finally {
-    //   setUploading(false);
-    // }
   };
 
-  const handleFileSelect = () => {};
+  // 5. Handle file select
+  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    await uploadToServer(file);
+  };
 
-  const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
+  // 6. Handle drop (drag & drop support)
+  const handleDrop = async (event: React.DragEvent<HTMLDivElement>) => {
     event.preventDefault();
     setIsDragging(false);
+    if (event.dataTransfer.files && event.dataTransfer.files.length > 0) {
+      await uploadToServer(event.dataTransfer.files[0]);
+    }
   };
 
+  // 7. Delete from R2 and clear everything
   const deleteImage = async () => {
     if (imageKey) {
       try {
@@ -119,5 +123,6 @@ export const useUploadAvatar = ({ onUpload }: { onUpload: (key: string) => void 
     deleteImage,
     setIsDragging,
     uploadToServer,
+    imageKey,
   };
 };

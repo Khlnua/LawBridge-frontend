@@ -22,9 +22,7 @@ export async function PUT(req: NextRequest) {
   const arrayBuffer = await file.arrayBuffer();
   const buffer = Buffer.from(arrayBuffer);
 
-  const key = existingKey?.trim()
-    ? existingKey
-    : `uploads/${crypto.randomUUID()}_${file.name}`;
+  const key = existingKey?.trim() ? existingKey : `uploads/${crypto.randomUUID()}_${file.name}`;
 
   await r2.send(
     new PutObjectCommand({
@@ -36,4 +34,28 @@ export async function PUT(req: NextRequest) {
   );
 
   return NextResponse.json({ key });
+}
+
+export async function POST(req: NextRequest) {
+  const formData = await req.formData();
+  const file = formData.get("file") as File;
+  if (!file) return NextResponse.json({ error: "No file" }, { status: 400 });
+
+  const arrayBuffer = await file.arrayBuffer();
+  const buffer = Buffer.from(arrayBuffer);
+  const key = `posts/${crypto.randomUUID()}_${file.name}`;
+
+  await r2.send(
+    new PutObjectCommand({
+      Bucket: process.env.R2_BUCKET_NAME!,
+      Key: key,
+      Body: buffer,
+      ContentType: file.type,
+    })
+  );
+
+  return NextResponse.json({
+    url: `https://${process.env.R2_PUBLIC_DOMAIN}/${key}`,
+    key,
+  });
 }
