@@ -32,7 +32,7 @@ export const LawyerArticleCard = ({ article }: { article: ArticleType }) => {
           {typeof article.content === "string" ? article.content : article.content?.text || ""}
         </p>
         <div className="flex justify-between items-center text-xs sm:text-sm text-gray-500 pt-3 sm:pt-4 border-t border-gray-200">
-          <span className="font-medium">
+          <span className="font-medium text-[18px]">
             {loading ? (
               <div className="flex justify-center items-center my-6">
                 <LoaderCircle className="animate-spin w-8 h-8 text-gray-400" />
