@@ -7,7 +7,7 @@ import {
   createHttpLink,
 } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
-import { ReactNode, useEffect, useState } from "react";
+import { ReactNode } from "react";
 import { useAuth } from "@clerk/nextjs";
 
 const httpLink = createHttpLink({
@@ -15,33 +15,21 @@ const httpLink = createHttpLink({
 });
 
 export const ApolloWrapper = ({ children }: { children: ReactNode }) => {
-  const { getToken } = useAuth();
-  const [client, setClient] = useState<ApolloClient<unknown> | null>(null);
+  const { userId } = useAuth();
 
-  useEffect(() => {
-    const initApolloClient = async () => {
-      const token = await getToken();
-
-      const authLink = setContext((_, { headers }) => {
-        return {
-          headers: {
-            ...headers,
-            Authorization: token ? `Bearer ${token}` : "",
-          },
-        };
-      });
-
-      const newClient = new ApolloClient({
-        link: authLink.concat(httpLink),
-        cache: new InMemoryCache(),
-      });
-
-      setClient(newClient);
+  const authLink = setContext((_, { headers }) => {
+    return {
+      headers: {
+        ...headers,
+        Authorization: userId,
+      },
     };
+  });
 
-    initApolloClient();
-  }, [getToken]);
+  const newClient = new ApolloClient({
+    link: authLink.concat(httpLink),
+    cache: new InMemoryCache(),
+  });
 
-  if (!client) return null;
-  return <ApolloProvider client={client}>{children}</ApolloProvider>;
+  return <ApolloProvider client={newClient}>{children}</ApolloProvider>;
 };
