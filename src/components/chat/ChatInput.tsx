@@ -76,17 +76,6 @@ export const ChatInput: React.FC<ChatInputProps> = ({
     e.target.value = "";
   };
 
-  const generateHourlySlots = (startHour = 9, endHour = 17): string[] => {
-    const slots: string[] = [];
-    for (let hour = startHour; hour < endHour; hour++) {
-      const timeString = `${hour.toString().padStart(2, "0")}:00`;
-      slots.push(timeString);
-    }
-    return slots;
-  };
-
-  const timeSlots = generateHourlySlots();
-
   return (
     <form
       onSubmit={handleSubmit}

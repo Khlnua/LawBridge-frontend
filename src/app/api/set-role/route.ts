@@ -27,7 +27,6 @@ export async function POST(req: Request) {
     await client.users.updateUserMetadata(userId, {
       publicMetadata: {
         role: "lawyer",
-        verified: "false",
       },
     });
   }

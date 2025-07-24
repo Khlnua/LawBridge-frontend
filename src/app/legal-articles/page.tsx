@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useParams } from "next/navigation";
 import { Button } from "@/components";
 import { useGetAdminSpecializationsQuery } from "@/generated";
 import { useQuery } from "@apollo/client";
@@ -14,7 +13,7 @@ const ArticlesPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [showFilters, setShowFilters] = useState(false);
 
-  const { lawyerId } = useParams() as { lawyerId: string };
+  // const { lawyerId } = useParams() as { lawyerId: string };
 
   const { data: specData, loading: specLoading, error: specError } = useGetAdminSpecializationsQuery();
   const { data: postData, loading: postLoading, error: postError } = useQuery(GET_ALL_POSTS);
@@ -172,8 +171,10 @@ const ArticlesPage = () => {
               })}
               {searchTerm && (
                 <div className="flex items-center gap-2 bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm">
+
                   <Search className="h-3 w-3" />"{searchTerm}"
                   <button onClick={() => setSearchTerm("")} className="hover:text-green-900">
+
                     <X className="h-3 w-3" />
                   </button>
                 </div>

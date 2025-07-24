@@ -18,7 +18,7 @@ export default function LawBridgeChat() {
     <div className="flex flex-col h-screen bg-gradient-to-br from-gray-50 to-gray-100 pt-14">
       <ChatHeader stats={stats} connectionError={connectionError} messageCount={messages.length} isLoading={isLoading} onClearChat={clearChat} />
       <div className="flex-1 flex flex-col overflow-hidden">
-        {showWelcome && messages.length === 0 ? <WelcomeScreen /> : <ChatMessageList messages={messages} userId={user.id} />}
+        {showWelcome && messages.length === 0 ? <WelcomeScreen /> : <ChatMessageList messages={messages} userId={user.id} isLoading={isLoading} />}
       </div>
       <ChatInput inputMessage={inputMessage} setInputMessage={setInputMessage} isLoading={isLoading} onSend={sendMessage} onKeyPress={handleKeyPress} inputRef={inputRef} />
     </div>

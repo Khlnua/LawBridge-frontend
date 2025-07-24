@@ -108,14 +108,6 @@ const LawyerCard = ({ id, name, status, avatarImage, rating, reviewCount }: Lawy
       </div>
 
 
-      <div className="w-full mb-5 text-left pl-4 mt-auto">
-        <p className="flex items-center text-gray-700 text-sm mb-1.5">
-          <span className={`mr-1.5 text-lg flex ${status?.toLowerCase() === "verified" ? "text-green-500" : "text-yellow-500"}`}>
-            {status ? status : `${rating ?? 0} ★ (${reviewCount ?? 0})`}
-          </span>
-        </p>
-      </div>
-
       <div className="w-full flex flex-col gap-2.5 mt-auto">
         <Button
           onClick={handleDelgerenguiClick}

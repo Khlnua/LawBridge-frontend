@@ -5,7 +5,6 @@ import { MailIcon, Pencil, Save, University, X } from "lucide-react";
 import { useUploadAvatar } from "@/app/(create-lawyer-profile)/lawyer-form/hooks";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
-  Card,
   CardHeader,
   CardTitle,
   CardContent,
