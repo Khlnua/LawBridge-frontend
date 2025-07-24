@@ -241,6 +241,7 @@ export type Lawyer = {
   licenseNumber: Scalars['String']['output'];
   profilePicture: Scalars['String']['output'];
   rating?: Maybe<Scalars['Int']['output']>;
+  specialization: Array<Specialization>;
   status?: Maybe<LawyerRequestStatus>;
   university?: Maybe<Scalars['String']['output']>;
   updatedAt?: Maybe<Scalars['Date']['output']>;

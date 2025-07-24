@@ -44,7 +44,6 @@ export const GET_ALL_LAWYERS_QUERY = gql`
   }
 `;
 
-
 export const GET_LAWYER_BY_LAWYERID_QUERY = gql`
   query GetLawyerById($lawyerId: ID!) {
     getLawyerById(lawyerId: $lawyerId) {
@@ -118,6 +117,14 @@ export const GET_ALL_LAWYERS = gql`
       licenseNumber
       bio
       university
+      specialization {
+        _id
+        lawyerId
+        specializationId
+        categoryName
+        subscription
+        pricePerHour
+      }
       achievements {
         _id
         title

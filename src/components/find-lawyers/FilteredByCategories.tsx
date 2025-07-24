@@ -25,7 +25,7 @@ interface Lawyer {
   firstName: string;
   lastName: string;
   profilePicture?: string;
-  status?: string;
+  status: string;
   specialty?: string;
   rating?: number;
   reviewCount?: number;
@@ -47,9 +47,12 @@ const FilteredByCategories = () => {
   if (allLawyersError) return <div>Алдаа гарлаа.</div>;
 
   const lawyers = [...(allLawyersData?.getLawyers || [])];
+  console.log({ lawyers });
 
   const filteredLawyers = lawyers.filter((lawyer: Lawyer) => {
     if (!selectedSpecialty) return true;
+
+    console.log(lawyer.specialty);
 
     if (Array.isArray(lawyer.specialty)) {
       return lawyer.specialty.includes(selectedSpecialty);
@@ -93,7 +96,7 @@ const FilteredByCategories = () => {
               {specializations.map((spec: Category) => (
                 <SelectItem
                   key={spec.id}
-                  value={spec.categoryName}
+                  value={spec.id}
                   className="cursor-pointer hover:bg-gray-100"
                 >
                   {spec.categoryName}
