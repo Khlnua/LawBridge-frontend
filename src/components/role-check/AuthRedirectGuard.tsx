@@ -14,7 +14,7 @@ export const AuthRedirectGuard = () => {
     if (!isLoaded) return;
 
     const role = user?.publicMetadata?.role;
-    const status = user?.publicMetadata?.status;
+    const id = user?.id;
 
     // ✅ Publicly accessible routes
     const publicRoutes = ["/", "/find-lawyers", "/legal-articles"];
@@ -27,6 +27,12 @@ export const AuthRedirectGuard = () => {
         router.replace("/sign-in");
       }
       return;
+    }
+
+    if (role === "lawyer") {
+      if (pathname === `/lawyer/${id}`) {
+        router.push("/my-profile/me");
+      }
     }
 
     // ✅ Signed in but not a lawyer
@@ -46,36 +52,6 @@ export const AuthRedirectGuard = () => {
       setIsAllowed(true);
       return;
     }
-
-    // ✅ LAWYER role handling
-    if (pathname === "/lawyer-form") {
-      // Lawyer just signed up → fill form
-      setIsAllowed(true);
-      return;
-    }
-
-    if (status === "PENDING") {
-      // Lawyer waiting for approval
-      if (pathname !== "/pending-approval") {
-        router.replace("/pending-approval");
-      } else {
-        setIsAllowed(true);
-      }
-      return;
-    }
-
-    if (status === "VERIFIED") {
-      // VERIFIED lawyer
-      if (pathname.startsWith("/lawyer/") && pathname !== "/my-profile/me") {
-        router.replace("/my-profile/me");
-        return;
-      }
-      setIsAllowed(true);
-      return;
-    }
-
-    // In case of REJECTED or unknown
-    router.replace("/unauthorized");
   }, [isLoaded, isSignedIn, pathname, router, user]);
 
   // Render children only when allowed
