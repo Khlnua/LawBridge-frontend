@@ -53,6 +53,16 @@ const GET_CHAT_ROOMS = gql`
       participants
       appointmentId
       allowedMedia
+      lastMessage {
+        chatRoomId
+        ChatRoomsMessages {
+          _id
+          userId
+          type
+          content
+          createdAt
+        }
+      }
     }
   }
 `;
