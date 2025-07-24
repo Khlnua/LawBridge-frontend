@@ -179,7 +179,7 @@ export default function MessengerLayout() {
   }, [isMobile, selectedRoomId]);
 
   // Enhanced query with error handling and retry logic
-  const { data, loading, error, refetch, networkStatus } = useQuery(
+  const { data, loading, error, refetch } = useQuery(
     GET_CHAT_ROOMS,
     {
       variables: { userId },
@@ -207,7 +207,7 @@ export default function MessengerLayout() {
   );
 
   // Fetch lawyer info for the selected chat with error handling
-  const { data: selectedLawyerData, loading: selectedLawyerLoading } = useQuery(
+  const { data: selectedLawyerData } = useQuery(
     GET_LAWYER_BY_ID,
     {
       variables: { lawyerId: selectedOtherId },
@@ -288,7 +288,7 @@ export default function MessengerLayout() {
   }, [filteredRooms, userId]);
 
   // Batch fetch all lawyers' info with error handling
-  const { data: lawyersData, loading: lawyersLoading } = useQuery(
+  const { data: lawyersData } = useQuery(
     GET_LAWYERS_BY_IDS,
     {
       variables: { ids: lawyerIds },
@@ -494,7 +494,7 @@ export default function MessengerLayout() {
             </div>
             {debouncedSearchQuery && (
               <p className="text-xs text-gray-500 mt-2">
-                "{debouncedSearchQuery}" хайж байна...
+                &quot{debouncedSearchQuery}&quot хайж байна...
               </p>
             )}
           </div>

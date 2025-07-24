@@ -1,5 +1,5 @@
 import React from "react";
-import { Scale, BarChart3, Trash2, AlertCircle } from "lucide-react";
+import { Scale, BarChart3,  AlertCircle } from "lucide-react";
 
 interface ChatHeaderProps {
   stats: { messageCount: number };

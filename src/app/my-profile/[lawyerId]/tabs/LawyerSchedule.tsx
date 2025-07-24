@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import {
   Calendar,
   Clock,
-  X,
   Edit3,
   Save,
   Trash2,
@@ -150,14 +149,14 @@ export default function LawyerSchedule({ lawyerId }: LawyerScheduleProps) {
     });
   };
 
-  const removeTimeSlot = (dateKey: string, time: string) => {
-    setAvailability((prev) => {
-      const filtered = prev[dateKey].filter((t) => t !== time);
-      const updated = { ...prev, [dateKey]: filtered };
-      if (filtered.length === 0) delete updated[dateKey];
-      return updated;
-    });
-  };
+  // const removeTimeSlot = (dateKey: string, time: string) => {
+  //   setAvailability((prev) => {
+  //     const filtered = prev[dateKey].filter((t) => t !== time);
+  //     const updated = { ...prev, [dateKey]: filtered };
+  //     if (filtered.length === 0) delete updated[dateKey];
+  //     return updated;
+  //   });
+  // };
 
   const saveAvailability = async () => {
     setSaving(true);

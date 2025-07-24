@@ -5,12 +5,12 @@ import { Button } from "@/components/ui";
 import { useRouter } from "next/navigation";
 import { useQuery } from "@apollo/client";
 import { GET_ALL_LAWYERS } from "@/graphql/lawyer";
-import { useGetAdminSpecializationsQuery } from "@/generated";
+// import { useGetAdminSpecializationsQuery } from "@/generated";
 import { LoaderCircle } from "lucide-react";
 
 const RecommendLawyers = () => {
   const { push } = useRouter();
-  const { data } = useGetAdminSpecializationsQuery();
+  // const { data } = useGetAdminSpecializationsQuery();
   const { data: allLawyersData, loading: allLawyersLoading, error: allLawyersError } = useQuery(GET_ALL_LAWYERS);
 
   if (allLawyersLoading)

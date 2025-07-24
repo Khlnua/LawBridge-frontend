@@ -17,7 +17,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
 const PendingPage = () => {
-  const [currentStep, setCurrentStep] = useState(0);
   const [showChatbotGlow, setShowChatbotGlow] = useState(false);
   const [particleKey, setParticleKey] = useState(0);
   const [isHoveringChatbot, setIsHoveringChatbot] = useState(false);
@@ -32,7 +31,7 @@ const PendingPage = () => {
   // Animate progress steps
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentStep((prev) => (prev + 1) % 4);
+      // setCurrentStep((prev) => (prev + 1) % 4); // This line was removed
     }, 3000);
     return () => clearInterval(interval);
   }, []);
