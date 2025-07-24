@@ -19,6 +19,15 @@ interface Category {
   categoryName: string;
 }
 
+interface Specialization {
+  _id: string;
+  specializationId: string;
+  categoryName: string;
+  lawyerId: string;
+  subscription: boolean;
+  pricePerHour: number;
+}
+
 interface Lawyer {
   id: string;
   lawyerId: string;
@@ -26,7 +35,7 @@ interface Lawyer {
   lastName: string;
   profilePicture?: string;
   status: string;
-  specialty?: string;
+  specialization: Specialization[];
   rating?: number;
   reviewCount?: number;
 }
@@ -46,33 +55,33 @@ const FilteredByCategories = () => {
   if (allLawyersLoading) return <div>Түр хүлээнэ үү...</div>;
   if (allLawyersError) return <div>Алдаа гарлаа.</div>;
 
-  const lawyers = [...(allLawyersData?.getLawyers || [])];
-  console.log({ lawyers });
+  const lawyers: Lawyer[] = allLawyersData?.getLawyers || [];
 
-  const filteredLawyers = lawyers.filter((lawyer: Lawyer) => {
+  // 🔍 Filter lawyers by selected specializationId
+  const filteredLawyers = lawyers.filter((lawyer) => {
     if (!selectedSpecialty) return true;
 
-    console.log(lawyer.specialty);
-
-    if (Array.isArray(lawyer.specialty)) {
-      return lawyer.specialty.includes(selectedSpecialty);
+    if (Array.isArray(lawyer.specialization)) {
+      return lawyer.specialization.some(
+        (spec) => spec.specializationId === selectedSpecialty
+      );
     }
 
     return false;
   });
 
   const handleSpecaltyChange = (value: string | null) => {
-    if (value === "Бүх чиглэл") {
+    if (value === "all") {
       setSelectedSpecialty(null);
-      return;
+    } else {
+      setSelectedSpecialty(value);
     }
-    setSelectedSpecialty(value);
   };
 
   const specializations = data?.getAdminSpecializations || [];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 md:gap-10 justify-center mb-8 sm:mb-10 w-full max-w-6xl mt-10 ">
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 md:gap-10 justify-center mb-8 sm:mb-10 w-full max-w-6xl mt-10">
       <div className="w-70 h-200 flex flex-col space-y-5 fixed left-20 top-30">
         <p className="text-lg font-semibold text-[#333]">Шүүлтүүр</p>
 
@@ -86,7 +95,7 @@ const FilteredByCategories = () => {
           <SelectContent className="bg-white">
             <SelectGroup>
               <SelectItem
-                value="Бүх чиглэл"
+                value="all"
                 className="cursor-pointer hover:bg-gray-100"
               >
                 Бүх чиглэл
@@ -96,7 +105,7 @@ const FilteredByCategories = () => {
               {specializations.map((spec: Category) => (
                 <SelectItem
                   key={spec.id}
-                  value={spec.id}
+                  value={spec.id} // 🎯 This matches specializationId
                   className="cursor-pointer hover:bg-gray-100"
                 >
                   {spec.categoryName}
@@ -108,11 +117,11 @@ const FilteredByCategories = () => {
       </div>
 
       {filteredLawyers?.length > 0 ? (
-        filteredLawyers.map((lawyer: any, index) => (
+        filteredLawyers.map((lawyer, index) => (
           <LawyerCard
             id={lawyer.lawyerId}
             key={lawyer.lawyerId || index}
-            name={lawyer.firstName + " " + lawyer.lastName}
+            name={`${lawyer.firstName} ${lawyer.lastName}`}
             avatarImage={lawyer.profilePicture}
             status={lawyer.status}
             rating={lawyer.rating}
