@@ -141,3 +141,14 @@ export const GET_ALL_LAWYERS = gql`
     }
   }
 `;
+
+export const GET_LAWYERS_BY_IDS = gql`
+  query GetLawyersByIds($ids: [ID!]!) {
+    getLawyersByIds(ids: $ids) {
+      lawyerId
+      firstName
+      lastName
+      profilePicture
+    }
+  }
+`;

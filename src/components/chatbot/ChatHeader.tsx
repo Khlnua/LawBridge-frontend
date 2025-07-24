@@ -9,7 +9,7 @@ interface ChatHeaderProps {
   onClearChat: () => void;
 }
 
-const ChatHeader: React.FC<ChatHeaderProps> = ({ stats, connectionError, messageCount, isLoading, onClearChat }) => (
+const ChatHeader: React.FC<ChatHeaderProps> = ({ stats, connectionError, }) => (
   <div className="bg-white shadow-sm border-b border-gray-200 px-6 py-4">
     <div className="flex items-center justify-between">
       <div className="flex items-center space-x-3">

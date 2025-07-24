@@ -43,6 +43,30 @@ const CREATE_MESSAGE = gql`
   }
 `;
 
+const GET_CHAT_ROOM_BY_ID = gql`
+  query GetChatRoomById($id: String!) {
+    getChatRoomById(_id: $id) {
+      _id
+      participants
+      appointmentId
+      allowedMedia
+    }
+  }
+`;
+
+const GET_LAWYER_BY_ID = gql`
+  query GetLawyerById($lawyerId: ID!) {
+    getLawyerById(lawyerId: $lawyerId) {
+      _id
+      lawyerId
+      clerkUserId
+      firstName
+      lastName
+      profilePicture
+    }
+  }
+`;
+
 // Update MessageType to match expected Message type
 export interface MessageType {
   id: string;
@@ -133,22 +157,31 @@ export default function useChatRoomState(chatRoomId: string): UseChatRoomState {
     }
   }, [chatData]);
 
-  // Fetch other user info based on chatRoomId and messages
+  // Fetch chat room info to get participants
+  const { data: chatRoomData } = useQuery(GET_CHAT_ROOM_BY_ID, {
+    variables: { id: chatRoomId },
+    skip: !chatRoomId,
+  });
+
+  // Find the other participant's userId
+  const otherUserId = chatRoomData?.getChatRoomById?.participants?.find((id: string) => id !== user?.id);
+
+  // Fetch lawyer info if the other participant is a lawyer
+  const { data: lawyerData } = useQuery(GET_LAWYER_BY_ID, {
+    variables: { lawyerId: otherUserId },
+    skip: !otherUserId,
+  });
+
   useEffect(() => {
-    if (!user || !chatRoomId || !messages.length) return;
-    // Find the other participant's userId
-    const otherUserId = messages.find((msg) => msg.userId !== user.id)?.userId;
-    if (!otherUserId) return;
-    // Try to fetch user profile from Clerk (if available)
-    // If Clerk is not used for other users, fallback to minimal info
-    // TODO: Replace with real user fetching logic if you have a user API
-    setOtherUser({
-      id: otherUserId,
-      name: `User ${otherUserId.slice(-4)}`,
-      avatar: "/default-avatar.png",
-      isLawyer: false,
-    });
-  }, [user, chatRoomId, messages]);
+    if (lawyerData?.getLawyerById) {
+      setOtherUser({
+        id: lawyerData.getLawyerById.clerkUserId,
+        name: `${lawyerData.getLawyerById.firstName} ${lawyerData.getLawyerById.lastName}`.trim(),
+        avatar: lawyerData.getLawyerById.profilePicture || "/default-avatar.png",
+        isLawyer: true,
+      });
+    }
+  }, [lawyerData]);
 
   // Socket Effects for real-time
   useEffect(() => {
