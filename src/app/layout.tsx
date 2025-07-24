@@ -27,8 +27,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   const pathname = usePathname();
-  const hideHeader =
-  pathname.startsWith("/admin");
+  const hideHeader = pathname.startsWith("/admin");
   const chatbotHide = pathname.startsWith("/chatbot");
   const { push } = useRouter();
   return (
@@ -42,12 +41,10 @@ export default function RootLayout({
             <SocketProvider>
               <Toaster richColors position="top-right" />
 
-              {!chatbotHide && <FloatingChatbotButton onClick={() => push("/chatbot")} />}
-              <main className="flex justify-center items-center min-h-[calc(100vh-4rem)]">
-
-
+              {!chatbotHide && (
+                <FloatingChatbotButton onClick={() => push("/chatbot")} />
+              )}
               <main className="flex mt-3 md:mt-10 lg:mt-15 justify-center items-start min-h-[calc(100vh-4rem)]">
-
                 <AuthRedirectGuard />
                 {children}
               </main>
