@@ -46,6 +46,7 @@ const FilteredByCategories = () => {
   );
 
   const { data } = useGetAdminSpecializationsQuery();
+
   const {
     data: allLawyersData,
     loading: allLawyersLoading,
