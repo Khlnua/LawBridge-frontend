@@ -5,11 +5,12 @@ import { Button, Input } from "@/components/ui";
 import { useRouter } from "next/navigation";
 import { useQuery } from "@apollo/client";
 import { GET_ALL_LAWYERS_QUERY } from "@/graphql/lawyer";
+
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
 interface Lawyer {
-  _id: string;
+  clientId: string;
   firstName: string;
   lastName: string;
 }
@@ -101,8 +102,8 @@ const HeroSection = () => {
               {filteredLawyers.length > 0 ? (
                 filteredLawyers.map((lawyer) => (
                   <Link
-                    href={`/lawyer/${lawyer._id}`}
-                    key={lawyer._id}
+                    href={`/lawyer/${lawyer.clientId}`}
+                    key={lawyer.clientId}
                     className="block px-4 py-2 border-b border-gray-200 text-left text-gray-800 opacity-50  transition-all duration-200"
                     style={{
                       fontWeight: "bold",
