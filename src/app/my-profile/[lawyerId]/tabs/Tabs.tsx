@@ -1,14 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import {
-  FileText,
-  Star,
-  Calendar,
-  MessageCircleMoreIcon,
-  UserPenIcon,
-  Newspaper,
-} from "lucide-react";
+import { FileText, Star, Calendar, MessageCircleMoreIcon, UserPenIcon, Newspaper } from "lucide-react";
 import { ShowLawyerPosts } from "./ShowLawyerPosts";
 import { LawyerReviews } from "./LawyerReviews";
 import LawyerSchedule from "./LawyerSchedule";
@@ -17,13 +10,7 @@ import { LawyerProfileHeader } from "@/app/my-profile/[lawyerId]/tabs/LawyerHead
 import { Button } from "@/components";
 import CreatePost from "./post/CreatePost";
 
-type TabType =
-  | "profile"
-  | "posts"
-  | "reviews"
-  | "schedule"
-  | "clients"
-  | "createPost";
+type TabType = "profile" | "posts" | "reviews" | "schedule" | "clients" | "createPost";
 
 type SidebarTabsProps = {
   lawyerId: string;
@@ -66,7 +53,7 @@ const SidebarTabs = ({ lawyerId }: SidebarTabsProps) => {
   ];
 
   return (
-    <div className="w-full flex flex-col md:flex-row gap-6">
+    <div className="w-[800] flex flex-col md:flex-row gap-6 ">
       <aside className="md:w-60 w-full rounded-xl bg-white  p-4 border-none ">
         <nav className="flex flex-col md:space-y-2 space-x-2 md:space-x-0 gap-3 ">
           {tabItems.map((tab) => (
@@ -74,11 +61,7 @@ const SidebarTabs = ({ lawyerId }: SidebarTabsProps) => {
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={`flex items-center gap-2 px-4 py-2 rounded-md transition-all duration-150 text-sm w-full justify-start hover:cursor-pointer
-                ${
-                  activeTab === tab.id
-                    ? "bg-[#316eea] text-white shadow-sm"
-                    : "text-gray-700 hover:bg-gray-100"
-                } ${
+                ${activeTab === tab.id ? "bg-[#316eea] text-white shadow-sm" : "text-gray-700 hover:bg-gray-100"} ${
                 tab.id === "profile" ? "bg-[#316eea]  hover:bg-gray-100" : ""
               }`}
             >
@@ -89,7 +72,7 @@ const SidebarTabs = ({ lawyerId }: SidebarTabsProps) => {
         </nav>
       </aside>
 
-      <section className="flex-1 bg-white rounded-xl shadow-sm p-6">
+      <section className="flex-1 bg-white rounded-xl ">
         {activeTab === "profile" && <LawyerProfileHeader lawyerId={lawyerId} />}
         {activeTab === "schedule" && <LawyerSchedule lawyerId={lawyerId} />}
         {activeTab === "clients" && <LawyerClients />}
