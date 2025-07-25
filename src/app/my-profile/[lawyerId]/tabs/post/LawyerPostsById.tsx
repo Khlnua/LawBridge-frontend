@@ -181,7 +181,7 @@ export const PostCard = ({ post }: { post: PostType }) => {
               <div className="flex-1">
                 <div className="relative">
                   <textarea
-                    placeholder="Сэтгэгдэл бичих... (Ctrl+Enter дарж илгээнэ үү)"
+                    placeholder="Сэтгэгдэл бичих..."
                     className="w-full border border-gray-200 rounded-lg p-3 pr-12 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all placeholder:text-gray-400"
                     rows={2}
                     value={commentText}
