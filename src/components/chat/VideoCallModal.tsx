@@ -64,6 +64,9 @@ export const VideoCallModal: React.FC<VideoCallModalProps> = ({
   const remoteVideoTrackRef = tracks.find(
     (t) => t.source === Track.Source.Camera && !t.participant.isLocal
   );
+  const remoteScreenShareTrackRef = tracks.find(
+    (t) => t.source === Track.Source.ScreenShare && !t.participant.isLocal
+  );
   const localCameraTrackRef = tracks.find(
     (t) => t.source === Track.Source.Camera && t.participant.isLocal
   );
@@ -236,6 +239,16 @@ export const VideoCallModal: React.FC<VideoCallModalProps> = ({
               className="w-full h-full object-contain"
             />
             <div className="absolute top-4 left-4 px-3 py-1 bg-red-600 text-white text-sm rounded-full font-medium">
+              Screen Sharing
+            </div>
+          </div>
+        ) : remoteScreenShareTrackRef ? (
+          <div className="relative w-full h-full bg-black flex items-center justify-center">
+            <VideoTrack
+              trackRef={remoteScreenShareTrackRef}
+              className="w-full h-full object-contain"
+            />
+            <div className="absolute top-4 left-4 px-3 py-1 bg-blue-600 text-white text-sm rounded-full font-medium">
               Screen Sharing
             </div>
           </div>
