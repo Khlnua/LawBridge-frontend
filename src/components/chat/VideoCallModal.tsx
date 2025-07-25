@@ -335,15 +335,6 @@ export const VideoCallModal: React.FC<VideoCallModalProps> = ({
           </ControlButton>
 
           <ControlButton
-            onClick={() => setIsAudioMuted(!isAudioMuted)}
-            label={isAudioMuted ? "Unmute Audio" : "Mute Audio"}
-            active={isAudioMuted}
-            variant={isAudioMuted ? "danger" : "default"}
-          >
-            {isAudioMuted ? <VolumeX size={20} /> : <Volume2 size={20} />}
-          </ControlButton>
-
-          <ControlButton
             onClick={toggleFullscreen}
             label={isFullscreen ? "Exit Fullscreen" : "Fullscreen"}
             active={isFullscreen}
