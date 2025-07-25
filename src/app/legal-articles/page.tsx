@@ -6,7 +6,7 @@ import { useGetAdminSpecializationsQuery } from "@/generated";
 import { useQuery } from "@apollo/client";
 import { GET_ALL_POSTS } from "@/graphql/post";
 import { Search, Filter, Calendar, User, Tag, ChevronRight, X } from "lucide-react";
-import { PostCard } from "../my-profile/[lawyerId]/tabs/post/LawyerPostsById";
+// import { PostCard } from "../my-profile/[lawyerId]/tabs/post/LawyerPostsById";
 
 const ArticlesPage = () => {
   const [selectedSpecIds, setSelectedSpecIds] = useState<string[]>([]);
@@ -171,7 +171,7 @@ const ArticlesPage = () => {
               })}
               {searchTerm && (
                 <div className="flex items-center gap-2 bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm">
-                  <Search className="h-3 w-3" />"{searchTerm}"
+                  <Search className="h-3 w-3" />&quot;{searchTerm}&quot;
                   <button onClick={() => setSearchTerm("")} className="hover:text-green-900">
                     <X className="h-3 w-3" />
                   </button>
