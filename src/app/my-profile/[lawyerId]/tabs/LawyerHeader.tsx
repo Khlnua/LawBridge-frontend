@@ -138,8 +138,7 @@ export const LawyerProfileHeader = ({ lawyerId }: LawyerProfileHeaderProps) => {
           <Avatar className="w-28 h-28 border">
             <AvatarImage
               src={
-                localPreview ||
-                `${process.env?.R2_PUBLIC_DOMAIN}/${form.avatar}`
+                localPreview || `${process.env.R2_PUBLIC_DOMAIN}/${form.avatar}`
               }
               alt="Avatar"
               className="object-cover border-none"
