@@ -17,7 +17,7 @@ export const AuthRedirectGuard = () => {
     const id = user?.id;
 
     // ✅ Publicly accessible routes
-    const publicRoutes = ["/", "/find-lawyers", "/legal-articles"];
+    const publicRoutes = ["/", "/find-lawyers", "/legal-articles","/sign-up",""];
     const isPublic =
       publicRoutes.includes(pathname) || pathname.startsWith("/lawyer/");
 
