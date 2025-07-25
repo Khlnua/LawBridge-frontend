@@ -32,7 +32,9 @@ export default function RootLayout({
   const chatbotHide =
     pathname.startsWith("/chatbot") ||
     pathname.startsWith("/pending-approval") ||
-    pathname.startsWith("/chatroom");
+    pathname.startsWith("/chatroom") ||
+    pathname.startsWith("/sign-in") ||
+    pathname.startsWith("/sign-up");
   const { push } = useRouter();
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
