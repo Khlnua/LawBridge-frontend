@@ -11,8 +11,6 @@ import {
   MonitorOff,
   Maximize2,
   Minimize2,
-  Volume2,
-  VolumeX,
   Signal,
   Wifi,
   WifiOff,
@@ -85,7 +83,6 @@ export const VideoCallModal: React.FC<VideoCallModalProps> = ({
   const [controlsVisible, setControlsVisible] = useState(true);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [callDuration, setCallDuration] = useState(0);
-  const [isAudioMuted, setIsAudioMuted] = useState(false);
 
   // Call duration timer
   useEffect(() => {
