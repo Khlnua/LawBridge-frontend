@@ -1,56 +1,86 @@
+"use client";
 import { MessageCircleMore, Sparkles, Bot, Zap } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useState, useEffect, useCallback } from "react";
 
 interface FloatingChatbotButtonProps {
-  onClick: () => void;
+  href?: string;
+  onClick?: () => void;
   isActive?: boolean;
   hasNotification?: boolean;
   className?: string;
 }
 
 export default function FloatingChatbotButton({
+  href,
   onClick,
   isActive = false,
   hasNotification = false,
   className = "",
 }: FloatingChatbotButtonProps) {
+  const router = useRouter();
   const [isHovered, setIsHovered] = useState(false);
   const [showPulse, setShowPulse] = useState(false);
   const [particleKey, setParticleKey] = useState(0);
 
-  // Periodic pulse animation
+  // Periodic pulse animation - less frequent to reduce lag
   useEffect(() => {
     const interval = setInterval(() => {
       setShowPulse(true);
-      setTimeout(() => setShowPulse(false), 1000);
-    }, 5000);
+      setTimeout(() => setShowPulse(false), 800);
+    }, 8000); // Increased from 5s to 8s
 
     return () => clearInterval(interval);
   }, []);
 
-  // Regenerate particles on hover
+  // Regenerate particles on hover - debounced
   useEffect(() => {
     if (isHovered) {
-      setParticleKey((prev) => prev + 1);
+      const timeout = setTimeout(() => {
+        setParticleKey((prev) => prev + 1);
+      }, 100);
+      return () => clearTimeout(timeout);
     }
   }, [isHovered]);
 
+  const handleClick = useCallback(
+    (e: React.MouseEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      console.log("Button clicked, href:", href);
+      if (onClick) onClick();
+      if (href) {
+        console.log("Navigating to:", href);
+        router.push(href);
+      }
+    },
+    [href, onClick, router]
+  );
+
+  const handleMouseEnter = useCallback(() => {
+    setIsHovered(true);
+  }, []);
+
+  const handleMouseLeave = useCallback(() => {
+    setIsHovered(false);
+  }, []);
+
   return (
     <div
-      className={`fixed right-4 bottom-4 sm:right-8 sm:bottom-8 md:right-12 md:bottom-12 lg:right-20 lg:bottom-20 z-50 ${className}`}
+      className={`fixed right-4 bottom-4 sm:right-8 sm:bottom-8 md:right-12 md:bottom-12 lg:right-20 lg:bottom-20 z-[9999] ${className}`}
     >
-      {/* Floating particles background */}
+      {/* Floating particles background - only on hover */}
       {isHovered && (
         <div key={particleKey} className="absolute inset-0 pointer-events-none">
-          {[...Array(6)].map((_, i) => (
+          {[...Array(4)].map((_, i) => (
             <div
               key={i}
-              className={`absolute w-1 h-1 bg-blue-400 rounded-full animate-ping opacity-60`}
+              className="absolute w-1 h-1 bg-blue-400 rounded-full animate-ping opacity-60"
               style={{
                 left: `${20 + Math.random() * 60}%`,
                 top: `${20 + Math.random() * 60}%`,
-                animationDelay: `${i * 200}ms`,
-                animationDuration: `${1000 + Math.random() * 1000}ms`,
+                animationDelay: `${i * 300}ms`,
+                animationDuration: `${1500 + Math.random() * 500}ms`,
               }}
             />
           ))}
@@ -59,35 +89,36 @@ export default function FloatingChatbotButton({
 
       {/* Main button container */}
       <div className="relative group">
-        {/* Glow ring effect */}
+        {/* Glow ring effect - simplified */}
         <div
           className={`
           absolute inset-0 rounded-full
           bg-gradient-to-br from-blue-400 to-purple-500
-          opacity-0 group-hover:opacity-30 transition-all duration-500 ease-out
-          scale-110 blur-md
-          ${showPulse ? "animate-pulse opacity-40" : ""}
+          opacity-0 group-hover:opacity-25 transition-opacity duration-300 ease-out
+          scale-110 blur-sm
+          ${showPulse ? "animate-pulse opacity-30" : ""}
         `}
         />
 
-        {/* Outer ring */}
+        {/* Outer ring - simplified */}
         <div
           className={`
           absolute inset-0 rounded-full
           border-2 border-blue-300/50
-          scale-100 group-hover:scale-125
-          transition-all duration-700 ease-out
-          ${isHovered ? "border-blue-400/70 shadow-lg shadow-blue-400/25" : ""}
+          scale-100 group-hover:scale-110
+          transition-all duration-300 ease-out
+          group-hover:border-blue-400/70 group-hover:shadow-lg group-hover:shadow-blue-400/25
         `}
         />
 
         {/* Button */}
         <button
-          onClick={onClick}
-          onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
+          type="button"
+          onClick={handleClick}
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
           className={`
-            relative overflow-hidden
+            relative overflow-hidden z-10
             size-14 sm:size-16 rounded-full
             bg-gradient-to-br from-blue-600 via-blue-700 to-purple-700
             hover:from-blue-500 hover:via-purple-600 hover:to-indigo-700
@@ -103,13 +134,13 @@ export default function FloatingChatbotButton({
           `}
           aria-label="Open AI Chatbot"
         >
-          {/* Background shimmer */}
+          {/* Background shimmer - simplified */}
           <div
             className={`
             absolute inset-0 
             bg-gradient-to-r from-transparent via-white/20 to-transparent
             -translate-x-full group-hover:translate-x-full
-            transition-transform duration-1000 ease-out
+            transition-transform duration-800 ease-out
             skew-x-12
           `}
           />
@@ -120,7 +151,7 @@ export default function FloatingChatbotButton({
             <MessageCircleMore
               className={`
               size-[50%] text-white
-              transition-all duration-500 ease-out
+              transition-all duration-300 ease-out
               ${isHovered ? "scale-110 rotate-12" : ""}
               ${isActive ? "scale-125" : ""}
               drop-shadow-lg
@@ -141,7 +172,7 @@ export default function FloatingChatbotButton({
               <Bot className="size-1.5 text-white" />
             </div>
 
-            {/* Sparkle effect */}
+            {/* Sparkle effect - only on hover */}
             {isHovered && (
               <>
                 <Sparkles className="absolute -top-2 -left-2 size-3 text-yellow-300 animate-spin" />
@@ -165,7 +196,7 @@ export default function FloatingChatbotButton({
         {hasNotification && (
           <div
             className={`
-            absolute -top-1 -right-1
+            absolute -top-1 -right-1 z-20
             size-5 bg-gradient-to-br from-red-500 to-pink-600
             rounded-full border-2 border-white
             flex items-center justify-center
@@ -214,7 +245,7 @@ export default function FloatingChatbotButton({
         `}
         />
 
-        {/* Breathing animation ring */}
+        {/* Breathing animation ring - only on hover */}
         <div
           className={`
           absolute inset-0 rounded-full
@@ -251,19 +282,5 @@ export default function FloatingChatbotButton({
 
 // Usage example component
 export function ChatbotButtonExample() {
-  const [hasNotification, setHasNotification] = useState(true);
-
-  const handleClick = () => {
-    console.log("Navigate to chatbot");
-    setHasNotification(false);
-    // Add your navigation logic here
-    // router.push("/chatbot");
-  };
-
-  return (
-    <FloatingChatbotButton
-      onClick={handleClick}
-      hasNotification={hasNotification}
-    />
-  );
+  return <FloatingChatbotButton href="/chatbot" hasNotification />;
 }

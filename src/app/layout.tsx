@@ -47,9 +47,7 @@ export default function RootLayout({
             <SocketProvider>
               <Toaster richColors position="top-right" />
 
-              {!chatbotHide && (
-                <FloatingChatbotButton onClick={() => push("/chatbot")} />
-              )}
+              {!chatbotHide && <FloatingChatbotButton href="/chatbot" />}
               <main className="flex justify-center items-start min-h-[calc(100vh-4rem)]">
                 {/* <AuthRedirectGuard /> */}
                 {children}
