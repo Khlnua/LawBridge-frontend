@@ -4,21 +4,13 @@ import { useState, useEffect } from "react";
 import { MailIcon, Pencil, Save, University, X } from "lucide-react";
 import { useUploadAvatar } from "@/app/(create-lawyer-profile)/lawyer-form/hooks";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-  CardHeader,
-  CardTitle,
-  CardContent,
-  CardFooter,
-} from "@/components/ui/card";
+// Removed unused card imports
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
-import {
-  GET_LAWYER_BY_LAWYERID_QUERY,
-  UPDATE_LAWYER_MUTATION,
-} from "@/graphql/lawyer";
+import { GET_LAWYER_BY_LAWYERID_QUERY, UPDATE_LAWYER_MUTATION } from "@/graphql/lawyer";
 import { useQuery, useMutation } from "@apollo/client";
 import { GET_SPECIALIZATION_BY_LAWYER_ID } from "@/graphql/specializationsbylawyer";
 
@@ -37,12 +29,9 @@ export const LawyerProfileHeader = ({ lawyerId }: LawyerProfileHeaderProps) => {
 
   const lawyer = data?.getLawyerById;
 
-  const { data: specializationData, loading: specialLoad } = useQuery(
-    GET_SPECIALIZATION_BY_LAWYER_ID,
-    {
-      variables: { lawyerId },
-    }
-  );
+  const { data: specializationData, loading: specialLoad } = useQuery(GET_SPECIALIZATION_BY_LAWYER_ID, {
+    variables: { lawyerId },
+  });
 
   const [form, setForm] = useState({
     avatar: "",
@@ -71,18 +60,13 @@ export const LawyerProfileHeader = ({ lawyerId }: LawyerProfileHeaderProps) => {
     }
   }, [lawyer, specializationData]);
 
-  const [updateLawyer, { loading: updating }] = useMutation(
-    UPDATE_LAWYER_MUTATION
-  );
+  const [updateLawyer, { loading: updating }] = useMutation(UPDATE_LAWYER_MUTATION);
 
-  const { fileInputRef, uploading, openBrowse, uploadToServer } =
-    useUploadAvatar({
-      onUpload: () => {},
-    });
+  const { fileInputRef, uploading, openBrowse, uploadToServer } = useUploadAvatar({
+    onUpload: () => {},
+  });
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
   };
@@ -129,157 +113,189 @@ export const LawyerProfileHeader = ({ lawyerId }: LawyerProfileHeaderProps) => {
     }
   };
 
-  if (loading) return <p className="text-center py-8">Ачааллаж байна...</p>;
+  if (loading) {
+    return (
+      <div className="p-8">
+        <div className="animate-pulse bg-white rounded-2xl h-64 w-full" />
+      </div>
+    );
+  }
 
   return (
-    <div className="w-full p-6 space-y-4 border-none ">
-      <CardHeader className="flex flex-col items-center text-center gap-4">
-        <div className="relative group">
-          <Avatar className="w-28 h-28 border">
-            <AvatarImage
-              src={
-                localPreview ||
-                `https://pub-c16a65dfb75c4bf1b7d1984fa8323c49.r2.dev/${form.avatar}`
-              }
-              alt="Avatar"
-              className="object-cover border-none"
-            />
-            <AvatarFallback>
-              {form.firstName.charAt(0)}
-              {form.lastName.charAt(0)}
-            </AvatarFallback>
-          </Avatar>
+    <div className="w-full">
+      <div className="border-b border-gray-100 bg-gray-50/50">
+        <div className="p-4 sm:p-6 lg:p-8">
+          <div className="flex flex-col lg:flex-row items-center lg:items-start gap-6 lg:gap-8">
+            <div className="relative group flex-shrink-0">
+              <Avatar className="w-24 h-24 sm:w-28 sm:h-28 lg:w-32 lg:h-32 border-4 border-white shadow-lg">
+                <AvatarImage
+                  src={localPreview || `https://pub-c16a65dfb75c4bf1b7d1984fa8323c49.r2.dev/${form.avatar}`}
+                  alt="Avatar"
+                  className="object-cover"
+                />
+                <AvatarFallback className="text-xl font-semibold bg-blue-100 text-[#003366]">
+                  {form.firstName.charAt(0)}
+                  {form.lastName.charAt(0)}
+                </AvatarFallback>
+              </Avatar>
 
-          {isEditing && (
-            <>
-              <button
-                type="button"
-                onClick={openBrowse}
-                className="absolute bottom-0 right-0 p-2 bg-white rounded-full shadow group-hover:opacity-100 opacity-0 transition"
-                disabled={uploading}
-              >
-                <Pencil size={16} />
-              </button>
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                onChange={handleFileSelect}
-                hidden
-              />
-            </>
-          )}
-        </div>
-
-        <CardTitle className="text-xl font-semibold">
-          {form.lastName} {form.firstName}
-        </CardTitle>
-
-        {!isEditing && (
-          <>
-            {specialLoad ? (
-              <p className="text-center py-2 text-sm">Ачааллаж байна...</p>
-            ) : form.specialization.length > 0 ? (
-              <div className="flex flex-wrap justify-center gap-2">
-                {form.specialization.map((spec) => (
-                  <span
-                    key={spec.specializationId}
-                    className="bg-[#0b1536] text-white px-3 py-1 text-sm rounded-full"
+              {isEditing && (
+                <>
+                  <button
+                    type="button"
+                    onClick={openBrowse}
+                    className="absolute bottom-2 right-2 p-2 bg-[#003366] text-white rounded-full shadow-lg hover:bg-[#004080] transition-colors group-hover:opacity-100 opacity-80"
+                    disabled={uploading}
                   >
-                    {spec.categoryName}
-                  </span>
-                ))}
-              </div>
-            ) : (
-              <p className="text-gray-500 text-sm">
-                Мэргэжлийн чиглэл оруулаагүй байна
-              </p>
-            )}
-
-            <div className="text-sm text-gray-500 mt-2">
-              <div className="flex gap-1 justify-center items-center">
-                <University size={16} /> {form.university}
-              </div>
-              <div className="flex gap-1 justify-center items-center">
-                <MailIcon size={16} /> {form.email}
-              </div>
+                    <Pencil size={16} />
+                  </button>
+                  <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileSelect} hidden />
+                </>
+              )}
             </div>
 
-            <p className="text-sm text-muted-foreground mt-2">{form.bio}</p>
+            {/* Profile Info Section */}
+            <div className="flex-1 text-center lg:text-left space-y-4">
+              <div>
+                <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 mb-2">
+                  {form.lastName} {form.firstName}
+                </h1>
 
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setIsEditing(true)}
-              className="mt-2 border-none bg-[#83bce5] text-[#0b1536]"
-            >
-              <Pencil size={14} className="mr-1" />
-              Шинэчлэх
-            </Button>
-          </>
-        )}
-      </CardHeader>
+                {!isEditing && (
+                  <>
+                    {specialLoad ? (
+                      <div className="animate-pulse">
+                        <div className="h-6 bg-gray-200 rounded w-32 mb-2"></div>
+                      </div>
+                    ) : form.specialization.length > 0 ? (
+                      <div className="flex flex-wrap justify-center lg:justify-start gap-2 mb-4">
+                        {form.specialization.map((spec) => (
+                          <span key={spec.specializationId} className="bg-[#003366] text-white px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm rounded-lg font-medium">
+                            {spec.categoryName}
+                          </span>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-gray-500 text-sm mb-4">Мэргэжлийн чиглэл оруулаагүй байна</p>
+                    )}
 
+                    <div className="space-y-2 text-gray-600">
+                      <div className="flex gap-2 justify-center lg:justify-start items-center">
+                        <University size={18} className="text-gray-500" />
+                        <span>{form.university}</span>
+                      </div>
+                      <div className="flex gap-2 justify-center lg:justify-start items-center">
+                        <MailIcon size={18} className="text-gray-500" />
+                        <span>{form.email}</span>
+                      </div>
+                    </div>
+
+                    {form.bio && <p className="text-sm sm:text-base text-gray-700 leading-relaxed mt-4 max-w-2xl">{form.bio}</p>}
+                  </>
+                )}
+              </div>
+
+              {!isEditing && (
+                <div className="flex justify-center lg:justify-start">
+                  <Button
+                    variant="outline"
+                    onClick={() => setIsEditing(true)}
+                    className="bg-white border-2 border-[#003366] text-[#003366] hover:bg-[#003366] hover:text-white transition-colors px-6 py-2 rounded-lg font-medium"
+                  >
+                    <Pencil size={16} className="mr-2" />
+                    Шинэчлэх
+                  </Button>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Edit Form Section */}
       {isEditing && (
-        <>
-          <Separator />
-          <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <Label>Нэр</Label>
-              <Input
-                name="firstName"
-                value={form.firstName}
-                onChange={handleChange}
-              />
-            </div>
-            <div>
-              <Label>Овог</Label>
-              <Input
-                name="lastName"
-                value={form.lastName}
-                onChange={handleChange}
-              />
-            </div>
-            <div>
-              <Label>Имэйл</Label>
-              <Input name="email" value={form.email} onChange={handleChange} />
-            </div>
-            <div>
-              <Label>Их сургууль</Label>
-              <Input
-                name="university"
-                value={form.university}
-                onChange={handleChange}
-              />
-            </div>
-            <div className="md:col-span-2">
-              <Label>Танилцуулга</Label>
-              <Textarea name="bio" value={form.bio} onChange={handleChange} />
-            </div>
-          </CardContent>
+        <div className="p-4 sm:p-6 lg:p-8 bg-white">
+          <Separator className="mb-6 lg:mb-8" />
+          <div className="max-w-4xl mx-auto">
+            <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-4 sm:mb-6">Мэдээлэл засах</h2>
 
-          <CardFooter className="flex justify-end gap-2">
-            <Button
-              onClick={handleSave}
-              disabled={uploading || updating}
-              className="bg-[#0b1536] hover:bg-[#0b1536b6] text-white rounded-4xl"
-            >
-              <Save size={16} className="mr-1" />
-              Хадгалах
-            </Button>
-            <Button
-              variant="outline"
-              onClick={() => {
-                setIsEditing(false);
-                setLocalPreview(null);
-              }}
-              className="text-[#0b1536] border-[#0b1536] rounded-4xl"
-            >
-              <X size={16} className="mr-1" />
-              Болих
-            </Button>
-          </CardFooter>
-        </>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+              <div className="space-y-2">
+                <Label className="text-sm font-medium text-gray-700">Нэр</Label>
+                <Input
+                  name="firstName"
+                  value={form.firstName}
+                  onChange={handleChange}
+                  className="border-gray-300 focus:border-[#003366] focus:ring-[#003366]"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-sm font-medium text-gray-700">Овог</Label>
+                <Input
+                  name="lastName"
+                  value={form.lastName}
+                  onChange={handleChange}
+                  className="border-gray-300 focus:border-[#003366] focus:ring-[#003366]"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-sm font-medium text-gray-700">Имэйл</Label>
+                <Input
+                  name="email"
+                  value={form.email}
+                  onChange={handleChange}
+                  className="border-gray-300 focus:border-[#003366] focus:ring-[#003366]"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-sm font-medium text-gray-700">Их сургууль</Label>
+                <Input
+                  name="university"
+                  value={form.university}
+                  onChange={handleChange}
+                  className="border-gray-300 focus:border-[#003366] focus:ring-[#003366]"
+                />
+              </div>
+
+              <div className="sm:col-span-2 space-y-2">
+                <Label className="text-sm font-medium text-gray-700">Танилцуулга</Label>
+                <Textarea
+                  name="bio"
+                  value={form.bio}
+                  onChange={handleChange}
+                  rows={3}
+                  className="border-gray-300 focus:border-[#003366] focus:ring-[#003366]"
+                />
+              </div>
+            </div>
+
+            <div className="flex flex-col sm:flex-row justify-end gap-3 sm:gap-4 mt-6 sm:mt-8 pt-4 sm:pt-6 border-t border-gray-200">
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setIsEditing(false);
+                  setLocalPreview(null);
+                }}
+                className="border-gray-300 text-gray-700 hover:bg-gray-50 px-4 sm:px-6 py-2 rounded-lg w-full sm:w-auto"
+              >
+                <X size={16} className="mr-2" />
+                Болих
+              </Button>
+
+              <Button
+                onClick={handleSave}
+                disabled={uploading || updating}
+                className="bg-[#003366] hover:bg-[#004080] text-white px-4 sm:px-6 py-2 rounded-lg font-medium w-full sm:w-auto"
+              >
+                <Save size={16} className="mr-2" />
+                {uploading || updating ? "Хадгалж байна..." : "Хадгалах"}
+              </Button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

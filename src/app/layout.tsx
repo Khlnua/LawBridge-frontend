@@ -27,8 +27,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   const pathname = usePathname();
-  const hideHeader =
-    pathname.startsWith("/admin") || pathname.startsWith("/pending-approval");
+  const hideHeader = pathname.startsWith("/admin") || pathname.startsWith("/pending-approval");
   const chatbotHide =
     pathname.startsWith("/chatbot") ||
     pathname.startsWith("/pending-approval") ||
@@ -38,9 +37,7 @@ export default function RootLayout({
   const { push } = useRouter();
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
-      <body
-        className={`min-h-screen bg-background font-sans antialiased ${geistSans.variable} ${geistMono.variable}`}
-      >
+      <body className={`min-h-screen bg-background font-sans antialiased ${geistSans.variable} ${geistMono.variable}`}>
         <ClerkProvider signInUrl="/sign-in" signUpUrl="/sign-up">
           <ApolloWrapper>
             {!hideHeader && <Header />}
@@ -48,7 +45,7 @@ export default function RootLayout({
               <Toaster richColors position="top-right" />
 
               {!chatbotHide && <FloatingChatbotButton href="/chatbot" />}
-              <main className="flex justify-center items-start min-h-[calc(100vh-4rem)]">
+              <main className="flex justify-center items-start min-h-[calc(100vh-8rem)]">
                 {/* <AuthRedirectGuard /> */}
                 {children}
               </main>
