@@ -14,15 +14,23 @@ type CommentType = {
 };
 
 type PostType = {
+  _id: string;
   id: string;
   lawyerId: string;
   title: string;
   content: {
-    text: string;
+    text?: string;
+    image?: string;
+    video?: string;
+    audio?: string;
   };
-  mediaUrl?: string;
-  mediaType?: "image" | "video";
+  specialization: Array<{
+    id: string;
+    categoryName: string;
+  }>;
+  type: "TEXT" | "IMAGE" | "VIDEO" | "AUDIO" | "FILE";
   createdAt: string;
+  updatedAt?: string;
   comments: CommentType[];
 };
 
@@ -69,7 +77,9 @@ export const PostCard = ({ post }: { post: PostType }) => {
     variables: { lawyerId: post.lawyerId },
   });
 
-  const lawyerName = `${lawyerData?.getLawyerById.firstName || "Хуульч"} ${lawyerData?.getLawyerById.lastName || ""}`;
+  const lawyerName = `${lawyerData?.getLawyerById.firstName || "Хуульч"} ${
+    lawyerData?.getLawyerById.lastName || ""
+  }`;
   console.log("Lawyer Name:", lawyerData);
 
   const handleLike = () => {
@@ -83,7 +93,8 @@ export const PostCard = ({ post }: { post: PostType }) => {
     }
   };
 
-  const comments: CommentType[] = data?.getCommentsByPost ?? post.comments ?? [];
+  const comments: CommentType[] =
+    data?.getCommentsByPost ?? post.comments ?? [];
   const displayedComments = showAllComments ? comments : comments.slice(0, 3);
   const hasMoreComments = comments.length > 3;
 
@@ -126,23 +137,80 @@ export const PostCard = ({ post }: { post: PostType }) => {
             {formatDate(post.createdAt)}
           </div>
         </div>
-        <h2 className="text-xl font-bold text-gray-900 mb-3 leading-tight">{post.title}</h2>
-        <p className="text-gray-700 leading-relaxed whitespace-pre-line">{post.content.text}</p>
+        <h2 className="text-xl font-bold text-gray-900 mb-3 leading-tight">
+          {post.title}
+        </h2>
+        {post.content.text && (
+          <p className="text-gray-700 leading-relaxed whitespace-pre-line">
+            {post.content.text}
+          </p>
+        )}
       </div>
 
-      {post.mediaType === "image" && post.mediaUrl && (
+      {/* Display Image */}
+      {post.content.image && (
         <div className="relative">
           <img
-            src={post.mediaUrl}
-            alt="Post attachment"
+            src={post.content.image}
+            alt="Post image"
             className="w-full max-h-96 object-cover cursor-pointer hover:opacity-95 transition-opacity"
+            onError={(e) => {
+              console.error("Image failed to load:", post.content.image);
+              e.currentTarget.style.display = "none";
+            }}
           />
         </div>
       )}
-      {post.mediaType === "video" && post.mediaUrl && (
+
+      {/* Display Video */}
+      {post.content.video && (
         <div className="px-4">
           <div className="aspect-video bg-gray-100 rounded-lg overflow-hidden">
-            <video controls src={post.mediaUrl} className="w-full h-full object-cover" preload="metadata" />
+            <video
+              controls
+              src={post.content.video}
+              className="w-full h-full object-cover"
+              preload="metadata"
+              onError={(e) => {
+                console.error("Video failed to load:", post.content.video);
+                e.currentTarget.style.display = "none";
+              }}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Display Audio */}
+      {post.content.audio && (
+        <div className="px-4">
+          <div className="bg-gray-100 rounded-lg p-4">
+            <audio
+              controls
+              src={post.content.audio}
+              className="w-full"
+              onError={(e) => {
+                console.error("Audio failed to load:", post.content.audio);
+                e.currentTarget.style.display = "none";
+              }}
+            >
+              Your browser does not support the audio element.
+            </audio>
+          </div>
+        </div>
+      )}
+
+      {/* Display Specializations */}
+      {post.specialization && post.specialization.length > 0 && (
+        <div className="px-4 py-2">
+          <div className="flex flex-wrap gap-2">
+            {post.specialization.map((spec) => (
+              <span
+                key={spec.id}
+                className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
+              >
+                {spec.categoryName}
+              </span>
+            ))}
           </div>
         </div>
       )}
@@ -153,10 +221,16 @@ export const PostCard = ({ post }: { post: PostType }) => {
             <button
               onClick={handleLike}
               className={`flex items-center gap-2 px-3 py-1.5 rounded-full transition-all duration-200 ${
-                isLiked ? "bg-red-50 text-red-600 hover:bg-red-100" : "text-gray-600 hover:bg-gray-100"
+                isLiked
+                  ? "bg-red-50 text-red-600 hover:bg-red-100"
+                  : "text-gray-600 hover:bg-gray-100"
               }`}
             >
-              <Heart className={`w-5 h-5 transition-all ${isLiked ? "fill-current" : ""}`} />
+              <Heart
+                className={`w-5 h-5 transition-all ${
+                  isLiked ? "fill-current" : ""
+                }`}
+              />
               <span className="font-medium text-sm">{likeCount}</span>
             </button>
 
@@ -201,7 +275,9 @@ export const PostCard = ({ post }: { post: PostType }) => {
                     )}
                   </button>
                 </div>
-                {localError && <div className="text-xs text-red-600 mt-2">{localError}</div>}
+                {localError && (
+                  <div className="text-xs text-red-600 mt-2">{localError}</div>
+                )}
               </div>
             </div>
           </div>
@@ -210,26 +286,38 @@ export const PostCard = ({ post }: { post: PostType }) => {
             {loading && (
               <div className="flex items-center justify-center py-8">
                 <div className="w-6 h-6 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
-                <span className="ml-2 text-gray-600">Коммент уншиж байна...</span>
+                <span className="ml-2 text-gray-600">
+                  Коммент уншиж байна...
+                </span>
               </div>
             )}
 
             {error && (
-              <div className="text-center py-4 text-red-500 bg-red-50 rounded-lg">Коммент уншихад алдаа гарлаа. Дахин оролдоно уу.</div>
+              <div className="text-center py-4 text-red-500 bg-red-50 rounded-lg">
+                Коммент уншихад алдаа гарлаа. Дахин оролдоно уу.
+              </div>
             )}
 
             {displayedComments.map((comment) => (
               <div key={comment._id} className="flex gap-3 group">
                 <div className="w-8 h-8 bg-gradient-to-br from-green-500 to-teal-600 rounded-full flex items-center justify-center flex-shrink-0">
-                  <span className="text-white text-xs font-bold">{comment.author?.slice(0, 2).toUpperCase() || "??"}</span>
+                  <span className="text-white text-xs font-bold">
+                    {comment.author?.slice(0, 2).toUpperCase() || "??"}
+                  </span>
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="bg-gray-100 rounded-2xl px-4 py-3 group-hover:bg-gray-200 transition-colors">
                     <div className="flex items-center gap-2 mb-1">
-                      <span className="font-semibold text-sm text-gray-900">{comment.author?.slice(0, 8) || "Зочин"}***</span>
-                      <span className="text-xs text-gray-500">{formatDate(comment.createdAt)}</span>
+                      <span className="font-semibold text-sm text-gray-900">
+                        {comment.author?.slice(0, 8) || "Зочин"}***
+                      </span>
+                      <span className="text-xs text-gray-500">
+                        {formatDate(comment.createdAt)}
+                      </span>
                     </div>
-                    <p className="text-gray-800 leading-relaxed">{comment.content}</p>
+                    <p className="text-gray-800 leading-relaxed">
+                      {comment.content}
+                    </p>
                   </div>
                 </div>
               </div>

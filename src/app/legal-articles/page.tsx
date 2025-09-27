@@ -5,18 +5,44 @@ import { Button } from "@/components";
 import { useGetAdminSpecializationsQuery } from "@/generated";
 import { useQuery } from "@apollo/client";
 import { GET_ALL_POSTS } from "@/graphql/post";
-import { Search, Filter, Calendar, User, Tag, ChevronRight, X } from "lucide-react";
-// import { PostCard } from "../my-profile/[lawyerId]/tabs/post/LawyerPostsById";
+import {
+  Search,
+  Filter,
+  Calendar,
+  User,
+  Tag,
+  ChevronRight,
+  X,
+} from "lucide-react";
+import { useUser } from "@clerk/nextjs";
+import CreatePostModal from "@/components/post/CreatePostModal";
+import { CommentModal } from "@/components/comment";
+import { useRouter } from "next/navigation";
 
 const ArticlesPage = () => {
   const [selectedSpecIds, setSelectedSpecIds] = useState<string[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [showFilters, setShowFilters] = useState(false);
+  const [, setRefreshKey] = useState(0);
 
-  // const { lawyerId } = useParams() as { lawyerId: string };
+  const { user, isLoaded } = useUser();
+  const role = user?.publicMetadata?.role as string | undefined;
+  const isLawyer = role === "lawyer";
+  const router = useRouter();
 
-  const { data: specData, loading: specLoading, error: specError } = useGetAdminSpecializationsQuery();
-  const { data: postData, loading: postLoading, error: postError } = useQuery(GET_ALL_POSTS);
+  const {
+    data: specData,
+    loading: specLoading,
+    error: specError,
+  } = useGetAdminSpecializationsQuery();
+  const {
+    data: postData,
+    loading: postLoading,
+    error: postError,
+    refetch,
+  } = useQuery(GET_ALL_POSTS, {
+    fetchPolicy: "cache-first",
+  });
 
   // Specializations and posts data
   const specializations = specData?.getAdminSpecializations || [];
@@ -24,11 +50,22 @@ const ArticlesPage = () => {
 
   // Multi-select logic
   const handleFilter = (specId: string) => {
-    setSelectedSpecIds((prev) => (prev.includes(specId) ? prev.filter((id) => id !== specId) : [...prev, specId]));
+    setSelectedSpecIds((prev) =>
+      prev.includes(specId)
+        ? prev.filter((id) => id !== specId)
+        : [...prev, specId]
+    );
   };
   const clearFilters = () => {
     setSelectedSpecIds([]);
     setSearchTerm("");
+  };
+
+  // Clean URL function to fix double https issue
+  const cleanUrl = (url: string) => {
+    if (!url) return url;
+    // Remove double https://
+    return url.replace(/^https:\/\/https:\/\//, "https://");
   };
 
   // Filtering logic
@@ -39,10 +76,27 @@ const ArticlesPage = () => {
       post.content?.text?.toLowerCase().includes(searchTerm.toLowerCase());
 
     const matchesSpec =
-      selectedSpecIds.length === 0 || post.specialization?.some((spec: any) => selectedSpecIds.includes(spec.id || spec._id));
+      selectedSpecIds.length === 0 ||
+      post.specialization?.some((spec: any) =>
+        selectedSpecIds.includes(spec.id || spec._id)
+      );
 
     return matchesSearch && matchesSpec;
   });
+
+  // Show authentication status for debugging
+  if (!isLoaded) {
+    return (
+      <div className="min-h-screen md:mt-100 mt-20 bg-transparent ">
+        <div className="text-center space-y-4 bg-transparent">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto bg-transparent"></div>
+          <p className="text-gray-600 text-lg">
+            Аутентификацийг шалгаж байна...
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   if (specLoading || postLoading) {
     return (
@@ -63,7 +117,9 @@ const ArticlesPage = () => {
             <X className="w-8 h-8 text-red-600" />
           </div>
           <h2 className="text-xl font-semibold text-gray-800">Алдаа гарлаа</h2>
-          <p className="text-gray-600">{specError?.message || postError?.message}</p>
+          <p className="text-gray-600">
+            {specError?.message || postError?.message}
+          </p>
           <Button onClick={() => window.location.reload()} className="mt-4">
             Дахин оролдох
           </Button>
@@ -71,8 +127,6 @@ const ArticlesPage = () => {
       </div>
     );
   }
-
-  console.log(filteredPosts);
 
   return (
     <div className="min-h-screen  px-30">
@@ -83,8 +137,15 @@ const ArticlesPage = () => {
               Хуулийн нийтлэлүүд
             </h1>
             <p className="text-lg text-gray-600 max-w-4xl mx-auto">
-              Хуулийн мэргэжилтнүүдийн туршлага, зөвлөгөө болон сүүлийн үеийн хуулийн мэдээллүүд
+              Хуулийн мэргэжилтнүүдийн туршлага, зөвлөгөө болон сүүлийн үеийн
+              хуулийн мэдээллүүд
             </p>
+
+            {isLawyer && (
+              <div className="pt-4">
+                <CreatePostModal />
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -115,11 +176,19 @@ const ArticlesPage = () => {
               >
                 <Filter className="h-4 w-4" />
                 Ангилал ({specializations.length})
-                <ChevronRight className={`h-4 w-4 transition-transform ${showFilters ? "rotate-90" : ""}`} />
+                <ChevronRight
+                  className={`h-4 w-4 transition-transform ${
+                    showFilters ? "rotate-90" : ""
+                  }`}
+                />
               </Button>
 
               {(selectedSpecIds.length > 0 || searchTerm) && (
-                <Button variant="ghost" onClick={clearFilters} className="text-gray-500 hover:text-gray-700 hover:bg-gray-100">
+                <Button
+                  variant="ghost"
+                  onClick={clearFilters}
+                  className="text-gray-500 hover:text-gray-700 hover:bg-gray-100"
+                >
                   <X className="h-4 w-4 mr-2" />
                   Цэвэрлэх
                 </Button>
@@ -131,12 +200,17 @@ const ArticlesPage = () => {
           {showFilters && (
             <div className="space-y-4 border-t border-gray-100 pt-6">
               <div className="flex flex-wrap gap-3 justify-center">
-                {specializations.map((spec: { id: string; categoryName: string }) => (
-                  <Button
-                    key={spec.id}
-                    variant={selectedSpecIds.includes(spec.id) ? "default" : "outline"}
-                    onClick={() => handleFilter(spec.id)}
-                    className={`
+                {specializations.map(
+                  (spec: { id: string; categoryName: string }) => (
+                    <Button
+                      key={spec.id}
+                      variant={
+                        selectedSpecIds.includes(spec.id)
+                          ? "default"
+                          : "outline"
+                      }
+                      onClick={() => handleFilter(spec.id)}
+                      className={`
                       px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 transform hover:scale-105
                       ${
                         selectedSpecIds.includes(spec.id)
@@ -144,11 +218,12 @@ const ArticlesPage = () => {
                           : "bg-white text-gray-700 border-gray-200 hover:border-blue-300 hover:text-blue-600 hover:bg-blue-50"
                       }
                     `}
-                  >
-                    <Tag className="h-4 w-4 mr-2" />
-                    {spec.categoryName}
-                  </Button>
-                ))}
+                    >
+                      <Tag className="h-4 w-4 mr-2" />
+                      {spec.categoryName}
+                    </Button>
+                  )
+                )}
               </div>
             </div>
           )}
@@ -156,14 +231,22 @@ const ArticlesPage = () => {
           {/* Active Filters Display */}
           {(selectedSpecIds.length > 0 || searchTerm) && (
             <div className="flex flex-wrap gap-3 border-t border-gray-100 pt-4 justify-center">
-              <span className="text-sm text-gray-500 font-medium">Идэвхтэй шүүлтүүр:</span>
+              <span className="text-sm text-gray-500 font-medium">
+                Идэвхтэй шүүлтүүр:
+              </span>
               {selectedSpecIds.map((specId) => {
                 const spec = specializations.find((s) => s.id === specId);
                 return (
-                  <div key={specId} className="flex items-center gap-2 bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">
+                  <div
+                    key={specId}
+                    className="flex items-center gap-2 bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm"
+                  >
                     <Tag className="h-3 w-3" />
                     {spec?.categoryName}
-                    <button onClick={() => handleFilter(specId)} className="hover:text-blue-900">
+                    <button
+                      onClick={() => handleFilter(specId)}
+                      className="hover:text-blue-900"
+                    >
                       <X className="h-3 w-3" />
                     </button>
                   </div>
@@ -171,8 +254,12 @@ const ArticlesPage = () => {
               })}
               {searchTerm && (
                 <div className="flex items-center gap-2 bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm">
-                  <Search className="h-3 w-3" />&quot;{searchTerm}&quot;
-                  <button onClick={() => setSearchTerm("")} className="hover:text-green-900">
+                  <Search className="h-3 w-3" />
+                  &quot;{searchTerm}&quot;
+                  <button
+                    onClick={() => setSearchTerm("")}
+                    className="hover:text-green-900"
+                  >
                     <X className="h-3 w-3" />
                   </button>
                 </div>
@@ -184,88 +271,217 @@ const ArticlesPage = () => {
         {/* Results Summary */}
         <div className="flex items-center justify-between">
           <h2 className="text-2xl font-semibold text-gray-800">
-            {selectedSpecIds.length > 0 ? `Сонгогдсон ангиллууд` : searchTerm ? `"${searchTerm}" хайлтын үр дүн` : "Бүх нийтлэлүүд"}
+            {selectedSpecIds.length > 0
+              ? `Сонгогдсон ангиллууд`
+              : searchTerm
+              ? `"${searchTerm}" хайлтын үр дүн`
+              : "Бүх нийтлэлүүд"}
           </h2>
-          <div className="text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-full">{filteredPosts.length} нийтлэл олдлоо</div>
         </div>
 
-        {/* Articles Grid - Modern look with PostCard */}
-        <div className="space-y-6">
+        {/* Facebook-style Newsfeed */}
+        <div className="max-w-4xl mx-auto space-y-6">
           {filteredPosts.length === 0 ? (
             <div className="text-center py-16 bg-white rounded-2xl shadow-sm border border-gray-100">
               <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Search className="w-12 h-12 text-gray-400" />
               </div>
-              <h3 className="text-xl font-medium text-gray-600 mb-2">Нийтлэл олдсонгүй</h3>
-              <p className="text-gray-500 mb-6">Таны хайлтын нөхцөлд тохирох нийтлэл байхгүй байна</p>
+              <h3 className="text-xl font-medium text-gray-600 mb-2">
+                Нийтлэл олдсонгүй
+              </h3>
+              <p className="text-gray-500 mb-6">
+                Таны хайлтын нөхцөлд тохирох нийтлэл байхгүй байна
+              </p>
               {(selectedSpecIds.length > 0 || searchTerm) && (
-                <Button onClick={clearFilters} className="bg-blue-600 hover:bg-blue-700">
+                <Button
+                  onClick={clearFilters}
+                  className="bg-blue-600 hover:bg-blue-700"
+                >
                   Бүх нийтлэлийг харах
                 </Button>
               )}
             </div>
           ) : (
-            <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
+            <div className="space-y-6">
               {filteredPosts.map((post: any) => (
-                // <PostCard key={post.id} post={post} />
-
                 <article
                   key={post._id}
-                  className="group bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl hover:border-blue-200 transition-all duration-300 transform hover:-translate-y-1"
-                  // style={{ animationDelay: `${index * 100}ms` }}
+                  className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-lg transition-all duration-300"
                 >
-                  <div className="p-6 space-y-4">
-                    <div className="flex items-start justify-between">
-                      <h3 className="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors duration-200 line-clamp-2 leading-tight">
-                        {post.title}
-                      </h3>
-                      <ChevronRight className="h-5 w-5 text-gray-400 group-hover:text-blue-500 transition-colors duration-200 flex-shrink-0 ml-2" />
-                    </div>
-
-                    <p className="text-gray-600 text-sm line-clamp-3 leading-relaxed">{post.content?.text}</p>
-
-                    <div className="space-y-3 pt-4 border-t border-gray-100">
-                      <div className="flex items-center gap-2 text-xs text-gray-500">
-                        <Calendar className="h-3 w-3" />
-                        <span>{post.createdAt ? new Date(post.createdAt).toLocaleDateString("mn-MN") : "Сүүлд шинэчлэгдсэн"}</span>
+                  {/* Post Header - Author Info */}
+                  <div className="p-4 border-b border-gray-100">
+                    <div
+                      className="flex items-center space-x-3"
+                      onClick={() => router.push(`/lawyer/${post.author?._id}`)}
+                    >
+                      <div className="w-10 h-10 rounded-full overflow-hidden flex items-center justify-center">
+                        {post.author?.profilePicture ? (
+                          <img
+                            src={post.author.profilePicture}
+                            alt={`${post.author?.firstName || ""} ${
+                              post.author?.lastName || ""
+                            }`}
+                            className="w-full h-full object-cover"
+                            onError={(e) => {
+                              // Fallback to initials if image fails to load
+                              const target = e.target as HTMLImageElement;
+                              target.style.display = "none";
+                              const parent = target.parentElement;
+                              if (parent) {
+                                parent.innerHTML = `<div class="w-full h-full bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-semibold text-sm">${
+                                  (post.author?.firstName?.charAt(0) || "") +
+                                    (post.author?.lastName?.charAt(0) || "") ||
+                                  "Ө"
+                                }</div>`;
+                              }
+                            }}
+                          />
+                        ) : (
+                          <div className="w-full h-full bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-semibold text-sm">
+                            {(post.author?.firstName?.charAt(0) || "") +
+                              (post.author?.lastName?.charAt(0) || "") || "Ө"}
+                          </div>
+                        )}
                       </div>
-                      <div className="flex items-center gap-2 text-xs text-gray-600">
-                        <User className="h-3 w-3" />
-                        <span className="font-medium">
-                          {post.author?.firstName && post.author?.lastName
-                            ? `${post.author.firstName} ${post.author.lastName}`
-                            : post.author?.name
-                            ? post.author.name
-                            : post.author?.username
-                            ? post.author.username
-                            : "Өмгөөлөгч"}
-                        </span>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center space-x-2">
+                          <h4 className="text-sm font-semibold text-gray-900 truncate">
+                            {post.author?.firstName && post.author?.lastName
+                              ? `${post.author.firstName} ${post.author.lastName}`
+                              : post.author?.name
+                              ? post.author.name
+                              : post.author?.username
+                              ? post.author.username
+                              : "Өмгөөлөгч"}
+                          </h4>
+                        </div>
+                        <p className="text-xs text-gray-500">
+                          {post.createdAt
+                            ? new Date(post.createdAt).toLocaleDateString(
+                                "mn-MN",
+                                {
+                                  year: "numeric",
+                                  month: "long",
+                                  day: "numeric",
+                                  hour: "2-digit",
+                                  minute: "2-digit",
+                                }
+                              )
+                            : "Сүүлд шинэчлэгдсэн"}
+                        </p>
                       </div>
                     </div>
+                  </div>
 
+                  {/* Post Content */}
+                  <div className="p-4 space-y-4">
+                    {/* Post Title */}
+                    <h3 className="text-xl font-bold text-gray-900 leading-tight">
+                      {post.title}
+                    </h3>
+
+                    {/* Post Text Content */}
+                    {post.content?.text && (
+                      <div className="text-gray-700 leading-relaxed whitespace-pre-line">
+                        {post.content.text}
+                      </div>
+                    )}
+
+                    {/* Display Image */}
+                    {post.content?.image && (
+                      <div className="mt-4">
+                        <img
+                          src={cleanUrl(post.content.image)}
+                          alt="Post image"
+                          className="w-full max-h-96 object-cover rounded-lg"
+                          onError={(e) => {
+                            console.error(
+                              "Image failed to load:",
+                              cleanUrl(post.content.image)
+                            );
+                            e.currentTarget.style.display = "none";
+                          }}
+                        />
+                      </div>
+                    )}
+
+                    {/* Display Video */}
+                    {post.content?.video &&
+                      post.content.video !==
+                        "https://example.com/video.mp4" && (
+                        <div className="mt-4">
+                          <div className="aspect-video bg-gray-100 rounded-lg overflow-hidden">
+                            <video
+                              controls
+                              src={cleanUrl(post.content.video)}
+                              className="w-full h-full object-cover"
+                              preload="metadata"
+                              onError={(e) => {
+                                console.error(
+                                  "Video failed to load:",
+                                  cleanUrl(post.content.video)
+                                );
+                                e.currentTarget.style.display = "none";
+                              }}
+                            />
+                          </div>
+                        </div>
+                      )}
+
+                    {/* Display Audio */}
+                    {post.content?.audio && (
+                      <div className="mt-4">
+                        <div className="bg-gray-100 rounded-lg p-4">
+                          <audio
+                            controls
+                            src={cleanUrl(post.content.audio)}
+                            className="w-full"
+                            onError={(e) => {
+                              console.error(
+                                "Audio failed to load:",
+                                cleanUrl(post.content.audio)
+                              );
+                              e.currentTarget.style.display = "none";
+                            }}
+                          >
+                            Your browser does not support the audio element.
+                          </audio>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Specializations */}
                     {post.specialization && post.specialization.length > 0 && (
-                      <div className="flex flex-wrap gap-1 pt-2">
-                        {post.specialization.slice(0, 2).map((spec: any) => (
+                      <div className="flex flex-wrap gap-2">
+                        {post.specialization.map((spec: any) => (
                           <span
                             key={spec.id || spec._id}
-                            className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200"
+                            className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 border border-blue-200"
                           >
+                            <Tag className="h-3 w-3 mr-1" />
                             {spec.categoryName}
                           </span>
                         ))}
-                        {post.specialization.length > 2 && (
-                          <span className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-gray-50 text-gray-600">
-                            +{post.specialization.length - 2}
-                          </span>
-                        )}
                       </div>
                     )}
                   </div>
 
-                  <div className="px-6 pb-6">
-                    <Button className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-medium py-3 rounded-xl transition-all duration-200 transform group-hover:scale-105">
-                      Дэлгэрэнгүй унших
-                    </Button>
+                  {/* Post Footer - Engagement */}
+                  <div className="px-4 py-3 border-t border-gray-100 bg-gray-50">
+                    <div className="flex justify-end items-end space-x-6">
+                      <CommentModal
+                        postId={post._id}
+                        comments={post.comments || []}
+                        onCommentAdded={() => {
+                          // Refetch posts to show new comment
+                          refetch();
+                        }}
+                        onCommentDeleted={() => {
+                          // Refetch posts to update comments
+                          refetch();
+                        }}
+                      />
+                    </div>
                   </div>
                 </article>
               ))}

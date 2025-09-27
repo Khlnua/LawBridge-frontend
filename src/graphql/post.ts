@@ -42,6 +42,28 @@ export const GET_ALL_POSTS = gql`
         categoryName
       }
       type
+      author {
+        id
+        firstName
+        lastName
+        name
+        username
+        email
+        profilePicture
+      }
+      comments {
+        _id
+        post
+        author
+        authorInfo {
+          id
+          name
+          email
+        }
+        content
+        createdAt
+        updatedAt
+      }
       createdAt
       updatedAt
     }
@@ -99,6 +121,38 @@ export const UPDATE_POST = gql`
 export const DELETE_POST = gql`
   mutation DeletePost($postId: ID!) {
     deletePost(postId: $postId)
+  }
+`;
+
+export const CREATE_COMMENT = gql`
+  mutation CreateComment($input: CreateCommentInput!) {
+    createComment(input: $input) {
+      _id
+      post
+      author
+      content
+      createdAt
+      updatedAt
+    }
+  }
+`;
+
+export const UPDATE_COMMENT = gql`
+  mutation UpdateComment($input: UpdateCommentInput!) {
+    updateComment(input: $input) {
+      _id
+      post
+      author
+      content
+      createdAt
+      updatedAt
+    }
+  }
+`;
+
+export const DELETE_COMMENT = gql`
+  mutation DeleteComment($input: DeleteCommentInput!) {
+    deleteComment(input: $input)
   }
 `;
 

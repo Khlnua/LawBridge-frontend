@@ -1,16 +1,44 @@
 "use client";
 
 import { useState } from "react";
+import { useMutation } from "@apollo/client";
+import { CREATE_COMMENT } from "@/graphql/post";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
+import { Loader2, Send } from "lucide-react";
 
-export default function CreateComment({ onSubmit }: { onSubmit: (text: string) => void }) {
+interface CreateCommentProps {
+  postId: string;
+  onCommentAdded?: () => void;
+}
+
+function CreateComment({ postId, onCommentAdded }: CreateCommentProps) {
   const [text, setText] = useState("");
+  const [createComment, { loading }] = useMutation(CREATE_COMMENT, {
+    onCompleted: () => {
+      setText("");
+      onCommentAdded?.();
+    },
+    onError: (error) => {
+      console.error("Error creating comment:", error);
+    },
+  });
 
-  const handleSend = () => {
-    if (!text.trim()) return;
-    onSubmit(text);
-    setText("");
+  const handleSend = async () => {
+    if (!text.trim() || loading) return;
+
+    try {
+      await createComment({
+        variables: {
+          input: {
+            postId,
+            content: text.trim(),
+          },
+        },
+      });
+    } catch (error) {
+      console.error("Failed to create comment:", error);
+    }
   };
 
   return (
@@ -19,13 +47,32 @@ export default function CreateComment({ onSubmit }: { onSubmit: (text: string) =
         value={text}
         onChange={(e) => setText(e.target.value)}
         placeholder="Сэтгэгдэл бичих..."
+        disabled={loading}
+        className="resize-none"
+        rows={3}
       />
       <div className="flex justify-end">
-        <Button size="sm" onClick={handleSend}>
-          Сэтгэгдэл үлдээх
+        <Button
+          size="sm"
+          onClick={handleSend}
+          disabled={!text.trim() || loading}
+          className="flex items-center gap-2"
+        >
+          {loading ? (
+            <>
+              <Loader2 className="h-4 w-4 animate-spin" />
+              Илгээж байна...
+            </>
+          ) : (
+            <>
+              <Send className="h-4 w-4" />
+              Сэтгэгдэл үлдээх
+            </>
+          )}
         </Button>
       </div>
     </div>
   );
 }
 
+export default CreateComment;

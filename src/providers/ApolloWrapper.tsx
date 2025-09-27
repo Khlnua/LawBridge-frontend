@@ -5,32 +5,56 @@ import {
   InMemoryCache,
   ApolloProvider,
   createHttpLink,
+  from,
 } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
-import { ReactNode } from "react";
+import { onError } from "@apollo/client/link/error";
+import { ReactNode, useMemo } from "react";
 import { useAuth } from "@clerk/nextjs";
 
 const httpLink = createHttpLink({
-  uri:
-    process.env.BACKEND_URL || "https://lawbridge-server.onrender.com/graphql",
+  uri: "http://localhost:4000/graphql",
 });
 
 export const ApolloWrapper = ({ children }: { children: ReactNode }) => {
-  const { userId } = useAuth();
+  const { userId, isLoaded } = useAuth();
 
-  const authLink = setContext((_, { headers }) => {
-    return {
-      headers: {
-        ...headers,
-        Authorization: userId ? `Bearer ${userId}` : "",
-      },
-    };
-  });
+  const authLink = useMemo(
+    () =>
+      setContext((_, { headers }) => {
+        return {
+          headers: {
+            ...headers,
+            Authorization: userId ? `Bearer ${userId}` : "",
+            "Content-Type": "application/json",
+          },
+        };
+      }),
+    [userId]
+  );
 
-  const newClient = new ApolloClient({
-    link: authLink.concat(httpLink),
-    cache: new InMemoryCache(),
-  });
+  const errorLink = useMemo(
+    () =>
+      onError(({ graphQLErrors, networkError }) => {
+        if (graphQLErrors)
+          graphQLErrors.forEach(({ message, locations, path }) =>
+            console.log(
+              `[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`
+            )
+          );
+        if (networkError) console.log(`[Network error]: ${networkError}`);
+      }),
+    []
+  );
 
-  return <ApolloProvider client={newClient}>{children}</ApolloProvider>;
+  const client = useMemo(
+    () =>
+      new ApolloClient({
+        link: from([errorLink, authLink, httpLink]),
+        cache: new InMemoryCache(),
+      }),
+    [errorLink, authLink]
+  );
+
+  return <ApolloProvider client={client}>{children}</ApolloProvider>;
 };
