@@ -5,15 +5,7 @@ import { Button } from "@/components";
 import { useGetAdminSpecializationsQuery } from "@/generated";
 import { useQuery } from "@apollo/client";
 import { GET_ALL_POSTS } from "@/graphql/post";
-import {
-  Search,
-  Filter,
-  Calendar,
-  User,
-  Tag,
-  ChevronRight,
-  X,
-} from "lucide-react";
+import { Search, Filter, Tag, ChevronRight, X } from "lucide-react";
 import { useUser } from "@clerk/nextjs";
 import CreatePostModal from "@/components/post/CreatePostModal";
 import { CommentModal } from "@/components/comment";
@@ -23,7 +15,6 @@ const ArticlesPage = () => {
   const [selectedSpecIds, setSelectedSpecIds] = useState<string[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [showFilters, setShowFilters] = useState(false);
-  const [, setRefreshKey] = useState(0);
 
   const { user, isLoaded } = useUser();
   const role = user?.publicMetadata?.role as string | undefined;

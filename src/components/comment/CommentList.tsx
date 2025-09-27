@@ -1,10 +1,9 @@
 "use client";
 
-import { useState } from "react";
 import { useMutation } from "@apollo/client";
 import { DELETE_COMMENT } from "@/graphql/post";
 import { Button } from "@/components/ui/button";
-import { Trash2, Edit2, MoreVertical } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import { useUser } from "@clerk/nextjs";
 
 interface Comment {

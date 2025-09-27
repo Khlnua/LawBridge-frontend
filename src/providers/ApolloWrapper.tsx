@@ -17,7 +17,7 @@ const httpLink = createHttpLink({
 });
 
 export const ApolloWrapper = ({ children }: { children: ReactNode }) => {
-  const { userId, isLoaded } = useAuth();
+  const { userId } = useAuth();
 
   const authLink = useMemo(
     () =>

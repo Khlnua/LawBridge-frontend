@@ -20,12 +20,6 @@ const CreatePostModal = ({ onPostCreated }: CreatePostModalProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
 
-  const handleClose = () => {
-    if (!isCreating) {
-      setIsOpen(false);
-    }
-  };
-
   const handlePostCreated = () => {
     setIsCreating(false);
     setIsOpen(false);
