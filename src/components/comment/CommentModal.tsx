@@ -160,25 +160,28 @@ function CommentModal({
           ) : (
             <div className="space-y-3">
               {comments.map((comment) => (
-                <div key={comment._id} className="bg-gray-50 rounded-lg p-4">
+                <div
+                  key={comment._id}
+                  className="bg-gray-100 border border-gray-200 rounded-xl p-4 "
+                >
                   <div className="flex items-start justify-between">
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center space-x-2 mb-2">
-                        <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-semibold">
-                          {getDisplayInitial(comment)}
-                        </div>
+                    <div className="flex flex-row gap-5 min-w-0">
+                      <div className="w-8 h-8 bg-[#003365] rounded-full flex items-center justify-center text-white text-sm font-semibold">
+                        {getDisplayInitial(comment)}
+                      </div>
+                      <div className="flex flex-col gap-2 items-start space-x-2 mb-2">
                         <div>
                           <span className="text-sm font-medium text-gray-900">
                             {getDisplayName(comment)}
                           </span>
-                          <span className="text-xs text-gray-500 ml-2">
+                          <span className="text-xs text-gray-500 ml-2 justify-end items-end">
                             {formatDate(comment.createdAt)}
                           </span>
                         </div>
+                        <p className="text-sm text-gray-700 leading-relaxed">
+                          {comment.content}
+                        </p>
                       </div>
-                      <p className="text-sm text-gray-700 leading-relaxed">
-                        {comment.content}
-                      </p>
                     </div>
 
                     {/* Delete button - only for comment author */}
@@ -201,14 +204,14 @@ function CommentModal({
         </div>
 
         {/* Create Comment Form */}
-        <div className="border-t border-gray-200 pt-4">
-          <div className="space-y-3">
+        <div className=" pt-4">
+          <div className="space-y-3 border-0 rounded-xl focus:ring-0 focus:border-b-[#003365] bg-transparent">
             <Textarea
               value={text}
               onChange={(e) => setText(e.target.value)}
               placeholder="Сэтгэгдэл бичих..."
               disabled={creating}
-              className="resize-none"
+              className="resize-none border border-gray-200 rounded-xl"
               rows={3}
             />
             <div className="flex justify-end">

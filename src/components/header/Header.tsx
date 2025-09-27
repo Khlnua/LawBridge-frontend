@@ -40,7 +40,7 @@ export default function Header() {
             <Link
               key={link.href}
               href={link.href}
-              className="text-gray-600 hover:text-blue-600 transition"
+              className="text-gray-600 hover:text-[#003365] transition"
             >
               {link.label}
             </Link>
@@ -110,7 +110,7 @@ export default function Header() {
             <Link
               key={link.href}
               href={link.href}
-              className="block text-gray-700 hover:text-blue-600"
+              className="block text-gray-700 hover:text-[#003365]"
               onClick={() => setIsOpen(false)}
             >
               {link.label}

@@ -125,7 +125,7 @@ export const PostCard = ({ post }: { post: PostType }) => {
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
             <div
-              className="flex items-center gap-1 bg-blue-50 text-blue-700 px-2 py-1 rounded-full text-xs font-medium"
+              className="flex items-center gap-1 bg-gray-50 text-[#003365] px-2 py-1 rounded-full text-xs font-medium"
               onClick={handleClick}
             >
               <Tag className="w-3 h-3" />
@@ -206,7 +206,7 @@ export const PostCard = ({ post }: { post: PostType }) => {
             {post.specialization.map((spec) => (
               <span
                 key={spec.id}
-                className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
+                className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-[#003365]"
               >
                 {spec.categoryName}
               </span>
@@ -266,7 +266,7 @@ export const PostCard = ({ post }: { post: PostType }) => {
                   <button
                     onClick={handleAddComment}
                     disabled={creating || !commentText.trim()}
-                    className="absolute right-2 bottom-2 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all mb-2"
+                    className="absolute right-2 bottom-2 w-8 h-8 bg-[#003365] text-white rounded-full flex items-center justify-center hover:bg-[#002a52] disabled:opacity-50 disabled:cursor-not-allowed transition-all mb-2"
                   >
                     {creating ? (
                       <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -285,7 +285,7 @@ export const PostCard = ({ post }: { post: PostType }) => {
           <div className="p-4 space-y-4 max-h-96 overflow-y-auto">
             {loading && (
               <div className="flex items-center justify-center py-8">
-                <div className="w-6 h-6 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
+                <div className="w-6 h-6 border-2 border-[#003365] border-t-transparent rounded-full animate-spin" />
                 <span className="ml-2 text-gray-600">
                   Коммент уншиж байна...
                 </span>
@@ -326,7 +326,7 @@ export const PostCard = ({ post }: { post: PostType }) => {
             {hasMoreComments && !showAllComments && (
               <button
                 onClick={() => setShowAllComments(true)}
-                className="w-full py-2 text-blue-600 hover:text-blue-700 font-medium text-sm transition-colors"
+                className="w-full py-2 text-[#003365] hover:text-[#002a52] font-medium text-sm transition-colors"
               >
                 Бүх коммент үзэх ({comments.length - 3} бусад)
               </button>
