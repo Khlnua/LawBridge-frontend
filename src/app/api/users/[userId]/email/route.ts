@@ -16,6 +16,15 @@ export async function GET(
       );
     }
 
+    // Validate userId format (Clerk user IDs typically start with 'user_')
+    if (!userId.startsWith("user_")) {
+      console.warn("Invalid user ID format:", userId);
+      return NextResponse.json(
+        { error: "Invalid user ID format" },
+        { status: 400 }
+      );
+    }
+
     // Check if Clerk secret key is configured
     if (!process.env.CLERK_SECRET_KEY) {
       console.error("CLERK_SECRET_KEY not configured");
@@ -65,8 +74,39 @@ export async function GET(
     });
   } catch (error) {
     console.error("Error fetching user email:", error);
+
+    // More specific error handling
+    if (error instanceof Error) {
+      console.error("Error details:", {
+        message: error.message,
+        name: error.name,
+        stack: error.stack,
+      });
+
+      // Handle specific Clerk errors
+      if (
+        error.message.includes("not found") ||
+        error.message.includes("404")
+      ) {
+        return NextResponse.json({ error: "User not found" }, { status: 404 });
+      }
+
+      if (
+        error.message.includes("unauthorized") ||
+        error.message.includes("401")
+      ) {
+        return NextResponse.json(
+          { error: "Unauthorized access" },
+          { status: 401 }
+        );
+      }
+    }
+
     return NextResponse.json(
-      { error: "Failed to fetch user data" },
+      {
+        error: "Failed to fetch user data",
+        details: process.env.NODE_ENV === "development" ? error : undefined,
+      },
       { status: 500 }
     );
   }

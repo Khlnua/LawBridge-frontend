@@ -21,6 +21,7 @@ interface SocketContextType {
   socket: Socket | null;
   isConnected: boolean;
   onlineUsers: User[];
+  connectionError: string | null;
   sendMessage: (data: {
     chatRoomId: "685a1b9dff6157ee051ccaaa";
     content: string;
@@ -52,6 +53,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
   const [socket, setSocket] = useState<Socket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
   const [onlineUsers, setOnlineUsers] = useState<User[]>([]);
+  const [connectionError, setConnectionError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!isLoaded || !user) return;
@@ -64,22 +66,30 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
           return;
         }
 
-        const newSocket = io(
+        const serverUrl =
           process.env.NEXT_PUBLIC_SERVER_URL ||
-            "https://lawbridge-server.onrender.com",
-          {
-            path: "/socket.io",
-            auth: {
-              token: token,
-            },
-            transports: ["websocket", "polling"],
-          }
-        );
+          "https://lawbridge-server.onrender.com";
+        console.log("🔌 Attempting to connect to:", serverUrl);
+
+        const newSocket = io(serverUrl, {
+          path: "/socket.io",
+          auth: {
+            token: token,
+          },
+          transports: ["websocket", "polling"],
+          timeout: 10000, // 10 second timeout
+          forceNew: true, // Force new connection
+          reconnection: true,
+          reconnectionAttempts: 5, // Increased attempts
+          reconnectionDelay: 2000,
+          reconnectionDelayMax: 10000, // Max delay between attempts
+        });
 
         // Connection events
         newSocket.on("connect", () => {
           console.log("✅ Socket connected:", newSocket.id);
           setIsConnected(true);
+          setConnectionError(null);
         });
 
         newSocket.on("disconnect", (reason) => {
@@ -90,6 +100,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
         newSocket.on("connect_error", (error) => {
           console.error("❌ Socket connection error:", error);
           setIsConnected(false);
+          setConnectionError(error.message || "Connection failed");
         });
 
         // Online users
@@ -162,6 +173,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
     joinRoom,
     leaveRoom,
     emitTyping,
+    connectionError,
   };
 
   return (

@@ -58,7 +58,7 @@ export const VideoCallModal: React.FC<VideoCallModalProps> = ({
         remoteParticipants.map((p) => p.identity)
       );
     }
-  }, [remoteParticipants.length]);
+  }, [remoteParticipants]);
 
   // Find all tracks in the room
   const tracks = useTracks();
@@ -95,7 +95,7 @@ export const VideoCallModal: React.FC<VideoCallModalProps> = ({
       }, 1000);
       return () => clearInterval(timer);
     }
-  }, [remoteParticipants.length]);
+  }, [remoteParticipants]);
 
   // Sync state with LiveKit
   useEffect(() => {

@@ -77,7 +77,7 @@ const GET_LAWYER_BY_ID = gql`
       lastName
       specialization {
         _id
-        name
+        categoryName
       }
     }
   }

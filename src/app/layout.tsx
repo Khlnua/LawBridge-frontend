@@ -63,6 +63,7 @@ export default function RootLayout({
     >
       <body
         className={`min-h-screen bg-background font-sans antialiased ${geistSans.variable} ${geistMono.variable} ${ptSerif.variable} ${playfairDisplay.variable}`}
+        suppressHydrationWarning={true}
       >
         <ClerkProvider signInUrl="/sign-in" signUpUrl="/sign-up">
           <ApolloWrapper>

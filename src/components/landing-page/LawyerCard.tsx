@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Badge } from "@/components/ui";
+import { Badge } from "@/components/ui";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { GET_SPECIALIZATION_BY_LAWYER_ID } from "@/graphql/specializationsbylawyer";
@@ -12,18 +12,9 @@ type LawyerCardProps = {
   name: string;
   status: string;
   avatarImage?: string;
-  rating?: number;
-  reviewCount?: number;
 };
 
-const LawyerCard = ({
-  id,
-  name,
-  status,
-  avatarImage,
-  rating,
-  reviewCount,
-}: LawyerCardProps) => {
+const LawyerCard = ({ id, name, status, avatarImage }: LawyerCardProps) => {
   const [activeSpecialtyIndex, setActiveSpecialtyIndex] = useState<
     number | null
   >(null);
@@ -77,7 +68,6 @@ const LawyerCard = ({
             <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full overflow-hidden mr-4 flex-shrink-0 ring-3 ring-white/50 shadow-xl group-hover:ring-white/80 group-hover:shadow-2xl group-hover:scale-105 transition-all duration-500">
               {avatarImage ? (
                 <img
-
                   src={
                     process.env.NEXT_PUBLIC_R2_PUBLIC_DOMAIN + "/" + avatarImage
                   }
@@ -155,7 +145,6 @@ const LawyerCard = ({
                       </span>
                       {activeSpecialtyIndex === index && (
                         <span className="block text-xs mt-1 opacity-90 break-words hyphens-auto overflow-hidden max-w-full">
-
                           {spec.pricePerHour
                             ? `₮${spec.pricePerHour.toLocaleString()}/цаг`
                             : "үнэгүй"}
@@ -166,31 +155,6 @@ const LawyerCard = ({
                 )}
               </div>
             )}
-          </div>
-
-          {/* Price Section - Enhanced */}
-          <div className="h-9 sm:h-10 mb-4 sm:mb-5">
-            <div className="flex items-center justify-center h-full">
-              {specializationData?.getSpecializationsByLawyer?.[0]
-                ?.pricePerHour ? (
-                <div className="inline-flex items-center bg-gradient-to-r from-blue-50 to-blue-100 text-blue-800 px-5 py-2.5 rounded-full text-sm font-bold border border-blue-200 shadow-md min-w-[130px] justify-center group-hover:shadow-lg group-hover:scale-105 transition-all duration-300">
-                  <span className="text-sm text-blue-600 mr-2 font-bold">
-                    ₮
-                  </span>
-                  <span className="font-bold">
-                    {specializationData.getSpecializationsByLawyer[0].pricePerHour.toLocaleString()}
-                  </span>
-                  <span className="text-xs text-blue-600 ml-2 font-medium">
-                    /цаг
-                  </span>
-                </div>
-              ) : (
-                <div className="inline-flex items-center bg-gradient-to-r from-blue-50 to-blue-100 text-blue-800 px-5 py-2.5 rounded-full text-sm font-bold border border-blue-200 shadow-md min-w-[130px] justify-center group-hover:shadow-lg group-hover:scale-105 transition-all duration-300">
-                  <span className="text-sm mr-2 text-blue-600">✓</span>
-                  <span className="font-bold">Үнэгүй</span>
-                </div>
-              )}
-            </div>
           </div>
 
           {/* Button Section - Enhanced */}

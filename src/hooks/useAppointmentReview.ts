@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 
 interface Appointment {
   _id: string;
@@ -35,7 +35,7 @@ export function useAppointmentReview({
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Check if appointment time has passed
-  const isAppointmentTimePassed = () => {
+  const isAppointmentTimePassed = useCallback(() => {
     const now = new Date();
     const appointmentDate = new Date(appointment.slot.day);
     const [hours, minutes] = appointment.slot.endTime.split(":").map(Number);
@@ -45,7 +45,7 @@ export function useAppointmentReview({
     appointmentEndTime.setHours(hours, minutes, 0, 0);
 
     return now > appointmentEndTime;
-  };
+  }, [appointment.slot.day, appointment.slot.endTime]);
 
   // Auto-trigger review modal when appointment time passes
   useEffect(() => {
@@ -53,7 +53,12 @@ export function useAppointmentReview({
       setIsAutoTriggered(true);
       setShowReviewModal(true);
     }
-  }, [appointment.status, appointment.slot.day, appointment.slot.endTime]);
+  }, [
+    appointment.status,
+    appointment.slot.day,
+    appointment.slot.endTime,
+    isAppointmentTimePassed,
+  ]);
 
   const handleEndAppointment = () => {
     setShowReviewModal(true);
@@ -126,4 +131,3 @@ export function useAppointmentReview({
     isAppointmentTimePassed: isAppointmentTimePassed(),
   };
 }
-
