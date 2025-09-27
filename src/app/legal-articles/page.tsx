@@ -107,26 +107,29 @@ const ArticlesPage = () => {
   }
 
   return (
-    <div className="min-h-screen  px-30">
-      <div className="bg-transparent ">
-        <div className=" px-4 sm:px-6 lg:px-8 py-8 ">
-          <div className="text-center space-y-4">
-            <h1 className="text-4xl md:text-4xl font-bold text-[#003365] bg-clip-text">
-              Хуулийн нийтлэлүүд
-            </h1>
-            <p className="text-lg text-gray-600 max-w-4xl mx-auto">
-              Хуулийн мэргэжилтнүүдийн туршлага, зөвлөгөө болон сүүлийн үеийн
-              хуулийн мэдээллүүд
-            </p>
-          </div>
+    <div className="min-h-screen bg-gray-50 w-full">
+      {/* Header */}
+      <div className="bg-gradient-to-r from-[#003366] via-[#004080] to-[#003366] text-white py-12 relative overflow-hidden px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 z-30">
+        {/* Background Pattern */}
+        <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-white/5"></div>
+        <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent"></div>
+        <div className="max-w-7xl mx-auto relative z-10">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-3 tracking-tight drop-shadow-lg">
+            Хуулийн нийтлэлүүд
+          </h1>
+          <p className="text-sm sm:text-base md:text-lg lg:text-xl text-slate-200 font-medium drop-shadow-sm">
+            Хуулийн мэргэжилтнүүдийн туршлага, зөвлөгөө болон сүүлийн үеийн
+            хуулийн мэдээллүүд
+          </p>
         </div>
       </div>
 
-      <div className="w-full px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-        <div className="bg-white rounded-lg  p-5 px-15 max-w-none">
-          <div className="flex flex-col md:flex-row md:items-center md:gap-6 gap-4 ">
+      <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16">
+        {/* Search and Filters */}
+        <div className="bg-white rounded-2xl shadow-xl border border-gray-200 p-4 sm:p-6 lg:p-8 mb-6 sm:mb-8 relative z-20 min-h-[100px] sm:min-h-[120px]">
+          <div className="flex flex-col md:flex-row md:items-center md:gap-6 gap-4">
             {/* Search */}
-            <div className="relative flex-1 border border-gray-200 rounded-lg">
+            <div className="relative flex-1">
               <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                 <Search className="h-5 w-5 text-gray-400" />
               </div>
@@ -135,7 +138,7 @@ const ArticlesPage = () => {
                 placeholder="Нийтлэл хайх..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-12 pr-4 py-2 border-0 rounded-lg focus:ring-0 focus:ring-[#003365] focus:border-[#003365] text-gray-700 placeholder-gray-400 text-sm bg-transparent"
+                className="w-full pl-12 pr-4 py-3 bg-gradient-to-r from-white to-gray-50 border border-gray-300 rounded-xl hover:from-gray-50 hover:to-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300 text-sm font-medium shadow-sm hover:shadow-md"
               />
             </div>
 
@@ -144,7 +147,7 @@ const ArticlesPage = () => {
               <Button
                 variant="outline"
                 onClick={() => setShowFilters(!showFilters)}
-                className="flex items-center gap-2 text-gray-600 hover:text-gray-900 border border-gray-300 bg-white"
+                className="flex items-center gap-2 px-4 py-3 bg-gradient-to-r from-white to-gray-50 border border-gray-300 rounded-xl hover:from-gray-50 hover:to-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300 text-sm font-medium shadow-sm hover:shadow-md"
               >
                 <Filter className="h-4 w-4" />
                 Ангилал ({specializations.length})
@@ -159,10 +162,10 @@ const ArticlesPage = () => {
                 <Button
                   variant="ghost"
                   onClick={clearFilters}
-                  className="text-gray-500 hover:text-gray-700 hover:bg-gray-100"
+                  className="px-4 py-2 text-sm text-blue-600 hover:text-blue-800 hover:bg-blue-100 rounded-lg transition-all duration-200 font-medium border border-blue-300 hover:border-blue-400 flex items-center space-x-2 hover:scale-105 active:scale-95"
                 >
-                  <X className="h-4 w-4 mr-2" />
-                  Цэвэрлэх
+                  <X className="h-4 w-4" />
+                  <span>Цэвэрлэх</span>
                 </Button>
               )}
             </div>
@@ -170,7 +173,7 @@ const ArticlesPage = () => {
 
           {/* Filter Buttons */}
           {showFilters && (
-            <div className="space-y-40 pt-6">
+            <div className="pt-6">
               <div className="flex flex-wrap gap-3 justify-center">
                 {specializations.map(
                   (spec: { id: string; categoryName: string }) => (
@@ -211,28 +214,29 @@ const ArticlesPage = () => {
                 return (
                   <div
                     key={specId}
-                    className="flex items-center gap-2 bg-gray-100 text-[#003365] px-3 py-1 rounded-full text-sm"
+                    className="flex items-center bg-white border border-blue-300 text-blue-700 px-4 py-2.5 rounded-lg text-sm shadow-sm hover:shadow-md hover:border-blue-400 transition-all duration-200 font-medium group"
                   >
-                    <Tag className="h-3 w-3" />
-                    {spec?.categoryName}
+                    <div className="w-2 h-2 bg-blue-500 rounded-full mr-2"></div>
+                    <span>{spec?.categoryName}</span>
                     <button
                       onClick={() => handleFilter(specId)}
-                      className="hover:text-[#002a52]"
+                      className="ml-2 text-blue-400 hover:text-blue-600 hover:bg-blue-100 p-0.5 rounded-full transition-all duration-200 group-hover:bg-blue-200"
                     >
-                      <X className="h-3 w-3" />
+                      <X className="w-3 h-3" />
                     </button>
                   </div>
                 );
               })}
               {searchTerm && (
-                <div className="flex items-center gap-2 bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm">
-                  <Search className="h-3 w-3" />
-                  &quot;{searchTerm}&quot;
+                <div className="flex items-center bg-white border border-green-300 text-green-700 px-4 py-2.5 rounded-lg text-sm shadow-sm hover:shadow-md hover:border-green-400 transition-all duration-200 font-medium group">
+                  <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
+                  <Search className="h-3 w-3 mr-1" />
+                  <span>&quot;{searchTerm}&quot;</span>
                   <button
                     onClick={() => setSearchTerm("")}
-                    className="hover:text-green-900"
+                    className="ml-2 text-green-400 hover:text-green-600 hover:bg-green-100 p-0.5 rounded-full transition-all duration-200 group-hover:bg-green-200"
                   >
-                    <X className="h-3 w-3" />
+                    <X className="w-3 h-3" />
                   </button>
                 </div>
               )}
@@ -247,7 +251,7 @@ const ArticlesPage = () => {
         )}
 
         {/* Results Summary */}
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl font-semibold text-gray-800">
             {selectedSpecIds.length > 0
               ? `Сонгогдсон ангиллууд`
@@ -260,24 +264,26 @@ const ArticlesPage = () => {
         {/* Facebook-style Newsfeed */}
         <div className="max-w-4xl mx-auto space-y-6">
           {filteredPosts.length === 0 ? (
-            <div className="text-center py-16 bg-white rounded-2xl shadow-sm border border-gray-100">
-              <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Search className="w-12 h-12 text-gray-400" />
+            <div className="text-center py-16 col-span-full bg-white/60 backdrop-blur-sm rounded-2xl border border-gray-200/50 shadow-lg">
+              <div className="max-w-md mx-auto">
+                <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-r from-gray-100 to-gray-200 rounded-full flex items-center justify-center">
+                  <Search className="w-8 h-8 text-gray-400" />
+                </div>
+                <p className="text-gray-600 text-lg font-semibold mb-2">
+                  Таны хайлтын нөхцөлд тохирох нийтлэл олдсонгүй
+                </p>
+                <p className="text-gray-500">
+                  Шүүлтүүрүүдийг өөрчилж, хайлтын үгүүдийг өөрчилж үзээрэй.
+                </p>
+                {(selectedSpecIds.length > 0 || searchTerm) && (
+                  <Button
+                    onClick={clearFilters}
+                    className="mt-4 bg-[#003365] text-white hover:bg-[#002a52] hover:text-white"
+                  >
+                    Бүх нийтлэлийг харах
+                  </Button>
+                )}
               </div>
-              <h3 className="text-xl font-medium text-gray-600 mb-2">
-                Нийтлэл олдсонгүй
-              </h3>
-              <p className="text-gray-500 mb-6">
-                Таны хайлтын нөхцөлд тохирох нийтлэл байхгүй байна
-              </p>
-              {(selectedSpecIds.length > 0 || searchTerm) && (
-                <Button
-                  onClick={clearFilters}
-                  className="bg-[#003365] text-white hover:bg-[#002a52 hover:text-white"
-                >
-                  Бүх нийтлэлийг харах
-                </Button>
-              )}
             </div>
           ) : (
             <div className="space-y-6">
