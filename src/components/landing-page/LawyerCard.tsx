@@ -16,12 +16,24 @@ type LawyerCardProps = {
   reviewCount?: number;
 };
 
-const LawyerCard = ({ id, name, status, avatarImage, rating, reviewCount }: LawyerCardProps) => {
-  const [activeSpecialtyIndex, setActiveSpecialtyIndex] = useState<number | null>(null);
+const LawyerCard = ({
+  id,
+  name,
+  status,
+  avatarImage,
+  rating,
+  reviewCount,
+}: LawyerCardProps) => {
+  const [activeSpecialtyIndex, setActiveSpecialtyIndex] = useState<
+    number | null
+  >(null);
 
-  const { data: specializationData, loading: specialLoad } = useQuery(GET_SPECIALIZATION_BY_LAWYER_ID, {
-    variables: { lawyerId: id },
-  });
+  const { data: specializationData, loading: specialLoad } = useQuery(
+    GET_SPECIALIZATION_BY_LAWYER_ID,
+    {
+      variables: { lawyerId: id },
+    }
+  );
 
   const handleClick = (index: number) => {
     setActiveSpecialtyIndex(activeSpecialtyIndex === index ? null : index);
@@ -44,13 +56,13 @@ const LawyerCard = ({ id, name, status, avatarImage, rating, reviewCount }: Lawy
           {/* Enhanced gradient overlays */}
           <div className="absolute inset-0 bg-gradient-to-br from-white/15 via-white/8 to-transparent pointer-events-none group-hover:from-white/20 group-hover:via-white/10 transition-all duration-500"></div>
           <div className="absolute inset-0 bg-gradient-to-t from-black/15 to-transparent pointer-events-none group-hover:from-black/20 transition-all duration-500"></div>
-          
+
           {/* Animated background pattern */}
           <div className="absolute inset-0 opacity-10 group-hover:opacity-20 transition-opacity duration-500">
             <div className="absolute top-0 right-0 w-32 h-32 bg-white/20 rounded-full -translate-y-16 translate-x-16 group-hover:scale-110 transition-transform duration-500"></div>
             <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/15 rounded-full translate-y-12 -translate-x-12 group-hover:scale-110 transition-transform duration-500"></div>
           </div>
-          
+
           {/* Enhanced Approved Checkbox - Top Right */}
           {status === "Баталгаажсан" && (
             <div className="absolute top-3 right-3 z-20 group-hover:scale-110 transition-transform duration-300">
@@ -59,13 +71,15 @@ const LawyerCard = ({ id, name, status, avatarImage, rating, reviewCount }: Lawy
               </div>
             </div>
           )}
-          
+
           {/* Avatar and Name Section - Enhanced */}
           <div className="flex items-center h-full relative z-10">
             <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full overflow-hidden mr-4 flex-shrink-0 ring-3 ring-white/50 shadow-xl group-hover:ring-white/80 group-hover:shadow-2xl group-hover:scale-105 transition-all duration-500">
               {avatarImage ? (
                 <img
-                  src={process.env.R2_PUBLIC_DOMAIN + "/" + avatarImage}
+                  src={
+                    process.env.NEXT_PUBLIC_R2_PUBLIC_DOMAIN + "/" + avatarImage
+                  }
                   alt={name}
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                 />
@@ -96,12 +110,14 @@ const LawyerCard = ({ id, name, status, avatarImage, rating, reviewCount }: Lawy
               </div>
             </div>
           )}
-          
+
           {/* Specializations Section - Enhanced */}
           <div className="flex-1 min-h-[80px] sm:min-h-[90px] mb-3 sm:mb-4">
             {specialLoad ? (
               <div className="flex items-center justify-center h-full">
-                <p className="text-center text-sm text-gray-500">Ачааллаж байна...</p>
+                <p className="text-center text-sm text-gray-500">
+                  Ачааллаж байна...
+                </p>
               </div>
             ) : (
               <div className="flex flex-col gap-2 w-full">
@@ -133,9 +149,15 @@ const LawyerCard = ({ id, name, status, avatarImage, rating, reviewCount }: Lawy
                         }
                       `}
                     >
-                      <span className="block text-xs sm:text-sm leading-tight break-words hyphens-auto overflow-hidden max-w-full">{spec.categoryName}</span>
+                      <span className="block text-xs sm:text-sm leading-tight break-words hyphens-auto overflow-hidden max-w-full">
+                        {spec.categoryName}
+                      </span>
                       {activeSpecialtyIndex === index && (
-                        <span className="block text-xs mt-1 opacity-90 break-words hyphens-auto overflow-hidden max-w-full">{spec.pricePerHour ? `₮${spec.pricePerHour.toLocaleString()}/цаг` : "үнэгүй"}</span>
+                        <span className="block text-xs mt-1 opacity-90 break-words hyphens-auto overflow-hidden max-w-full">
+                          {spec.pricePerHour
+                            ? `₮${spec.pricePerHour.toLocaleString()}/цаг`
+                            : "үнэгүй"}
+                        </span>
                       )}
                     </Badge>
                   )
@@ -147,11 +169,18 @@ const LawyerCard = ({ id, name, status, avatarImage, rating, reviewCount }: Lawy
           {/* Price Section - Enhanced */}
           <div className="h-9 sm:h-10 mb-4 sm:mb-5">
             <div className="flex items-center justify-center h-full">
-              {specializationData?.getSpecializationsByLawyer?.[0]?.pricePerHour ? (
+              {specializationData?.getSpecializationsByLawyer?.[0]
+                ?.pricePerHour ? (
                 <div className="inline-flex items-center bg-gradient-to-r from-blue-50 to-blue-100 text-blue-800 px-5 py-2.5 rounded-full text-sm font-bold border border-blue-200 shadow-md min-w-[130px] justify-center group-hover:shadow-lg group-hover:scale-105 transition-all duration-300">
-                  <span className="text-sm text-blue-600 mr-2 font-bold">₮</span>
-                  <span className="font-bold">{specializationData.getSpecializationsByLawyer[0].pricePerHour.toLocaleString()}</span>
-                  <span className="text-xs text-blue-600 ml-2 font-medium">/цаг</span>
+                  <span className="text-sm text-blue-600 mr-2 font-bold">
+                    ₮
+                  </span>
+                  <span className="font-bold">
+                    {specializationData.getSpecializationsByLawyer[0].pricePerHour.toLocaleString()}
+                  </span>
+                  <span className="text-xs text-blue-600 ml-2 font-medium">
+                    /цаг
+                  </span>
                 </div>
               ) : (
                 <div className="inline-flex items-center bg-gradient-to-r from-blue-50 to-blue-100 text-blue-800 px-5 py-2.5 rounded-full text-sm font-bold border border-blue-200 shadow-md min-w-[130px] justify-center group-hover:shadow-lg group-hover:scale-105 transition-all duration-300">
