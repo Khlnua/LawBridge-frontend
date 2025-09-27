@@ -369,11 +369,11 @@ const CreatePost = ({
   };
 
   const content = (
-    <div className="space-y-8">
+    <div className="space-y-4 sm:space-y-6 md:space-y-8">
       {error && (
         <Alert
           variant="destructive"
-          className="border-red-200 bg-red-50 text-red-800 rounded-lg"
+          className="border-red-200 bg-red-50 text-red-800 rounded-lg text-sm sm:text-base"
         >
           <AlertCircle className="h-4 w-4" />
           <AlertDescription>{error}</AlertDescription>
@@ -381,7 +381,7 @@ const CreatePost = ({
       )}
 
       {success && (
-        <Alert className="border-green-200 bg-green-50 text-green-800 rounded-lg">
+        <Alert className="border-green-200 bg-green-50 text-green-800 rounded-lg text-sm sm:text-base">
           <CheckCircle2 className="h-4 w-4 text-green-600" />
           <AlertDescription className="text-green-800">
             {success}
@@ -390,10 +390,10 @@ const CreatePost = ({
       )}
 
       {/* Title Input */}
-      <div className="space-y-3">
+      <div className="space-y-2 sm:space-y-3">
         <Label
           htmlFor="title"
-          className="text-sm font-semibold text-gray-700 flex items-center gap-2"
+          className="text-xs sm:text-sm font-semibold text-gray-700 flex items-center gap-2"
         >
           Гарчиг
         </Label>
@@ -403,7 +403,7 @@ const CreatePost = ({
           value={title}
           maxLength={80}
           onChange={(e) => setTitle(e.target.value)}
-          className="border border-gray-200 rounded-lg px-4 py-3 focus:border-[#003365] focus:ring-1 focus:ring-[#003365] bg-white transition-all duration-200"
+          className="border border-gray-200 rounded-lg px-3 sm:px-4 py-2 sm:py-3 focus:border-[#003365] focus:ring-1 focus:ring-[#003365] bg-white transition-all duration-200 text-sm sm:text-base"
         />
         <div className="flex justify-between items-center">
           <div className="text-xs text-gray-500">
@@ -414,10 +414,10 @@ const CreatePost = ({
       </div>
 
       {/* Content Textarea */}
-      <div className="space-y-3">
+      <div className="space-y-2 sm:space-y-3">
         <Label
           htmlFor="content"
-          className="text-sm font-semibold text-gray-700 flex items-center gap-2"
+          className="text-xs sm:text-sm font-semibold text-gray-700 flex items-center gap-2"
         >
           Агуулга
         </Label>
@@ -428,11 +428,11 @@ const CreatePost = ({
               ? "// Write your epic content here 🚀"
               : "Нийтлэлийн агуулга бичнэ үү..."
           }
-          rows={6}
+          rows={4}
           value={postContent}
           maxLength={3000}
           onChange={(e) => setPostContent(e.target.value)}
-          className={`border border-gray-200 rounded-lg px-4 py-3 focus:border-[#003365] focus:ring-1 focus:ring-[#003365] bg-white transition-all duration-200 resize-none ${
+          className={`border border-gray-200 rounded-lg px-3 sm:px-4 py-2 sm:py-3 focus:border-[#003365] focus:ring-1 focus:ring-[#003365] bg-white transition-all duration-200 resize-none text-sm sm:text-base ${
             easterEggActive ? "font-mono" : ""
           }`}
         />
@@ -450,12 +450,12 @@ const CreatePost = ({
       </div>
 
       {/* Specializations */}
-      <div className="space-y-4">
-        <Label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
-          <Scale className="h-4 w-4" />
+      <div className="space-y-3 sm:space-y-4">
+        <Label className="text-xs sm:text-sm font-semibold text-gray-700 flex items-center gap-2">
+          <Scale className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
           Хуулийн салбар
         </Label>
-        <div className="flex flex-wrap gap-3">
+        <div className="flex flex-wrap gap-2 sm:gap-3">
           {specData?.getAdminSpecializations?.map(
             (spec: { id: string; categoryName: string }) => (
               <button
@@ -468,13 +468,15 @@ const CreatePost = ({
                       : [...prev, spec.id]
                   )
                 }
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 border ${
+                className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-all duration-200 border ${
                   specialization.includes(spec.id)
                     ? "bg-[#003365] text-white border-[#003365] shadow-sm"
                     : "bg-white text-gray-700 border-gray-200 hover:border-[#003365] hover:text-[#003365] hover:bg-gray-50"
                 }`}
               >
-                {spec.categoryName}
+                <span className="truncate max-w-[120px] sm:max-w-none">
+                  {spec.categoryName}
+                </span>
                 {specialization.includes(spec.id) && easterEggActive && (
                   <span className="ml-1">{getRandomEmoji()}</span>
                 )}
@@ -485,32 +487,32 @@ const CreatePost = ({
       </div>
 
       {/* File Upload Section */}
-      <div className="space-y-4">
-        <Label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
-          <ImagePlus className="h-4 w-4" />
+      <div className="space-y-3 sm:space-y-4">
+        <Label className="text-xs sm:text-sm font-semibold text-gray-700 flex items-center gap-2">
+          <ImagePlus className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
           Медиа файл
         </Label>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
           {/* Image Upload */}
           <div
-            className={`border-2 border-dashed rounded-xl p-6 transition-all duration-200 cursor-pointer ${
+            className={`border-2 border-dashed rounded-lg sm:rounded-xl p-4 sm:p-6 transition-all duration-200 cursor-pointer ${
               easterEggActive
                 ? "border-purple-300 hover:border-purple-400 hover:bg-purple-50"
                 : "border-gray-200 hover:border-[#003365] hover:bg-gray-50"
-            } flex flex-col items-center justify-center relative min-h-[120px] group`}
+            } flex flex-col items-center justify-center relative min-h-[100px] sm:min-h-[120px] group`}
           >
             <Label
               onClick={() => imageInputRef.current?.click()}
-              className="cursor-pointer flex flex-col gap-3 items-center w-full"
+              className="cursor-pointer flex flex-col gap-2 sm:gap-3 items-center w-full"
             >
               <ImagePlus
-                className={`h-8 w-8 transition-colors ${
+                className={`h-6 w-6 sm:h-8 sm:w-8 transition-colors ${
                   easterEggActive
                     ? "text-purple-500"
                     : "text-gray-400 group-hover:text-[#003365]"
                 }`}
               />
-              <span className="text-sm font-medium text-gray-600">
+              <span className="text-xs sm:text-sm font-medium text-gray-600 text-center">
                 Зураг нэмэх
               </span>
             </Label>
@@ -543,24 +545,24 @@ const CreatePost = ({
 
           {/* Video Upload */}
           <div
-            className={`border-2 border-dashed rounded-xl p-6 transition-all duration-200 cursor-pointer ${
+            className={`border-2 border-dashed rounded-lg sm:rounded-xl p-4 sm:p-6 transition-all duration-200 cursor-pointer ${
               easterEggActive
                 ? "border-purple-300 hover:border-purple-400 hover:bg-purple-50"
                 : "border-gray-200 hover:border-[#003365] hover:bg-gray-50"
-            } flex flex-col items-center justify-center relative min-h-[120px] group`}
+            } flex flex-col items-center justify-center relative min-h-[100px] sm:min-h-[120px] group`}
           >
             <Label
               onClick={() => videoInputRef.current?.click()}
-              className="cursor-pointer flex flex-col gap-3 items-center w-full"
+              className="cursor-pointer flex flex-col gap-2 sm:gap-3 items-center w-full"
             >
               <FileVideo
-                className={`h-8 w-8 transition-colors ${
+                className={`h-6 w-6 sm:h-8 sm:w-8 transition-colors ${
                   easterEggActive
                     ? "text-purple-500"
                     : "text-gray-400 group-hover:text-[#003365]"
                 }`}
               />
-              <span className="text-sm font-medium text-gray-600">
+              <span className="text-xs sm:text-sm font-medium text-gray-600 text-center">
                 Видео нэмэх
               </span>
             </Label>
@@ -593,24 +595,24 @@ const CreatePost = ({
 
           {/* Audio Upload */}
           <div
-            className={`border-2 border-dashed rounded-xl p-6 transition-all duration-200 cursor-pointer ${
+            className={`border-2 border-dashed rounded-lg sm:rounded-xl p-4 sm:p-6 transition-all duration-200 cursor-pointer ${
               easterEggActive
                 ? "border-purple-300 hover:border-purple-400 hover:bg-purple-50"
                 : "border-gray-200 hover:border-[#003365] hover:bg-gray-50"
-            } flex flex-col items-center justify-center relative min-h-[120px] group`}
+            } flex flex-col items-center justify-center relative min-h-[100px] sm:min-h-[120px] group`}
           >
             <Label
               onClick={() => audioInputRef.current?.click()}
-              className="cursor-pointer flex flex-col gap-3 items-center w-full"
+              className="cursor-pointer flex flex-col gap-2 sm:gap-3 items-center w-full"
             >
               <Volume2
-                className={`h-8 w-8 transition-colors ${
+                className={`h-6 w-6 sm:h-8 sm:w-8 transition-colors ${
                   easterEggActive
                     ? "text-purple-500"
                     : "text-gray-400 group-hover:text-[#003365]"
                 }`}
               />
-              <span className="text-sm font-medium text-gray-600">
+              <span className="text-xs sm:text-sm font-medium text-gray-600 text-center">
                 Аудио нэмэх
               </span>
             </Label>
@@ -644,7 +646,7 @@ const CreatePost = ({
       </div>
 
       {/* Submit Button */}
-      <div className="pt-4">
+      <div className="pt-3 sm:pt-4">
         <Button
           onClick={() => {
             console.log("🔘 Button clicked!");
@@ -663,7 +665,7 @@ const CreatePost = ({
           disabled={
             loading || uploading || !title.trim() || !postContent.trim()
           }
-          className={`w-full h-12 text-base font-semibold transition-all duration-200 rounded-lg ${
+          className={`w-full h-10 sm:h-12 text-sm sm:text-base font-semibold transition-all duration-200 rounded-lg ${
             easterEggActive
               ? "bg-purple-600 hover:bg-purple-700 text-white shadow-lg hover:shadow-xl"
               : "bg-[#003365] hover:bg-[#002a52] text-white shadow-sm hover:shadow-md"
@@ -671,21 +673,25 @@ const CreatePost = ({
         >
           {loading || uploading ? (
             <>
-              <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-              {easterEggActive
-                ? "Deploying awesome content..."
-                : uploading
-                ? "Файл илгээж байна..."
-                : "Илгээж байна..."}
+              <Loader2 className="mr-2 h-4 w-4 sm:h-5 sm:w-5 animate-spin" />
+              <span className="text-xs sm:text-sm">
+                {easterEggActive
+                  ? "Deploying awesome content..."
+                  : uploading
+                  ? "Файл илгээж байна..."
+                  : "Илгээж байна..."}
+              </span>
             </>
           ) : (
             <>
               {easterEggActive ? (
-                <Rocket className="mr-2 h-5 w-5" />
+                <Rocket className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
               ) : (
-                <Send className="mr-2 h-5 w-5" />
+                <Send className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
               )}
-              {easterEggActive ? "Launch Post 🚀" : "Нийтлэл нийтлэх"}
+              <span className="text-xs sm:text-sm">
+                {easterEggActive ? "Launch Post 🚀" : "Нийтлэл нийтлэх"}
+              </span>
             </>
           )}
         </Button>
@@ -698,31 +704,33 @@ const CreatePost = ({
   }
 
   return (
-    <div className="max-w-3xl mx-auto p-6">
+    <div className="max-w-3xl mx-auto p-4 sm:p-6">
       <Card
-        className={`border border-gray-200 rounded-2xl shadow-sm transition-all duration-300 ${
+        className={`border border-gray-200 rounded-xl sm:rounded-2xl shadow-sm transition-all duration-300 ${
           easterEggActive
             ? "ring-2 ring-purple-200 shadow-purple-100"
             : "hover:shadow-lg"
         }`}
       >
-        <CardHeader className="pb-6 border-b border-gray-100">
+        <CardHeader className="pb-4 sm:pb-6 border-b border-gray-100">
           <CardTitle
-            className="text-2xl font-bold text-gray-900 flex items-center gap-3 cursor-pointer select-none"
+            className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 flex items-center gap-2 sm:gap-3 cursor-pointer select-none"
             onClick={handleTitleClick}
           >
-            <PenTool className="h-6 w-6 text-[#003365]" />
-            Шинэ нийтлэл үүсгэх
+            <PenTool className="h-5 w-5 sm:h-6 sm:w-6 text-[#003365]" />
+            <span className="text-sm sm:text-base md:text-lg lg:text-xl">
+              Шинэ нийтлэл үүсгэх
+            </span>
             {easterEggActive && (
-              <Sparkles className="h-5 w-5 text-purple-500 animate-pulse" />
+              <Sparkles className="h-4 w-4 sm:h-5 sm:w-5 text-purple-500 animate-pulse" />
             )}
           </CardTitle>
-          <p className="text-sm text-gray-600 mt-2">
+          <p className="text-xs sm:text-sm text-gray-600 mt-1 sm:mt-2">
             {easterEggActive ? "🎮 Developer mode activated! " : ""}
             Хэрэглэгчдийн хуулийн мэдлэг олгох зөвлөгөө нийтлэл бичнэ үү
           </p>
         </CardHeader>
-        <CardContent className="p-8">{content}</CardContent>
+        <CardContent className="p-4 sm:p-6 md:p-8">{content}</CardContent>
       </Card>
     </div>
   );
