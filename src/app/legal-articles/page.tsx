@@ -32,7 +32,7 @@ const ArticlesPage = () => {
     error: postError,
     refetch,
   } = useQuery(GET_ALL_POSTS, {
-    fetchPolicy: "cache-first",
+    fetchPolicy: "network-only",
   });
 
   // Specializations and posts data
@@ -51,6 +51,8 @@ const ArticlesPage = () => {
     setSelectedSpecIds([]);
     setSearchTerm("");
   };
+
+  console.log(posts);
 
   // Clean URL function to fix double https issue
   const cleanUrl = (url: string) => {
@@ -271,7 +273,7 @@ const ArticlesPage = () => {
               {(selectedSpecIds.length > 0 || searchTerm) && (
                 <Button
                   onClick={clearFilters}
-                  className="bg-[#003365] hover:bg-[#002a52]"
+                  className="bg-[#003365] text-white hover:bg-[#002a52 hover:text-white"
                 >
                   Бүх нийтлэлийг харах
                 </Button>
@@ -291,26 +293,28 @@ const ArticlesPage = () => {
                       onClick={() => router.push(`/lawyer/${post.author?._id}`)}
                     >
                       <div className="w-10 h-10 rounded-full overflow-hidden flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-[#003365] focus:ring-opacity-50">
+                        {(() => {
+                          console.log("🔍 Post author data:", post.author);
+                          console.log(
+                            "🖼️ Profile picture URL:",
+                            post.author?.profilePicture
+                          );
+                          const profilePicUrl = post.author?.profilePicture
+                            ? `${process.env.NEXT_PUBLIC_R2_PUBLIC_DOMAIN}/${post.author.profilePicture}`
+                            : null;
+                          console.log(
+                            "🔗 Full profile picture URL:",
+                            profilePicUrl
+                          );
+                          return null;
+                        })()}
                         {post.author?.profilePicture ? (
                           <img
-                            src={post.author.profilePicture}
+                            src={`${process.env.NEXT_PUBLIC_R2_PUBLIC_DOMAIN}/${post.author.profilePicture}`}
                             alt={`${post.author?.firstName || ""} ${
                               post.author?.lastName || ""
                             }`}
                             className="w-full h-full object-cover"
-                            onError={(e) => {
-                              // Fallback to initials if image fails to load
-                              const target = e.target as HTMLImageElement;
-                              target.style.display = "none";
-                              const parent = target.parentElement;
-                              if (parent) {
-                                parent.innerHTML = `<div class="w-full h-full bg-gradient-to-br from-[#003365] to-[#002a52] rounded-full flex items-center justify-center text-white font-semibold text-sm">${
-                                  (post.author?.firstName?.charAt(0) || "") +
-                                    (post.author?.lastName?.charAt(0) || "") ||
-                                  "Ө"
-                                }</div>`;
-                              }
-                            }}
                           />
                         ) : (
                           <div className="w-full h-full bg-gradient-to-br from-[#003365] to-[#002a52] rounded-full flex items-center justify-center text-white font-semibold text-sm">
