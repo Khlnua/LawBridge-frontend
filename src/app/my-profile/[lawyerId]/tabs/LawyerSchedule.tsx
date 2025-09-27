@@ -232,23 +232,23 @@ export default function LawyerSchedule({ lawyerId }: LawyerScheduleProps) {
   // const maxDate = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
 
   return (
-    <div className="p-8 space-y-8">
+    <div className="py-4 px-2 sm:p-6 lg:p-8 space-y-6 sm:space-y-8">
       {notification && (
-        <div className="bg-emerald-50 border border-emerald-200 text-emerald-800 px-4 py-3 rounded-xl flex items-center justify-center gap-2 shadow-sm">
+        <div className="bg-emerald-50 border border-emerald-200 text-emerald-800 px-3 sm:px-4 py-2 sm:py-3 rounded-xl flex items-center justify-center gap-2 shadow-sm text-sm sm:text-base">
           <span className="w-2 h-2 bg-emerald-500 rounded-full"></span>
           {notification}
         </div>
       )}
 
-      <div className="">
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 mb-6">
-          <div className="flex items-center  justify-between">
+      <div>
+        <div className="bg-white rounded-none sm:rounded-2xl border-0 sm:border border-gray-100 shadow-none sm:shadow-sm p-0 sm:p-4 mb-4 sm:mb-6">
+          <div className="space-y-3 sm:space-y-0 sm:flex sm:items-center sm:justify-between">
             <div>
-              <h2 className="text-lg font-semibold text-gray-900">Өдөр сонгох</h2>
-              <p className="text-sm text-gray-500">7 хоногийн хуваарь</p>
+              <h2 className="text-base sm:text-lg font-semibold text-gray-900">Өдөр сонгох</h2>
+              <p className="text-xs sm:text-sm text-gray-500">7 хоногийн хуваарь</p>
             </div>
 
-            <div className="grid grid-cols-7 gap-3">
+            <div className="grid grid-cols-7 gap-1 sm:gap-3">
               {Array.from({ length: 7 }, (_, i) => {
                 const date = new Date(now);
                 date.setDate(now.getDate() + i);
@@ -260,14 +260,14 @@ export default function LawyerSchedule({ lawyerId }: LawyerScheduleProps) {
                   <button
                     key={i}
                     onClick={() => setSelectedDate(date)}
-                    className={`relative p-4 rounded-xl text-center transition-all duration-200 border-2 hover:scale-105 ${
+                    className={`relative p-2 sm:p-4 rounded-lg sm:rounded-xl text-center transition-all duration-200 border-2 hover:scale-105 ${
                       isSelected
                         ? "bg-slate-900 text-white border-slate-900 shadow-lg"
                         : "bg-white hover:bg-gray-50 text-gray-700 border-gray-200 hover:border-gray-300"
                     }`}
                   >
-                    <div className="text-lg font-bold">{date.getDate()}</div>
-                    <div className="text-xs opacity-70">{date.toLocaleDateString("mn-MN", { weekday: "short" })}</div>
+                    <div className="text-sm sm:text-lg font-bold">{date.getDate()}</div>
+                    <div className="text-xs opacity-70 hidden sm:block">{date.toLocaleDateString("mn-MN", { weekday: "short" })}</div>
                     {hasSlots && (
                       <div
                         className={`absolute -top-1 -right-1 w-4 h-4 rounded-full border-2 border-white ${
@@ -282,43 +282,41 @@ export default function LawyerSchedule({ lawyerId }: LawyerScheduleProps) {
           </div>
         </div>
 
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-            <div className="flex items-center gap-3">
-              <div>
-                <h2 className="text-lg font-semibold text-gray-900">Цаг сонгох</h2>
-                <p className="text-sm text-gray-500">Боломжит цагаа сонгоно уу</p>
-              </div>
+        <div className="bg-white rounded-none sm:rounded-2xl border-0 sm:border border-gray-100 shadow-none sm:shadow-sm p-0   sm:p-6">
+          <div className="flex flex-col sm:flex-row sm:justify-between gap-3 mb-4 sm:mb-6">
+            <div>
+              <h2 className="text-base sm:text-lg font-semibold text-gray-900">Цаг сонгох</h2>
+              <p className="text-xs sm:text-sm text-gray-500">Боломжит цагаа сонгоно уу</p>
             </div>
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               <button
                 onClick={() => addQuickSlots(9, 12)}
-                className="px-4 py-2 text-sm bg-blue-50 text-blue-700 rounded-xl hover:bg-blue-100 transition-colors font-medium border border-blue-200"
+                className="px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm bg-blue-50 text-blue-700 rounded-lg sm:rounded-xl hover:bg-blue-100 transition-colors font-medium border border-blue-200"
               >
                 Өглөө (9-12)
               </button>
               <button
                 onClick={() => addQuickSlots(13, 17)}
-                className="px-4 py-2 text-sm bg-orange-50 text-orange-700 rounded-xl hover:bg-orange-100 transition-colors font-medium border border-orange-200"
+                className="px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm bg-orange-50 text-orange-700 rounded-lg sm:rounded-xl hover:bg-orange-100 transition-colors font-medium border border-orange-200"
               >
                 Үдээс хойш (13-17)
               </button>
             </div>
           </div>
 
-          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3 mb-6">
+          <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 gap-2 sm:gap-3 mb-4 sm:mb-6">
             {timeSlots.map((time) => (
               <button
                 key={time}
                 onClick={() => toggleTimeSlot(time)}
-                className={`p-2 rounded-xl text-sm font-medium transition-all duration-200 border-2 hover:scale-105 text-center ${
+                className={`p-2 sm:p-3 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 border-2 hover:scale-105 text-center ${
                   selectedTimeSlots.includes(time)
                     ? "bg-[#003366] text-white border-[#003366] shadow-lg"
                     : "bg-white hover:bg-gray-50 text-gray-700 border-gray-200 hover:border-gray-300"
                 }`}
               >
                 <div className="font-bold">{time}</div>
-                <div className="text-xs opacity-70">{addMinutesToTime(time, 60)}</div>
+                <div className="text-xs opacity-70 hidden sm:block">{addMinutesToTime(time, 60)}</div>
               </button>
             ))}
           </div>
@@ -327,18 +325,18 @@ export default function LawyerSchedule({ lawyerId }: LawyerScheduleProps) {
             {selectedTimeSlots.length > 0 ? (
               <div></div>
             ) : (
-              <div className="text-center bg-blue-50 border border-gray-100 rounded-xl p-5 mb-6">
-                <p className="text-gray-500 font-medium">Цаг сонгоно уу</p>
-                <p className="text-gray-400 text-sm">Дээрх цагнуудаас сонгож болно</p>
+              <div className="text-center bg-blue-50 border border-gray-100 rounded-xl p-3 sm:p-5 mb-4 sm:mb-6">
+                <p className="text-gray-500 font-medium text-sm sm:text-base">Цаг сонгоно уу</p>
+                <p className="text-gray-400 text-xs sm:text-sm">Дээрх цагнуудаас сонгож болно</p>
               </div>
             )}
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-3">
+          <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
             <button
               onClick={saveAvailability}
               disabled={isLoading || selectedTimeSlots.length === 0}
-              className="flex-1 bg-[#003366] text-white py-3 px-6 rounded-xl font-semibold hover:bg-[#004080] disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center gap-3 shadow-sm"
+              className="flex-1 bg-[#003366] text-white py-2.5 sm:py-3 px-4 sm:px-6 rounded-lg sm:rounded-xl text-sm sm:text-base font-semibold hover:bg-[#004080] disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center gap-2 sm:gap-3 shadow-sm"
             >
               {isLoading ? (
                 <>
@@ -352,7 +350,7 @@ export default function LawyerSchedule({ lawyerId }: LawyerScheduleProps) {
 
             <button
               onClick={() => setShowUpdateForm(!showUpdateForm)}
-              className="px-6 py-3 bg-gray-100 text-gray-700 rounded-xl font-semibold hover:bg-gray-200 transition-colors flex items-center justify-center gap-2"
+              className="px-4 sm:px-6 py-2.5 sm:py-3 bg-gray-100 text-gray-700 rounded-lg sm:rounded-xl text-sm sm:text-base font-semibold hover:bg-gray-200 transition-colors flex items-center justify-center gap-2"
             >
               Засах
             </button>
@@ -360,7 +358,7 @@ export default function LawyerSchedule({ lawyerId }: LawyerScheduleProps) {
             {Object.keys(availability).length > 0 && (
               <button
                 onClick={clearAllSlots}
-                className="px-6 py-4 bg-red-50 text-red-700 border border-red-200 rounded-xl font-semibold hover:bg-red-100 transition-colors flex items-center justify-center gap-2"
+                className="px-4 sm:px-6 py-2.5 sm:py-4 bg-red-50 text-red-700 border border-red-200 rounded-lg sm:rounded-xl text-sm sm:text-base font-semibold hover:bg-red-100 transition-colors flex items-center justify-center gap-2"
               >
                 Арилгах
               </button>
@@ -370,7 +368,7 @@ export default function LawyerSchedule({ lawyerId }: LawyerScheduleProps) {
       </div>
 
       {showUpdateForm && (
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+        <div className="bg-white rounded-none sm:rounded-2xl border-0 sm:border border-gray-100 shadow-none sm:shadow-sm p-6">
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 bg-[#003366] rounded-xl flex items-center justify-center">
               <span className="text-white text-sm font-bold">EDIT</span>

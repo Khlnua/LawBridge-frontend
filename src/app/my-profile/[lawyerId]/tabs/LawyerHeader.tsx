@@ -123,7 +123,7 @@ export const LawyerProfileHeader = ({ lawyerId }: LawyerProfileHeaderProps) => {
 
   return (
     <div className="w-full">
-      <div className="border-b border-gray-100 bg-gray-50/50">
+      <div className="md:border-b border-gray-100">
         <div className="p-4 sm:p-6 lg:p-8">
           <div className="flex flex-col lg:flex-row items-center lg:items-start gap-6 lg:gap-8">
             <div className="relative group flex-shrink-0">
@@ -155,9 +155,9 @@ export const LawyerProfileHeader = ({ lawyerId }: LawyerProfileHeaderProps) => {
             </div>
 
             {/* Profile Info Section */}
-            <div className="flex-1 text-center lg:text-left space-y-4">
+            <div className="flex-1 text-left space-y-4">
               <div>
-                <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 mb-2">
+                <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 mb-2 text-center sm:text-left">
                   {form.lastName} {form.firstName}
                 </h1>
 
@@ -168,9 +168,12 @@ export const LawyerProfileHeader = ({ lawyerId }: LawyerProfileHeaderProps) => {
                         <div className="h-6 bg-gray-200 rounded w-32 mb-2"></div>
                       </div>
                     ) : form.specialization.length > 0 ? (
-                      <div className="flex flex-wrap justify-center lg:justify-start gap-2 mb-4">
+                      <div className="flex flex-wrap justify-start gap-2 mb-4">
                         {form.specialization.map((spec) => (
-                          <span key={spec.specializationId} className="bg-[#003366] text-white px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm rounded-lg font-medium">
+                          <span
+                            key={spec.specializationId}
+                            className="bg-[#003366] text-white px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm rounded-lg font-medium"
+                          >
                             {spec.categoryName}
                           </span>
                         ))}
@@ -180,11 +183,11 @@ export const LawyerProfileHeader = ({ lawyerId }: LawyerProfileHeaderProps) => {
                     )}
 
                     <div className="space-y-2 text-gray-600">
-                      <div className="flex gap-2 justify-center lg:justify-start items-center">
+                      <div className="flex gap-2 justify-start items-center">
                         <University size={18} className="text-gray-500" />
                         <span>{form.university}</span>
                       </div>
-                      <div className="flex gap-2 justify-center lg:justify-start items-center">
+                      <div className="flex gap-2 justify-start items-center">
                         <MailIcon size={18} className="text-gray-500" />
                         <span>{form.email}</span>
                       </div>
@@ -196,7 +199,7 @@ export const LawyerProfileHeader = ({ lawyerId }: LawyerProfileHeaderProps) => {
               </div>
 
               {!isEditing && (
-                <div className="flex justify-center lg:justify-start">
+                <div className="flex justify-start">
                   <Button
                     variant="outline"
                     onClick={() => setIsEditing(true)}
