@@ -7,6 +7,7 @@ import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SignedIn, SignedOut, UserButton, useUser } from "@clerk/nextjs";
 import PrettyChatButton from "../PrettyChatButton";
+import CustomUserButton from "./CustomUserButton";
 
 const navLinks = [
   { label: "Өмгөөлөгчид", href: "/find-lawyers" },
@@ -69,7 +70,7 @@ export default function Header() {
 
             <SignedIn>
               {role === "lawyer" ? (
-                <UserButton
+                <CustomUserButton
                   afterSignOutUrl="/sign-in"
                   userProfileMode="navigation"
                   userProfileUrl="/my-profile/me"
@@ -87,7 +88,7 @@ export default function Header() {
               <div className="flex gap-2 justify-center items-center">
                 <SignedIn>
                   {role === "lawyer" ? (
-                    <UserButton
+                    <CustomUserButton
                       afterSignOutUrl="/sign-in"
                       userProfileMode="navigation"
                       userProfileUrl="/my-profile/me"

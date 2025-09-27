@@ -135,10 +135,18 @@ export type Comment = {
   __typename?: 'Comment';
   _id: Scalars['ID']['output'];
   author: Scalars['String']['output'];
+  authorInfo: CommentAuthorInfo;
   content: Scalars['String']['output'];
   createdAt: Scalars['Date']['output'];
   post: Scalars['ID']['output'];
   updatedAt: Scalars['Date']['output'];
+};
+
+export type CommentAuthorInfo = {
+  __typename?: 'CommentAuthorInfo';
+  email?: Maybe<Scalars['String']['output']>;
+  id: Scalars['String']['output'];
+  name: Scalars['String']['output'];
 };
 
 export type CreateAchievementInput = {
@@ -398,7 +406,9 @@ export type MutationCreatePostArgs = {
 
 
 export type MutationCreateReviewArgs = {
+  clientId: Scalars['ID']['input'];
   input: CreateReviewInput;
+  lawyerId: Scalars['ID']['input'];
 };
 
 
@@ -533,6 +543,8 @@ export type NotificationsFilterInput = {
 export type Post = {
   __typename?: 'Post';
   _id: Scalars['ID']['output'];
+  author?: Maybe<PostAuthor>;
+  comments: Array<Comment>;
   content: PostContent;
   createdAt: Scalars['Date']['output'];
   id: Scalars['ID']['output'];
@@ -541,6 +553,17 @@ export type Post = {
   title: Scalars['String']['output'];
   type: MediaType;
   updatedAt?: Maybe<Scalars['Date']['output']>;
+};
+
+export type PostAuthor = {
+  __typename?: 'PostAuthor';
+  email?: Maybe<Scalars['String']['output']>;
+  firstName?: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  lastName?: Maybe<Scalars['String']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
+  profilePicture?: Maybe<Scalars['String']['output']>;
+  username?: Maybe<Scalars['String']['output']>;
 };
 
 export type PostContent = {
