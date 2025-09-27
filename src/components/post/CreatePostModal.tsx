@@ -33,18 +33,18 @@ const CreatePostModal = ({ onPostCreated }: CreatePostModalProps) => {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-lg flex items-center gap-2 shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105">
+        <Button className="bg-[#003365] hover:bg-[#002a52] text-white font-semibold py-3 px-6 rounded-lg flex items-center gap-2 shadow-sm hover:shadow-md transition-all duration-200">
           <PlusCircle className="h-5 w-5" />
           Шинэ нийтлэл үүсгэх
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[900px] max-h-[90vh] overflow-y-auto bg-white">
-        <DialogHeader className="pb-4 border-b border-gray-200">
-          <DialogTitle className="text-2xl font-bold text-[#091c3c] text-center">
+      <DialogContent className="sm:max-w-[900px] max-h-[90vh] overflow-y-auto bg-white rounded-2xl border border-gray-200">
+        <DialogHeader className="pb-6 border-b border-gray-100">
+          <DialogTitle className="text-2xl font-bold text-gray-900 text-center">
             {isCreating ? "Нийтлэл үүсгэж байна..." : "Шинэ нийтлэл үүсгэх"}
           </DialogTitle>
         </DialogHeader>
-        <div className="pt-6 bg-white">
+        <div className="pt-8 bg-white">
           <CreatePost
             onPostCreated={handlePostCreated}
             onPostStart={handlePostStart}

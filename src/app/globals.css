@@ -12,4 +12,16 @@ body {
   cursor: default;
 }
 
+/* Override default yellow focus outlines */
+*:focus {
+  outline: none !important;
+}
+
+*:focus-visible {
+  outline: 2px solid #003365 !important;
+  outline-offset: 2px !important;
+}
+
+/* Minimal input styling - removed forced underline */
+
 @custom-variant dark (&:is(.dark *));

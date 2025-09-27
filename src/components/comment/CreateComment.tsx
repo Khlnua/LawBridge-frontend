@@ -48,7 +48,7 @@ function CreateComment({ postId, onCommentAdded }: CreateCommentProps) {
         onChange={(e) => setText(e.target.value)}
         placeholder="Сэтгэгдэл бичих..."
         disabled={loading}
-        className="resize-none"
+        className="resize-none border-0 border-b border-gray-200 rounded-none focus:ring-0 focus:border-b-[#003365] bg-transparent"
         rows={3}
       />
       <div className="flex justify-end">

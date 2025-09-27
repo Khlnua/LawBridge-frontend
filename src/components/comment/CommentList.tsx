@@ -97,7 +97,7 @@ function CommentList({ comments, onCommentDeleted }: CommentListProps) {
           <div className="flex items-start justify-between">
             <div className="flex-1 min-w-0">
               <div className="flex items-center space-x-2 mb-1">
-                <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center text-white text-xs font-semibold">
+                <div className="w-6 h-6 bg-[#003365] rounded-full flex items-center justify-center text-white text-xs font-semibold">
                   {getDisplayInitial(comment)}
                 </div>
                 <span className="text-sm font-medium text-gray-900">

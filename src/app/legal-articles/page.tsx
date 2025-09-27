@@ -75,26 +75,11 @@ const ArticlesPage = () => {
     return matchesSearch && matchesSpec;
   });
 
-  // Show authentication status for debugging
-  if (!isLoaded) {
+  if (!isLoaded || specLoading || postLoading) {
     return (
       <div className="min-h-screen md:mt-100 mt-20 bg-transparent ">
         <div className="text-center space-y-4 bg-transparent">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto bg-transparent"></div>
-          <p className="text-gray-600 text-lg">
-            Аутентификацийг шалгаж байна...
-          </p>
-        </div>
-      </div>
-    );
-  }
-
-  if (specLoading || postLoading) {
-    return (
-      <div className="min-h-screen md:mt-100 mt-20 bg-transparent ">
-        <div className="text-center space-y-4 bg-transparent">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto bg-transparent"></div>
-          <p className="text-gray-600 text-lg">Ачааллаж байна...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#003365] mx-auto bg-transparent"></div>
         </div>
       </div>
     );
@@ -124,28 +109,22 @@ const ArticlesPage = () => {
       <div className="bg-transparent ">
         <div className=" px-4 sm:px-6 lg:px-8 py-8 ">
           <div className="text-center space-y-4">
-            <h1 className="text-4xl md:text-4xl font-bold bg-gradient-to-r from-blue-600 to-blue-700 bg-clip-text text-transparent">
+            <h1 className="text-4xl md:text-4xl font-bold text-[#003365] bg-clip-text">
               Хуулийн нийтлэлүүд
             </h1>
             <p className="text-lg text-gray-600 max-w-4xl mx-auto">
               Хуулийн мэргэжилтнүүдийн туршлага, зөвлөгөө болон сүүлийн үеийн
               хуулийн мэдээллүүд
             </p>
-
-            {isLawyer && (
-              <div className="pt-4">
-                <CreatePostModal />
-              </div>
-            )}
           </div>
         </div>
       </div>
 
       <div className="w-full px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-        <div className="bg-white rounded-lg shadow border border-gray-200 p-5 px-15 max-w-none bg-gradient-to-br from-blue-50 via-white to-indigo-50">
+        <div className="bg-white rounded-lg  p-5 px-15 max-w-none">
           <div className="flex flex-col md:flex-row md:items-center md:gap-6 gap-4 ">
             {/* Search */}
-            <div className="relative flex-1">
+            <div className="relative flex-1 border border-gray-200 rounded-lg">
               <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                 <Search className="h-5 w-5 text-gray-400" />
               </div>
@@ -154,7 +133,7 @@ const ArticlesPage = () => {
                 placeholder="Нийтлэл хайх..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-gray-300 focus:border-gray-400 text-gray-700 placeholder-gray-400 text-sm"
+                className="w-full pl-12 pr-4 py-2 border-0 rounded-lg focus:ring-0 focus:ring-[#003365] focus:border-[#003365] text-gray-700 placeholder-gray-400 text-sm bg-transparent"
               />
             </div>
 
@@ -189,7 +168,7 @@ const ArticlesPage = () => {
 
           {/* Filter Buttons */}
           {showFilters && (
-            <div className="space-y-4 border-t border-gray-100 pt-6">
+            <div className="space-y-40 pt-6">
               <div className="flex flex-wrap gap-3 justify-center">
                 {specializations.map(
                   (spec: { id: string; categoryName: string }) => (
@@ -203,11 +182,11 @@ const ArticlesPage = () => {
                       onClick={() => handleFilter(spec.id)}
                       className={`
                       px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 transform hover:scale-105
-                      ${
-                        selectedSpecIds.includes(spec.id)
-                          ? "bg-blue-600 text-white shadow-lg border-blue-600"
-                          : "bg-white text-gray-700 border-gray-200 hover:border-blue-300 hover:text-blue-600 hover:bg-blue-50"
-                      }
+                        ${
+                          selectedSpecIds.includes(spec.id)
+                            ? "bg-[#003365] text-white shadow-lg border-[#003365]"
+                            : "bg-white text-gray-700 border-gray-200 hover:border-[#003365] hover:text-[#003365] hover:bg-gray-50"
+                        }
                     `}
                     >
                       <Tag className="h-4 w-4 mr-2" />
@@ -230,13 +209,13 @@ const ArticlesPage = () => {
                 return (
                   <div
                     key={specId}
-                    className="flex items-center gap-2 bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm"
+                    className="flex items-center gap-2 bg-gray-100 text-[#003365] px-3 py-1 rounded-full text-sm"
                   >
                     <Tag className="h-3 w-3" />
                     {spec?.categoryName}
                     <button
                       onClick={() => handleFilter(specId)}
-                      className="hover:text-blue-900"
+                      className="hover:text-[#002a52]"
                     >
                       <X className="h-3 w-3" />
                     </button>
@@ -258,6 +237,12 @@ const ArticlesPage = () => {
             </div>
           )}
         </div>
+
+        {isLawyer && (
+          <div className="pt-4 flex justify-center">
+            <CreatePostModal />
+          </div>
+        )}
 
         {/* Results Summary */}
         <div className="flex items-center justify-between">
@@ -286,7 +271,7 @@ const ArticlesPage = () => {
               {(selectedSpecIds.length > 0 || searchTerm) && (
                 <Button
                   onClick={clearFilters}
-                  className="bg-blue-600 hover:bg-blue-700"
+                  className="bg-[#003365] hover:bg-[#002a52]"
                 >
                   Бүх нийтлэлийг харах
                 </Button>
@@ -302,10 +287,10 @@ const ArticlesPage = () => {
                   {/* Post Header - Author Info */}
                   <div className="p-4 border-b border-gray-100">
                     <div
-                      className="flex items-center space-x-3"
+                      className="flex items-center space-x-3 focus:outline-none focus:ring-2 focus:ring-[#003365] focus:ring-opacity-50 rounded-lg p-1 -m-1"
                       onClick={() => router.push(`/lawyer/${post.author?._id}`)}
                     >
-                      <div className="w-10 h-10 rounded-full overflow-hidden flex items-center justify-center">
+                      <div className="w-10 h-10 rounded-full overflow-hidden flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-[#003365] focus:ring-opacity-50">
                         {post.author?.profilePicture ? (
                           <img
                             src={post.author.profilePicture}
@@ -319,7 +304,7 @@ const ArticlesPage = () => {
                               target.style.display = "none";
                               const parent = target.parentElement;
                               if (parent) {
-                                parent.innerHTML = `<div class="w-full h-full bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-semibold text-sm">${
+                                parent.innerHTML = `<div class="w-full h-full bg-gradient-to-br from-[#003365] to-[#002a52] rounded-full flex items-center justify-center text-white font-semibold text-sm">${
                                   (post.author?.firstName?.charAt(0) || "") +
                                     (post.author?.lastName?.charAt(0) || "") ||
                                   "Ө"
@@ -328,7 +313,7 @@ const ArticlesPage = () => {
                             }}
                           />
                         ) : (
-                          <div className="w-full h-full bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-semibold text-sm">
+                          <div className="w-full h-full bg-gradient-to-br from-[#003365] to-[#002a52] rounded-full flex items-center justify-center text-white font-semibold text-sm">
                             {(post.author?.firstName?.charAt(0) || "") +
                               (post.author?.lastName?.charAt(0) || "") || "Ө"}
                           </div>
@@ -447,7 +432,7 @@ const ArticlesPage = () => {
                         {post.specialization.map((spec: any) => (
                           <span
                             key={spec.id || spec._id}
-                            className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 border border-blue-200"
+                            className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-[#003365] border border-gray-200"
                           >
                             <Tag className="h-3 w-3 mr-1" />
                             {spec.categoryName}
