@@ -555,12 +555,9 @@ export default function LawyerSchedule({ lawyerId }: LawyerScheduleProps) {
       {Object.keys(availability).length > 0 && (
         <div className="grid gap-4">
           {Object.entries(availability).map(([dateKey, slots]) => (
-            <div key={dateKey} className="bg-emerald-50 border border-emerald-100 rounded-xl p-5">
+            <div key={dateKey} className="bg-gray-100 border border-emerald-100 rounded-xl p-5">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 bg-emerald-600 rounded-lg flex items-center justify-center">
-                    <span className="text-white text-xs font-bold">DAY</span>
-                  </div>
                   <div>
                     <h4 className="font-semibold text-gray-900">
                       {new Date(dateKey).toLocaleDateString("mn-MN", {

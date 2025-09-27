@@ -21,11 +21,7 @@ const ArticlesPage = () => {
   const isLawyer = role === "lawyer";
   const router = useRouter();
 
-  const {
-    data: specData,
-    loading: specLoading,
-    error: specError,
-  } = useGetAdminSpecializationsQuery();
+  const { data: specData, loading: specLoading, error: specError } = useGetAdminSpecializationsQuery();
   const {
     data: postData,
     loading: postLoading,
@@ -41,11 +37,7 @@ const ArticlesPage = () => {
 
   // Multi-select logic
   const handleFilter = (specId: string) => {
-    setSelectedSpecIds((prev) =>
-      prev.includes(specId)
-        ? prev.filter((id) => id !== specId)
-        : [...prev, specId]
-    );
+    setSelectedSpecIds((prev) => (prev.includes(specId) ? prev.filter((id) => id !== specId) : [...prev, specId]));
   };
   const clearFilters = () => {
     setSelectedSpecIds([]);
@@ -69,10 +61,7 @@ const ArticlesPage = () => {
       post.content?.text?.toLowerCase().includes(searchTerm.toLowerCase());
 
     const matchesSpec =
-      selectedSpecIds.length === 0 ||
-      post.specialization?.some((spec: any) =>
-        selectedSpecIds.includes(spec.id || spec._id)
-      );
+      selectedSpecIds.length === 0 || post.specialization?.some((spec: any) => selectedSpecIds.includes(spec.id || spec._id));
 
     return matchesSearch && matchesSpec;
   });
@@ -95,9 +84,7 @@ const ArticlesPage = () => {
             <X className="w-8 h-8 text-red-600" />
           </div>
           <h2 className="text-xl font-semibold text-gray-800">Алдаа гарлаа</h2>
-          <p className="text-gray-600">
-            {specError?.message || postError?.message}
-          </p>
+          <p className="text-gray-600">{specError?.message || postError?.message}</p>
           <Button onClick={() => window.location.reload()} className="mt-4">
             Дахин оролдох
           </Button>
@@ -107,6 +94,7 @@ const ArticlesPage = () => {
   }
 
   return (
+
     <div className="min-h-screen bg-gray-50 w-full">
       {/* Header */}
       <div className="bg-gradient-to-r from-[#003366] via-[#004080] to-[#003366] text-white py-12 relative overflow-hidden px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 z-30">
@@ -151,14 +139,11 @@ const ArticlesPage = () => {
               >
                 <Filter className="h-4 w-4" />
                 Ангилал ({specializations.length})
-                <ChevronRight
-                  className={`h-4 w-4 transition-transform ${
-                    showFilters ? "rotate-90" : ""
-                  }`}
-                />
+                <ChevronRight className={`h-4 w-4 transition-transform ${showFilters ? "rotate-90" : ""}`} />
               </Button>
 
               {(selectedSpecIds.length > 0 || searchTerm) && (
+
                 <Button
                   variant="ghost"
                   onClick={clearFilters}
@@ -166,6 +151,7 @@ const ArticlesPage = () => {
                 >
                   <X className="h-4 w-4" />
                   <span>Цэвэрлэх</span>
+
                 </Button>
               )}
             </div>
@@ -175,17 +161,12 @@ const ArticlesPage = () => {
           {showFilters && (
             <div className="pt-6">
               <div className="flex flex-wrap gap-3 justify-center">
-                {specializations.map(
-                  (spec: { id: string; categoryName: string }) => (
-                    <Button
-                      key={spec.id}
-                      variant={
-                        selectedSpecIds.includes(spec.id)
-                          ? "default"
-                          : "outline"
-                      }
-                      onClick={() => handleFilter(spec.id)}
-                      className={`
+                {specializations.map((spec: { id: string; categoryName: string }) => (
+                  <Button
+                    key={spec.id}
+                    variant={selectedSpecIds.includes(spec.id) ? "default" : "outline"}
+                    onClick={() => handleFilter(spec.id)}
+                    className={`
                       px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 transform hover:scale-105
                         ${
                           selectedSpecIds.includes(spec.id)
@@ -193,12 +174,11 @@ const ArticlesPage = () => {
                             : "bg-white text-gray-700 border-gray-200 hover:border-[#003365] hover:text-[#003365] hover:bg-gray-50"
                         }
                     `}
-                    >
-                      <Tag className="h-4 w-4 mr-2" />
-                      {spec.categoryName}
-                    </Button>
-                  )
-                )}
+                  >
+                    <Tag className="h-4 w-4 mr-2" />
+                    {spec.categoryName}
+                  </Button>
+                ))}
               </div>
             </div>
           )}
@@ -206,12 +186,11 @@ const ArticlesPage = () => {
           {/* Active Filters Display */}
           {(selectedSpecIds.length > 0 || searchTerm) && (
             <div className="flex flex-wrap gap-3 border-t border-gray-100 pt-4 justify-center">
-              <span className="text-sm text-gray-500 font-medium">
-                Идэвхтэй шүүлтүүр:
-              </span>
+              <span className="text-sm text-gray-500 font-medium">Идэвхтэй шүүлтүүр:</span>
               {selectedSpecIds.map((specId) => {
                 const spec = specializations.find((s) => s.id === specId);
                 return (
+
                   <div
                     key={specId}
                     className="flex items-center bg-white border border-blue-300 text-blue-700 px-4 py-2.5 rounded-lg text-sm shadow-sm hover:shadow-md hover:border-blue-400 transition-all duration-200 font-medium group"
@@ -228,6 +207,7 @@ const ArticlesPage = () => {
                 );
               })}
               {searchTerm && (
+
                 <div className="flex items-center bg-white border border-green-300 text-green-700 px-4 py-2.5 rounded-lg text-sm shadow-sm hover:shadow-md hover:border-green-400 transition-all duration-200 font-medium group">
                   <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
                   <Search className="h-3 w-3 mr-1" />
@@ -237,6 +217,7 @@ const ArticlesPage = () => {
                     className="ml-2 text-green-400 hover:text-green-600 hover:bg-green-100 p-0.5 rounded-full transition-all duration-200 group-hover:bg-green-200"
                   >
                     <X className="w-3 h-3" />
+
                   </button>
                 </div>
               )}
@@ -253,11 +234,7 @@ const ArticlesPage = () => {
         {/* Results Summary */}
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl font-semibold text-gray-800">
-            {selectedSpecIds.length > 0
-              ? `Сонгогдсон ангиллууд`
-              : searchTerm
-              ? `"${searchTerm}" хайлтын үр дүн`
-              : "Бүх нийтлэлүүд"}
+            {selectedSpecIds.length > 0 ? `Сонгогдсон ангиллууд` : searchTerm ? `"${searchTerm}" хайлтын үр дүн` : "Бүх нийтлэлүүд"}
           </h2>
         </div>
 
@@ -284,6 +261,7 @@ const ArticlesPage = () => {
                   </Button>
                 )}
               </div>
+
             </div>
           ) : (
             <div className="space-y-6">
@@ -301,31 +279,22 @@ const ArticlesPage = () => {
                       <div className="w-10 h-10 rounded-full overflow-hidden flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-[#003365] focus:ring-opacity-50">
                         {(() => {
                           console.log("🔍 Post author data:", post.author);
-                          console.log(
-                            "🖼️ Profile picture URL:",
-                            post.author?.profilePicture
-                          );
+                          console.log("🖼️ Profile picture URL:", post.author?.profilePicture);
                           const profilePicUrl = post.author?.profilePicture
-                            ? `${process.env.NEXT_PUBLIC_R2_PUBLIC_DOMAIN}/${post.author.profilePicture}`
+                            ? `${process.env.NEXT_PUBLIC_NEXT_PUBLIC_R2_PUBLIC_DOMAIN}/${post.author.profilePicture}`
                             : null;
-                          console.log(
-                            "🔗 Full profile picture URL:",
-                            profilePicUrl
-                          );
+                          console.log("🔗 Full profile picture URL:", profilePicUrl);
                           return null;
                         })()}
                         {post.author?.profilePicture ? (
                           <img
-                            src={`${process.env.NEXT_PUBLIC_R2_PUBLIC_DOMAIN}/${post.author.profilePicture}`}
-                            alt={`${post.author?.firstName || ""} ${
-                              post.author?.lastName || ""
-                            }`}
+                            src={`${process.env.NEXT_PUBLIC_NEXT_PUBLIC_R2_PUBLIC_DOMAIN}/${post.author.profilePicture}`}
+                            alt={`${post.author?.firstName || ""} ${post.author?.lastName || ""}`}
                             className="w-full h-full object-cover"
                           />
                         ) : (
                           <div className="w-full h-full bg-gradient-to-br from-[#003365] to-[#002a52] rounded-full flex items-center justify-center text-white font-semibold text-sm">
-                            {(post.author?.firstName?.charAt(0) || "") +
-                              (post.author?.lastName?.charAt(0) || "") || "Ө"}
+                            {(post.author?.firstName?.charAt(0) || "") + (post.author?.lastName?.charAt(0) || "") || "Ө"}
                           </div>
                         )}
                       </div>
@@ -343,16 +312,13 @@ const ArticlesPage = () => {
                         </div>
                         <p className="text-xs text-gray-500">
                           {post.createdAt
-                            ? new Date(post.createdAt).toLocaleDateString(
-                                "mn-MN",
-                                {
-                                  year: "numeric",
-                                  month: "long",
-                                  day: "numeric",
-                                  hour: "2-digit",
-                                  minute: "2-digit",
-                                }
-                              )
+                            ? new Date(post.createdAt).toLocaleDateString("mn-MN", {
+                                year: "numeric",
+                                month: "long",
+                                day: "numeric",
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              })
                             : "Сүүлд шинэчлэгдсэн"}
                         </p>
                       </div>
@@ -362,16 +328,10 @@ const ArticlesPage = () => {
                   {/* Post Content */}
                   <div className="p-4 space-y-4">
                     {/* Post Title */}
-                    <h3 className="text-xl font-bold text-gray-900 leading-tight">
-                      {post.title}
-                    </h3>
+                    <h3 className="text-xl font-bold text-gray-900 leading-tight">{post.title}</h3>
 
                     {/* Post Text Content */}
-                    {post.content?.text && (
-                      <div className="text-gray-700 leading-relaxed whitespace-pre-line">
-                        {post.content.text}
-                      </div>
-                    )}
+                    {post.content?.text && <div className="text-gray-700 leading-relaxed whitespace-pre-line">{post.content.text}</div>}
 
                     {/* Display Image */}
                     {post.content?.image && (
@@ -381,10 +341,7 @@ const ArticlesPage = () => {
                           alt="Post image"
                           className="w-full max-h-96 object-cover rounded-lg"
                           onError={(e) => {
-                            console.error(
-                              "Image failed to load:",
-                              cleanUrl(post.content.image)
-                            );
+                            console.error("Image failed to load:", cleanUrl(post.content.image));
                             e.currentTarget.style.display = "none";
                           }}
                         />
@@ -392,27 +349,22 @@ const ArticlesPage = () => {
                     )}
 
                     {/* Display Video */}
-                    {post.content?.video &&
-                      post.content.video !==
-                        "https://example.com/video.mp4" && (
-                        <div className="mt-4">
-                          <div className="aspect-video bg-gray-100 rounded-lg overflow-hidden">
-                            <video
-                              controls
-                              src={cleanUrl(post.content.video)}
-                              className="w-full h-full object-cover"
-                              preload="metadata"
-                              onError={(e) => {
-                                console.error(
-                                  "Video failed to load:",
-                                  cleanUrl(post.content.video)
-                                );
-                                e.currentTarget.style.display = "none";
-                              }}
-                            />
-                          </div>
+                    {post.content?.video && post.content.video !== "https://example.com/video.mp4" && (
+                      <div className="mt-4">
+                        <div className="aspect-video bg-gray-100 rounded-lg overflow-hidden">
+                          <video
+                            controls
+                            src={cleanUrl(post.content.video)}
+                            className="w-full h-full object-cover"
+                            preload="metadata"
+                            onError={(e) => {
+                              console.error("Video failed to load:", cleanUrl(post.content.video));
+                              e.currentTarget.style.display = "none";
+                            }}
+                          />
                         </div>
-                      )}
+                      </div>
+                    )}
 
                     {/* Display Audio */}
                     {post.content?.audio && (
@@ -423,10 +375,7 @@ const ArticlesPage = () => {
                             src={cleanUrl(post.content.audio)}
                             className="w-full"
                             onError={(e) => {
-                              console.error(
-                                "Audio failed to load:",
-                                cleanUrl(post.content.audio)
-                              );
+                              console.error("Audio failed to load:", cleanUrl(post.content.audio));
                               e.currentTarget.style.display = "none";
                             }}
                           >

@@ -55,7 +55,7 @@ export async function POST(req: NextRequest) {
   );
 
   return NextResponse.json({
-    url: `https://${process.env.R2_PUBLIC_DOMAIN}/${key}`,
+    url: `https://${process.env.NEXT_PUBLIC_R2_PUBLIC_DOMAIN}/${key}`,
     key,
   });
 }

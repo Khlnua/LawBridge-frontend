@@ -77,6 +77,7 @@ const LawyerCard = ({
             <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full overflow-hidden mr-4 flex-shrink-0 ring-3 ring-white/50 shadow-xl group-hover:ring-white/80 group-hover:shadow-2xl group-hover:scale-105 transition-all duration-500">
               {avatarImage ? (
                 <img
+
                   src={
                     process.env.NEXT_PUBLIC_R2_PUBLIC_DOMAIN + "/" + avatarImage
                   }
@@ -154,6 +155,7 @@ const LawyerCard = ({
                       </span>
                       {activeSpecialtyIndex === index && (
                         <span className="block text-xs mt-1 opacity-90 break-words hyphens-auto overflow-hidden max-w-full">
+
                           {spec.pricePerHour
                             ? `₮${spec.pricePerHour.toLocaleString()}/цаг`
                             : "үнэгүй"}
