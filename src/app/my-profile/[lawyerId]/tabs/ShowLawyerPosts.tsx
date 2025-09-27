@@ -12,16 +12,23 @@ interface CommentType {
 }
 
 export interface PostType {
+  _id: string;
   id: string;
-  title: string;
   lawyerId: string;
+  title: string;
   content: {
-    text: string;
+    text?: string;
+    image?: string;
+    video?: string;
+    audio?: string;
   };
-
-  mediaUrl?: string;
-  mediaType?: "image" | "video";
+  specialization: Array<{
+    id: string;
+    categoryName: string;
+  }>;
+  type: "TEXT" | "IMAGE" | "VIDEO" | "AUDIO" | "FILE";
   createdAt: string;
+  updatedAt?: string;
   comments: CommentType[];
 }
 
@@ -60,7 +67,9 @@ export const ShowLawyerPosts = ({ lawyerId }: Props) => {
     return (
       <div className="p-4 sm:p-6 lg:p-8">
         <div className="bg-red-50 border-0 sm:border border-red-200 rounded-none sm:rounded-xl p-4 sm:p-6 text-center">
-          <p className="text-red-600 font-medium text-sm sm:text-base">Алдаа гарлаа: {error.message}</p>
+          <p className="text-red-600 font-medium text-sm sm:text-base">
+            Алдаа гарлаа: {error.message}
+          </p>
         </div>
       </div>
     );
@@ -75,8 +84,12 @@ export const ShowLawyerPosts = ({ lawyerId }: Props) => {
           <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
             <span className="text-gray-400 text-xl sm:text-2xl">📝</span>
           </div>
-          <h3 className="text-sm sm:text-lg font-medium text-gray-900 mb-2">Нийтлэл байхгүй байна</h3>
-          <p className="text-xs sm:text-base text-gray-500">Та анхны нийтлэлээ бичээрэй.</p>
+          <h3 className="text-sm sm:text-lg font-medium text-gray-900 mb-2">
+            Нийтлэл байхгүй байна
+          </h3>
+          <p className="text-xs sm:text-base text-gray-500">
+            Та анхны нийтлэлээ бичээрэй.
+          </p>
         </div>
       </div>
     );
@@ -86,8 +99,12 @@ export const ShowLawyerPosts = ({ lawyerId }: Props) => {
     <div className="pt-4 pb-2 px-0 sm:p-6 lg:p-8">
       <div className="space-y-4 sm:space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-0">
-          <h2 className="text-lg sm:text-2xl font-bold text-gray-900">Миний нийтлэлүүд</h2>
-          <span className="text-xs sm:text-sm text-gray-500">{posts.length} нийтлэл</span>
+          <h2 className="text-lg sm:text-2xl font-bold text-gray-900">
+            Миний нийтлэлүүд
+          </h2>
+          <span className="text-xs sm:text-sm text-gray-500">
+            {posts.length} нийтлэл
+          </span>
         </div>
 
         <div className="space-y-4 sm:space-y-6">
