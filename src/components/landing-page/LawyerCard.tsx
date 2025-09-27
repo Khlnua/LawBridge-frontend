@@ -44,13 +44,13 @@ const LawyerCard = ({ id, name, status, avatarImage, rating, reviewCount }: Lawy
           {/* Enhanced gradient overlays */}
           <div className="absolute inset-0 bg-gradient-to-br from-white/15 via-white/8 to-transparent pointer-events-none group-hover:from-white/20 group-hover:via-white/10 transition-all duration-500"></div>
           <div className="absolute inset-0 bg-gradient-to-t from-black/15 to-transparent pointer-events-none group-hover:from-black/20 transition-all duration-500"></div>
-          
+
           {/* Animated background pattern */}
           <div className="absolute inset-0 opacity-10 group-hover:opacity-20 transition-opacity duration-500">
             <div className="absolute top-0 right-0 w-32 h-32 bg-white/20 rounded-full -translate-y-16 translate-x-16 group-hover:scale-110 transition-transform duration-500"></div>
             <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/15 rounded-full translate-y-12 -translate-x-12 group-hover:scale-110 transition-transform duration-500"></div>
           </div>
-          
+
           {/* Enhanced Approved Checkbox - Top Right */}
           {status === "Баталгаажсан" && (
             <div className="absolute top-3 right-3 z-20 group-hover:scale-110 transition-transform duration-300">
@@ -59,13 +59,13 @@ const LawyerCard = ({ id, name, status, avatarImage, rating, reviewCount }: Lawy
               </div>
             </div>
           )}
-          
+
           {/* Avatar and Name Section - Enhanced */}
           <div className="flex items-center h-full relative z-10">
             <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full overflow-hidden mr-4 flex-shrink-0 ring-3 ring-white/50 shadow-xl group-hover:ring-white/80 group-hover:shadow-2xl group-hover:scale-105 transition-all duration-500">
               {avatarImage ? (
                 <img
-                  src={process.env.R2_PUBLIC_DOMAIN + "/" + avatarImage}
+                  src={process.env.NEXT_PUBLIC_R2_PUBLIC_DOMAIN + "/" + avatarImage}
                   alt={name}
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                 />
@@ -96,7 +96,7 @@ const LawyerCard = ({ id, name, status, avatarImage, rating, reviewCount }: Lawy
               </div>
             </div>
           )}
-          
+
           {/* Specializations Section - Enhanced */}
           <div className="flex-1 min-h-[80px] sm:min-h-[90px] mb-3 sm:mb-4">
             {specialLoad ? (
@@ -133,9 +133,13 @@ const LawyerCard = ({ id, name, status, avatarImage, rating, reviewCount }: Lawy
                         }
                       `}
                     >
-                      <span className="block text-xs sm:text-sm leading-tight break-words hyphens-auto overflow-hidden max-w-full">{spec.categoryName}</span>
+                      <span className="block text-xs sm:text-sm leading-tight break-words hyphens-auto overflow-hidden max-w-full">
+                        {spec.categoryName}
+                      </span>
                       {activeSpecialtyIndex === index && (
-                        <span className="block text-xs mt-1 opacity-90 break-words hyphens-auto overflow-hidden max-w-full">{spec.pricePerHour ? `₮${spec.pricePerHour.toLocaleString()}/цаг` : "үнэгүй"}</span>
+                        <span className="block text-xs mt-1 opacity-90 break-words hyphens-auto overflow-hidden max-w-full">
+                          {spec.pricePerHour ? `₮${spec.pricePerHour.toLocaleString()}/цаг` : "үнэгүй"}
+                        </span>
                       )}
                     </Badge>
                   )
