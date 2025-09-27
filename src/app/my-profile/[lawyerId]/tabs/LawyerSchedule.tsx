@@ -1,7 +1,20 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useMutation, gql } from "@apollo/client";
+import { useMutation, useQuery, gql } from "@apollo/client";
+
+const GET_AVAILABILITY = gql`
+  query GetAvailability($lawyerId: String!) {
+    getAvailability(lawyerId: $lawyerId) {
+      availableDays {
+        day
+        startTime
+        endTime
+        booked
+      }
+    }
+  }
+`;
 
 const SET_AVAILABILITY = gql`
   mutation SetAvailability($input: SetAvailabilityInput!) {
@@ -76,8 +89,26 @@ export default function LawyerSchedule({ lawyerId }: LawyerScheduleProps) {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [availability, setAvailability] = useState<Availability>({});
   const [isLoading, setSaving] = useState(false);
+  const [isDeleting, setDeleting] = useState(false);
   const [showUpdateForm, setShowUpdateForm] = useState(false);
   const [notification, setNotification] = useState("");
+
+  // Fetch existing availability
+  const { loading: loadingAvailability } = useQuery(GET_AVAILABILITY, {
+    variables: { lawyerId },
+    onCompleted: (data) => {
+      if (data?.getAvailability?.[0]?.availableDays) {
+        const savedAvailability: Availability = {};
+        data.getAvailability[0].availableDays.forEach((slot: any) => {
+          if (!savedAvailability[slot.day]) {
+            savedAvailability[slot.day] = [];
+          }
+          savedAvailability[slot.day].push(slot.startTime);
+        });
+        setAvailability(savedAvailability);
+      }
+    },
+  });
 
   const [updateForm, setUpdateForm] = useState<UpdateFormState>({
     oldDay: "",
@@ -88,8 +119,12 @@ export default function LawyerSchedule({ lawyerId }: LawyerScheduleProps) {
     newEnd: "",
   });
 
-  const [setAvailabilityMutation] = useMutation(SET_AVAILABILITY);
-  const [updateAvailabilityDate] = useMutation(UPDATE_AVAILABILITY);
+  const [setAvailabilityMutation] = useMutation(SET_AVAILABILITY, {
+    refetchQueries: [{ query: GET_AVAILABILITY, variables: { lawyerId } }],
+  });
+  const [updateAvailabilityDate] = useMutation(UPDATE_AVAILABILITY, {
+    refetchQueries: [{ query: GET_AVAILABILITY, variables: { lawyerId } }],
+  });
 
   const selectedDateKey = selectedDate.toISOString().split("T")[0];
   const selectedTimeSlots = availability[selectedDateKey] || [];
@@ -128,14 +163,46 @@ export default function LawyerSchedule({ lawyerId }: LawyerScheduleProps) {
     });
   };
 
-  // const removeTimeSlot = (dateKey: string, time: string) => {
-  //   setAvailability((prev) => {
-  //     const filtered = prev[dateKey].filter((t) => t !== time);
-  //     const updated = { ...prev, [dateKey]: filtered };
-  //     if (filtered.length === 0) delete updated[dateKey];
-  //     return updated;
-  //   });
-  // };
+  const removeTimeSlot = async (dateKey: string, time: string) => {
+    try {
+      setDeleting(true);
+
+      // Remove the slot from local state first
+      const updatedAvailability = { ...availability };
+      if (updatedAvailability[dateKey]) {
+        updatedAvailability[dateKey] = updatedAvailability[dateKey].filter((t) => t !== time);
+        if (updatedAvailability[dateKey].length === 0) {
+          delete updatedAvailability[dateKey];
+        }
+      }
+
+      // Convert updated availability to the format expected by setAvailability
+      const availableDays = Object.entries(updatedAvailability).flatMap(([date, slots]) =>
+        slots.map((startTime) => ({
+          day: date,
+          startTime,
+          endTime: addMinutesToTime(startTime, 30),
+        }))
+      );
+
+      // Update database with new availability (without the deleted slot)
+      await setAvailabilityMutation({
+        variables: { input: { availableDays } },
+      });
+
+      // Update local state after successful database update
+      setAvailability(updatedAvailability);
+
+      showNotification("Цаг амжилттай устгагдлаа! ✅");
+    } catch (error) {
+      showNotification("Цаг устгахад алдаа гарлаа. Дахин оролдоно уу.");
+      if (error instanceof Error) {
+        console.error("Delete slot error:", error.message);
+      }
+    } finally {
+      setDeleting(false);
+    }
+  };
 
   const saveAvailability = async () => {
     setSaving(true);
@@ -230,6 +297,17 @@ export default function LawyerSchedule({ lawyerId }: LawyerScheduleProps) {
 
   const now = new Date();
   // const maxDate = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+
+  if (loadingAvailability) {
+    return (
+      <div className="py-4 px-2 sm:p-6 lg:p-8 flex items-center justify-center min-h-[400px]">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#003366] mx-auto mb-4"></div>
+          <p className="text-gray-600 text-sm sm:text-base">Хуваарь ачааллаж байна...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="py-4 px-2 sm:p-6 lg:p-8 space-y-6 sm:space-y-8">
@@ -498,9 +576,20 @@ export default function LawyerSchedule({ lawyerId }: LawyerScheduleProps) {
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2">
                 {slots.map((slot) => (
-                  <div key={slot} className="bg-white border border-emerald-200 rounded-lg px-3 py-2 text-center">
-                    <div className="text-sm font-semibold text-gray-900">{slot}</div>
-                    <div className="text-xs text-gray-500">{addMinutesToTime(slot, 60)}</div>
+                  <div
+                    key={slot}
+                    className={`relative bg-white border border-emerald-200 rounded-lg px-3 py-2 text-center group hover:bg-red-50 hover:border-red-200 transition-colors cursor-pointer ${
+                      isDeleting ? "opacity-50 cursor-not-allowed" : ""
+                    }`}
+                    onClick={() => !isDeleting && removeTimeSlot(dateKey, slot)}
+                  >
+                    <div className="text-sm font-semibold text-gray-900 group-hover:text-red-700">{slot}</div>
+                    <div className="text-xs text-gray-500 group-hover:text-red-500">{addMinutesToTime(slot, 60)}</div>
+
+                    {/* X button that appears on hover */}
+                    <div className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-xs font-bold hover:bg-red-600">
+                      ×
+                    </div>
                   </div>
                 ))}
               </div>
