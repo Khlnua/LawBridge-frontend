@@ -77,10 +77,7 @@ export const PostCard = ({ post }: { post: PostType }) => {
     variables: { lawyerId: post.lawyerId },
   });
 
-  const lawyerName = `${lawyerData?.getLawyerById.firstName || "Хуульч"} ${
-    lawyerData?.getLawyerById.lastName || ""
-  }`;
-  console.log("Lawyer Name:", lawyerData);
+  const lawyerName = `${lawyerData?.getLawyerById.firstName || "Хуульч"} ${lawyerData?.getLawyerById.lastName || ""}`;
 
   const handleLike = () => {
     setIsLiked((liked) => !liked);
@@ -93,8 +90,7 @@ export const PostCard = ({ post }: { post: PostType }) => {
     }
   };
 
-  const comments: CommentType[] =
-    data?.getCommentsByPost ?? post.comments ?? [];
+  const comments: CommentType[] = data?.getCommentsByPost ?? post.comments ?? [];
   const displayedComments = showAllComments ? comments : comments.slice(0, 3);
   const hasMoreComments = comments.length > 3;
 
@@ -137,14 +133,8 @@ export const PostCard = ({ post }: { post: PostType }) => {
             {formatDate(post.createdAt)}
           </div>
         </div>
-        <h2 className="text-xl font-bold text-gray-900 mb-3 leading-tight">
-          {post.title}
-        </h2>
-        {post.content.text && (
-          <p className="text-gray-700 leading-relaxed whitespace-pre-line">
-            {post.content.text}
-          </p>
-        )}
+        <h2 className="text-xl font-bold text-gray-900 mb-3 leading-tight">{post.title}</h2>
+        {post.content.text && <p className="text-gray-700 leading-relaxed whitespace-pre-line">{post.content.text}</p>}
       </div>
 
       {/* Display Image */}
@@ -221,16 +211,10 @@ export const PostCard = ({ post }: { post: PostType }) => {
             <button
               onClick={handleLike}
               className={`flex items-center gap-2 px-3 py-1.5 rounded-full transition-all duration-200 ${
-                isLiked
-                  ? "bg-red-50 text-red-600 hover:bg-red-100"
-                  : "text-gray-600 hover:bg-gray-100"
+                isLiked ? "bg-red-50 text-red-600 hover:bg-red-100" : "text-gray-600 hover:bg-gray-100"
               }`}
             >
-              <Heart
-                className={`w-5 h-5 transition-all ${
-                  isLiked ? "fill-current" : ""
-                }`}
-              />
+              <Heart className={`w-5 h-5 transition-all ${isLiked ? "fill-current" : ""}`} />
               <span className="font-medium text-sm">{likeCount}</span>
             </button>
 
@@ -275,9 +259,7 @@ export const PostCard = ({ post }: { post: PostType }) => {
                     )}
                   </button>
                 </div>
-                {localError && (
-                  <div className="text-xs text-red-600 mt-2">{localError}</div>
-                )}
+                {localError && <div className="text-xs text-red-600 mt-2">{localError}</div>}
               </div>
             </div>
           </div>
@@ -286,38 +268,26 @@ export const PostCard = ({ post }: { post: PostType }) => {
             {loading && (
               <div className="flex items-center justify-center py-8">
                 <div className="w-6 h-6 border-2 border-[#003365] border-t-transparent rounded-full animate-spin" />
-                <span className="ml-2 text-gray-600">
-                  Коммент уншиж байна...
-                </span>
+                <span className="ml-2 text-gray-600">Коммент уншиж байна...</span>
               </div>
             )}
 
             {error && (
-              <div className="text-center py-4 text-red-500 bg-red-50 rounded-lg">
-                Коммент уншихад алдаа гарлаа. Дахин оролдоно уу.
-              </div>
+              <div className="text-center py-4 text-red-500 bg-red-50 rounded-lg">Коммент уншихад алдаа гарлаа. Дахин оролдоно уу.</div>
             )}
 
             {displayedComments.map((comment) => (
               <div key={comment._id} className="flex gap-3 group">
                 <div className="w-8 h-8 bg-gradient-to-br from-green-500 to-teal-600 rounded-full flex items-center justify-center flex-shrink-0">
-                  <span className="text-white text-xs font-bold">
-                    {comment.author?.slice(0, 2).toUpperCase() || "??"}
-                  </span>
+                  <span className="text-white text-xs font-bold">{comment.author?.slice(0, 2).toUpperCase() || "??"}</span>
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="bg-gray-100 rounded-2xl px-4 py-3 group-hover:bg-gray-200 transition-colors">
                     <div className="flex items-center gap-2 mb-1">
-                      <span className="font-semibold text-sm text-gray-900">
-                        {comment.author?.slice(0, 8) || "Зочин"}***
-                      </span>
-                      <span className="text-xs text-gray-500">
-                        {formatDate(comment.createdAt)}
-                      </span>
+                      <span className="font-semibold text-sm text-gray-900">{comment.author?.slice(0, 8) || "Зочин"}***</span>
+                      <span className="text-xs text-gray-500">{formatDate(comment.createdAt)}</span>
                     </div>
-                    <p className="text-gray-800 leading-relaxed">
-                      {comment.content}
-                    </p>
+                    <p className="text-gray-800 leading-relaxed">{comment.content}</p>
                   </div>
                 </div>
               </div>

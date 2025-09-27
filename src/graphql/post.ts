@@ -18,6 +18,28 @@ export const GET_LAWYER_POSTS_BY_ID = gql`
         categoryName
       }
       type
+      author {
+        id
+        firstName
+        lastName
+        name
+        username
+        email
+        profilePicture
+      }
+      comments {
+        _id
+        post
+        author
+        authorInfo {
+          id
+          name
+          email
+        }
+        content
+        createdAt
+        updatedAt
+      }
       createdAt
       updatedAt
     }
