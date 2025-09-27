@@ -4,6 +4,7 @@ import { useQuery, useMutation, gql } from "@apollo/client";
 import { useSocket } from "@/context/SocketContext";
 import { fetchLiveKitToken } from "@/lib/livekit";
 import { User as ChatUser } from "@/app/chatroom/types/chat";
+import { useUserInfo } from "@/hooks/useUserInfo";
 
 const GET_MESSAGES = gql`
   query getMessages($chatRoomId: ID!) {
@@ -54,19 +55,6 @@ const GET_CHAT_ROOM_BY_ID = gql`
   }
 `;
 
-const GET_LAWYER_BY_ID = gql`
-  query GetLawyerById($lawyerId: ID!) {
-    getLawyerById(lawyerId: $lawyerId) {
-      _id
-      lawyerId
-      clerkUserId
-      firstName
-      lastName
-      profilePicture
-    }
-  }
-`;
-
 // Update MessageType to match expected Message type
 export interface MessageType {
   id: string;
@@ -102,7 +90,6 @@ export interface UseChatRoomState {
 }
 
 export default function useChatRoomState(chatRoomId: string): UseChatRoomState {
-  console.log("useChatRoomState initialized for chatRoomId:", chatRoomId);
   const { user } = useClerkUser();
   const { getToken } = useAuth();
   const { socket, isConnected, joinRoom, leaveRoom, emitTyping } = useSocket();
@@ -125,7 +112,6 @@ export default function useChatRoomState(chatRoomId: string): UseChatRoomState {
     data: chatData,
     loading: chatLoading,
     error: apolloError,
-    refetch,
   } = useQuery(GET_MESSAGES, {
     variables: { chatRoomId },
     skip: !chatRoomId,
@@ -164,24 +150,23 @@ export default function useChatRoomState(chatRoomId: string): UseChatRoomState {
   });
 
   // Find the other participant's userId
-  const otherUserId = chatRoomData?.getChatRoomById?.participants?.find((id: string) => id !== user?.id);
+  const otherUserId = chatRoomData?.getChatRoomById?.participants?.find(
+    (id: string) => id !== user?.id
+  );
 
-  // Fetch lawyer info if the other participant is a lawyer
-  const { data: lawyerData } = useQuery(GET_LAWYER_BY_ID, {
-    variables: { lawyerId: otherUserId },
-    skip: !otherUserId,
-  });
+  // Use the new useUserInfo hook to get user data
+  const userInfo = useUserInfo(otherUserId || "");
 
   useEffect(() => {
-    if (lawyerData?.getLawyerById) {
+    if (userInfo) {
       setOtherUser({
-        id: lawyerData.getLawyerById.clerkUserId,
-        name: `${lawyerData.getLawyerById.firstName} ${lawyerData.getLawyerById.lastName}`.trim(),
-        avatar: lawyerData.getLawyerById.profilePicture || "/default-avatar.png",
-        isLawyer: true,
+        id: userInfo.id,
+        name: userInfo.displayName || userInfo.name, // Use displayName if available
+        avatar: userInfo.avatar,
+        isLawyer: userInfo.userType === "lawyer",
       });
     }
-  }, [lawyerData]);
+  }, [userInfo]);
 
   // Socket Effects for real-time
   useEffect(() => {
@@ -228,10 +213,51 @@ export default function useChatRoomState(chatRoomId: string): UseChatRoomState {
     };
   }, [socket, chatRoomId, user?.id, joinRoom, leaveRoom]);
 
-  // Auto-scroll to bottom when messages change
+  // Auto-scroll to bottom when messages change - only for new messages
+  const prevMessageCountRef = useRef(0);
+  const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+    if (
+      messagesEndRef.current &&
+      messages.length > prevMessageCountRef.current
+    ) {
+      // Clear any existing scroll timeout
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
+      }
+
+      // Use a delay to ensure DOM is updated and prevent conflicts
+      scrollTimeoutRef.current = setTimeout(() => {
+        if (messagesEndRef.current) {
+          // Get the scroll container (parent of messagesEndRef)
+          const scrollContainer =
+            messagesEndRef.current.closest(".overflow-y-auto");
+          if (scrollContainer) {
+            // Scroll to bottom of the container
+            scrollContainer.scrollTop = scrollContainer.scrollHeight;
+          } else {
+            // Fallback to scrollIntoView
+            messagesEndRef.current.scrollIntoView({
+              behavior: "smooth",
+              block: "end",
+              inline: "nearest",
+            });
+          }
+        }
+      }, 50);
+    }
+    prevMessageCountRef.current = messages.length;
+  }, [messages.length]);
+
+  // Cleanup scroll timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
+      }
+    };
+  }, []);
 
   // Handlers
   const handleSendMessage = useCallback(
@@ -264,7 +290,8 @@ export default function useChatRoomState(chatRoomId: string): UseChatRoomState {
           );
           setMessages((prev) => [...prev, ...mapped]);
         }
-        await refetch();
+        // Remove refetch() call to prevent page refresh
+        // The socket connection handles real-time updates
         setError(null);
       } catch (err) {
         setError(err instanceof Error ? err.message : String(err));
@@ -272,7 +299,7 @@ export default function useChatRoomState(chatRoomId: string): UseChatRoomState {
         setIsSending(false);
       }
     },
-    [user, chatRoomId, createMessage, isSending, refetch]
+    [user, chatRoomId, createMessage, isSending]
   );
 
   const handleSendFile = useCallback(async () => {

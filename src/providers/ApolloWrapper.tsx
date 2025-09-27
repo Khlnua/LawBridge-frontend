@@ -16,13 +16,14 @@ const httpLink = createHttpLink({
 });
 
 export const ApolloWrapper = ({ children }: { children: ReactNode }) => {
-  const { userId } = useAuth();
+  const { getToken } = useAuth();
 
-  const authLink = setContext((_, { headers }) => {
+  const authLink = setContext(async (_, { headers }) => {
+    const token = await getToken();
     return {
       headers: {
         ...headers,
-        Authorization: userId ? `Bearer ${userId}` : "",
+        Authorization: token ? `Bearer ${token}` : "",
       },
     };
   });

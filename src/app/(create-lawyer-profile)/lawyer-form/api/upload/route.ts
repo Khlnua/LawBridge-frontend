@@ -22,7 +22,9 @@ export async function PUT(req: NextRequest) {
   const arrayBuffer = await file.arrayBuffer();
   const buffer = Buffer.from(arrayBuffer);
 
-  const key = existingKey?.trim() ? existingKey : `uploads/${crypto.randomUUID()}_${file.name}`;
+  const key = existingKey?.trim()
+    ? existingKey
+    : `uploads/${crypto.randomUUID()}_${file.name}`;
 
   await r2.send(
     new PutObjectCommand({
@@ -55,7 +57,7 @@ export async function POST(req: NextRequest) {
   );
 
   return NextResponse.json({
-    url: `https://${process.env.R2_PUBLIC_DOMAIN}/${key}`,
+    url: `https://${process.env.NEXT_PUBLIC_R2_PUBLIC_DOMAIN}/${key}`,
     key,
   });
 }

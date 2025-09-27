@@ -165,8 +165,7 @@ const LawyerProfile = ({ params }: Props) => {
       onCompleted: () => {
         setAppointmentStatus({
           type: "success",
-          message:
-            "Цаг захиалга амжилттай үүслээ!",
+          message: "Цаг захиалга амжилттай үүслээ!",
         });
         setSelectedSlot(null);
         setAppointmentNotes("");
@@ -497,7 +496,7 @@ const LawyerProfile = ({ params }: Props) => {
               <div className="relative">
                 <img
                   src={
-                    `${process.env.R2_PUBLIC_DOMAIN}/${lawyer.profilePicture}` ||
+                    `${process.env.NEXT_PUBLIC_R2_PUBLIC_DOMAIN}/${lawyer.profilePicture}` ||
                     "/api/placeholder/120/120"
                   }
                   alt={`${lawyer.firstName} ${lawyer.lastName}`}

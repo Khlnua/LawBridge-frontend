@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const z = process.env.R2_PUBLIC_DOMAIN;
+const z = process.env.NEXT_PUBLIC_R2_PUBLIC_DOMAIN;
 export async function GET(req: NextRequest) {
   const imageKey = req.nextUrl.searchParams.get("key");
   if (!imageKey) {

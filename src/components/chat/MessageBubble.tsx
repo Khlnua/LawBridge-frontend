@@ -6,7 +6,8 @@ import { Download } from "lucide-react";
 export const MessageBubble: React.FC<{
   message: Message;
   isOwnMessage: boolean;
-}> = ({ message, isOwnMessage }) => {
+  otherUserAvatar?: string;
+}> = ({ message, isOwnMessage, otherUserAvatar }) => {
   const formatTime = (timestamp: Date | string) => {
     if (!timestamp) return "";
     try {
@@ -39,8 +40,8 @@ export const MessageBubble: React.FC<{
             rel="noopener noreferrer"
             className="flex items-center space-x-3 p-3 bg-slate-50 rounded-lg border hover:bg-slate-100"
           >
-            <div className="p-2 bg-blue-100 rounded">
-              <Download className="w-5 h-5 text-blue-600" />
+            <div className="p-2 bg-gray-100 rounded">
+              <Download className="w-5 h-5 text-primary-custom" />
             </div>
             <div className="flex-1">
               <p className="font-medium text-sm text-slate-800">
@@ -63,11 +64,20 @@ export const MessageBubble: React.FC<{
         isOwnMessage ? "justify-end" : "justify-start"
       )}
     >
-      {/* Avatar for other user, fallback to generic avatar */}
+      {/* Avatar for other user, use actual profile picture or fallback to generic avatar */}
       {!isOwnMessage && (
-        <div className="w-8 h-8 rounded-full mb-4 flex-shrink-0 bg-slate-300 flex items-center justify-center text-white font-bold">
-          {/* Optionally, show initials or a generic icon */}
-          <span>U</span>
+        <div className="w-8 h-8 rounded-full mb-4 flex-shrink-0 overflow-hidden">
+          {otherUserAvatar ? (
+            <img
+              src={otherUserAvatar}
+              alt="User avatar"
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <div className="w-full h-full bg-slate-300 flex items-center justify-center text-white font-bold">
+              <span>U</span>
+            </div>
+          )}
         </div>
       )}
       <div>
@@ -75,7 +85,7 @@ export const MessageBubble: React.FC<{
           className={cn(
             "max-w-[75vw] sm:max-w-xs lg:max-w-md rounded-2xl px-3 py-2 text-sm md:text-base shadow-sm",
             isOwnMessage
-              ? "bg-blue-600 text-white rounded-br-none"
+              ? "bg-primary-custom text-white rounded-br-none"
               : "bg-white text-slate-800 border border-slate-200 rounded-bl-none"
           )}
         >

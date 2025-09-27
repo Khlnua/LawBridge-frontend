@@ -3,7 +3,7 @@
 import React, { useState, useRef } from "react";
 import { Paperclip, Send } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { getSocket } from "@/lib/socket";
+// import { getSocket } from "@/lib/socket";
 
 interface ChatInputProps {
   chatRoomId?: string;
@@ -51,13 +51,13 @@ export const ChatInput: React.FC<ChatInputProps> = ({
     if (onSend) {
       await onSend(msg.trim());
     } else if (chatRoomId && sender) {
-      const socket = getSocket();
-      socket.emit("chat-message", {
-        chatRoomId,
-        sender,
-        type: "TEXT",
-        content: msg.trim(),
-      });
+      // // const socket = getSocket();
+      // socket.emit("chat-message", {
+      //   chatRoomId,
+      //   sender,
+      //   type: "TEXT",
+      //   content: msg.trim(),
+      // });
     }
     setMsg("");
     if (onTyping) {
@@ -79,7 +79,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   return (
     <form
       onSubmit={handleSubmit}
-      className="flex items-center gap-2 md:gap-4 p-2 md:p-3"
+      className="flex items-center gap-3 md:gap-4 p-4 bg-white border-t border-gray-200 shadow-lg"
     >
       <input
         type="file"
@@ -91,15 +91,15 @@ export const ChatInput: React.FC<ChatInputProps> = ({
         type="button"
         onClick={handleFileIconClick}
         title="Attach file"
-        className="p-2 text-slate-500 hover:text-blue-600 transition"
+        className="p-3 rounded-full text-primary-custom hover:bg-primary-custom/10 transition-all duration-200 hover:scale-110"
       >
-        <Paperclip size={22} />
+        <Paperclip size={20} className="text-primary-custom" />
       </button>
       <input
         value={msg}
         onChange={handleInputChange}
         onBlur={handleBlur}
-        className="flex-1 rounded-full border border-slate-300 bg-slate-100 px-4 py-2 text-sm md:text-base focus:outline-none focus:ring-2 focus:ring-blue-500"
+        className="flex-1 rounded-full border-2 border-gray-200 bg-gray-50 px-6 py-3 text-sm md:text-base focus:outline-none focus:ring-2 focus:ring-primary-custom focus:border-primary-custom transition-all duration-200 placeholder:text-gray-400"
         placeholder="Type a message..."
         disabled={isSending || disabled}
       />
@@ -107,12 +107,12 @@ export const ChatInput: React.FC<ChatInputProps> = ({
         type="submit"
         disabled={!msg.trim() || isSending || disabled}
         className={cn(
-          "p-2.5 rounded-full text-white transition",
-          "bg-blue-600 hover:bg-blue-700",
-          "disabled:opacity-50 disabled:bg-blue-400"
+          "p-3 rounded-full text-white transition-all duration-200 shadow-md hover:shadow-lg",
+          "bg-primary-custom hover:bg-primary-custom hover:scale-110",
+          "disabled:opacity-50 disabled:bg-gray-400 disabled:hover:scale-100"
         )}
       >
-        <Send size={20} />
+        <Send size={20} className="text-white" />
       </button>
     </form>
   );

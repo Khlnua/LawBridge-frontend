@@ -1,40 +1,40 @@
 "use client";
 
-import React, { useRef, useEffect } from "react";
+import React, { useEffect } from "react";
 import { useUser } from "@clerk/nextjs";
 import { MessageBubble } from "./MessageBubble";
 import { Message } from "@/app/chatroom/types/chat";
-import { getSocket } from "@/lib/socket";
+import { useSocket } from "@/context/SocketContext";
 
 interface MessageListProps {
   messages: Message[];
   setMessages: React.Dispatch<React.SetStateAction<Message[]>>;
   currentUserId?: string;
+  otherUserAvatar?: string;
 }
 
 export const MessageList: React.FC<MessageListProps> = ({
   messages,
   setMessages,
   currentUserId,
+  otherUserAvatar,
 }) => {
   const { user, isLoaded } = useUser();
-  const scrollRef = useRef<HTMLDivElement>(null);
+  const { socket } = useSocket();
 
   useEffect(() => {
-    scrollRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages.length]);
+    if (!socket) return;
 
-  useEffect(() => {
-    const socket = getSocket();
-
-    socket.on("chat-message", (newMessage: Message) => {
+    const handleNewMessage = (newMessage: Message) => {
       setMessages((prev) => [...prev, newMessage]);
-    });
+    };
+
+    socket.on("chat-message", handleNewMessage);
 
     return () => {
-      socket.off("chat-message");
+      socket.off("chat-message", handleNewMessage);
     };
-  }, [setMessages]);
+  }, [socket, setMessages]);
 
   if (!isLoaded) {
     return (
@@ -45,7 +45,7 @@ export const MessageList: React.FC<MessageListProps> = ({
   }
 
   return (
-    <div className="space-y-4">
+    <>
       {messages
         .filter((msg) => msg && msg.userId)
         .map((msg, index) => {
@@ -55,10 +55,10 @@ export const MessageList: React.FC<MessageListProps> = ({
               key={`${msg.userId}-${msg.type}-${msg.content}-${index}`}
               message={msg}
               isOwnMessage={isOwnMessage}
+              otherUserAvatar={otherUserAvatar}
             />
           );
         })}
-      <div ref={scrollRef} />
-    </div>
+    </>
   );
 };

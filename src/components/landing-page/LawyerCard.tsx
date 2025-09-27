@@ -15,12 +15,24 @@ type LawyerCardProps = {
   reviewCount?: number;
 };
 
-const LawyerCard = ({ id, name, status, avatarImage, rating, reviewCount }: LawyerCardProps) => {
-  const [activeSpecialtyIndex, setActiveSpecialtyIndex] = useState<number | null>(null);
+const LawyerCard = ({
+  id,
+  name,
+  status,
+  avatarImage,
+  rating,
+  reviewCount,
+}: LawyerCardProps) => {
+  const [activeSpecialtyIndex, setActiveSpecialtyIndex] = useState<
+    number | null
+  >(null);
 
-  const { data: specializationData, loading: specialLoad } = useQuery(GET_SPECIALIZATION_BY_LAWYER_ID, {
-    variables: { lawyerId: id },
-  });
+  const { data: specializationData, loading: specialLoad } = useQuery(
+    GET_SPECIALIZATION_BY_LAWYER_ID,
+    {
+      variables: { lawyerId: id },
+    }
+  );
 
   const handleClick = (index: number) => {
     setActiveSpecialtyIndex(activeSpecialtyIndex === index ? null : index);
@@ -47,7 +59,7 @@ const LawyerCard = ({ id, name, status, avatarImage, rating, reviewCount }: Lawy
         <div className="w-20 h-20 bg-[#8bc34a] rounded-full mx-auto mb-3 overflow-hidden">
           {avatarImage && (
             <img
-              src={process.env.R2_PUBLIC_DOMAIN + "/" + avatarImage}
+              src={process.env.NEXT_PUBLIC_R2_PUBLIC_DOMAIN + "/" + avatarImage}
               className="size-full object-cover rounded-full"
               alt="Lawyer Avatar"
             />
@@ -97,7 +109,11 @@ const LawyerCard = ({ id, name, status, avatarImage, rating, reviewCount }: Lawy
                   >
                     {spec.categoryName}
                     {activeSpecialtyIndex === index && (
-                      <span className="ml-1">{spec.pricePerHour ? `/ ₮${spec.pricePerHour}/цаг` : "/ үнэгүй"}</span>
+                      <span className="ml-1">
+                        {spec.pricePerHour
+                          ? `/ ₮${spec.pricePerHour}/цаг`
+                          : "/ үнэгүй"}
+                      </span>
                     )}
                   </Badge>
                 )
@@ -106,7 +122,6 @@ const LawyerCard = ({ id, name, status, avatarImage, rating, reviewCount }: Lawy
           )}
         </div>
       </div>
-
 
       <div className="w-full flex flex-col gap-2.5 mt-auto">
         <Button
