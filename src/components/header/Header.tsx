@@ -32,7 +32,10 @@ export default function Header() {
   return (
     <header className="w-full bg-white shadow-sm sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-2 sm:px-3 lg:px-4 py-4 flex items-center justify-between relative">
-        <Link href="/" className="text-xl font-bold text-[#003366]">
+        <Link
+          href="/"
+          className="text-2xl text-[#003366] font-extrabold font-playfair-display"
+        >
           LawBridge
         </Link>
 
@@ -41,7 +44,7 @@ export default function Header() {
             <Link
               key={link.href}
               href={link.href}
-              className="text-gray-600 hover:text-[#003365] transition"
+              className="text-gray-600 text-xl hover:text-[#003366] transition"
             >
               {link.label}
             </Link>
@@ -111,7 +114,7 @@ export default function Header() {
             <Link
               key={link.href}
               href={link.href}
-              className="block text-gray-700 hover:text-[#003365]"
+              className="block text-gray-700 hover:text-[#003366]"
               onClick={() => setIsOpen(false)}
             >
               {link.label}

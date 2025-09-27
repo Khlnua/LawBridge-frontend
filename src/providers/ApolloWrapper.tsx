@@ -17,21 +17,17 @@ const httpLink = createHttpLink({
 });
 
 export const ApolloWrapper = ({ children }: { children: ReactNode }) => {
-  const { userId } = useAuth();
+  const { getToken } = useAuth();
 
-  const authLink = useMemo(
-    () =>
-      setContext((_, { headers }) => {
-        return {
-          headers: {
-            ...headers,
-            Authorization: userId ? `Bearer ${userId}` : "",
-            "Content-Type": "application/json",
-          },
-        };
-      }),
-    [userId]
-  );
+  const authLink = setContext(async (_, { headers }) => {
+    const token = await getToken();
+    return {
+      headers: {
+        ...headers,
+        Authorization: token ? `Bearer ${token}` : "",
+      },
+    };
+  });
 
   const errorLink = useMemo(
     () =>

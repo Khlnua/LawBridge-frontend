@@ -47,6 +47,7 @@ export default function useLawBridgeChat() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputMessage, setInputMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isClearing, setIsClearing] = useState(false);
   const [sessionId] = useState(
     () => `session-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
   );
@@ -62,7 +63,7 @@ export default function useLawBridgeChat() {
   const { data, loading, error, refetch } = useQuery(GET_CHAT_HISTORY_BY_USER, {
     variables: { userId: user?.id || "" },
     skip: !user?.id,
-    fetchPolicy: "cache-and-network",
+    fetchPolicy: "cache-first", // Use cache-first to prevent unnecessary refetches
   });
 
   useEffect(() => {
@@ -103,7 +104,7 @@ export default function useLawBridgeChat() {
   }, [data]);
 
   useEffect(() => {
-    if (error) setConnectionError("Unable to load chat history");
+    if (error) setConnectionError("Чат түүхийг ачаалах боломжгүй");
   }, [error]);
 
   const sendMessage = async () => {
@@ -133,7 +134,10 @@ export default function useLawBridgeChat() {
         options: chatOptions,
       };
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || "https://lawbridge-server.onrender.com"}/api/chat`,
+        `${
+          process.env.NEXT_PUBLIC_API_URL ||
+          "https://lawbridge-server.onrender.com"
+        }/api/chat`,
         {
           method: "POST",
           headers: {
@@ -146,14 +150,14 @@ export default function useLawBridgeChat() {
       if (!response.ok)
         throw new Error(
           (await response.json().catch(() => ({}))).error ||
-            `HTTP error! status: ${response.status}`
+            `HTTP алдаа! статус: ${response.status}`
         );
       const data = await response.json();
       const botMessage: Message = {
         id: Date.now() + 1,
         text:
           data.answer ||
-          "I received your message but couldn't generate a response.",
+          "Таны мессежийг хүлээн авсан боловч хариу үйлдэл үүсгэж чадсангүй.",
         sender: "bot",
         timestamp: new Date(),
         metadata: data.metadata || {},
@@ -175,12 +179,12 @@ export default function useLawBridgeChat() {
         lastMessageTime: new Date().toISOString(),
       }));
     } catch {
-      setConnectionError("Connection failed");
+      setConnectionError("Холболт амжилтгүй");
       setMessages((prev) => [
         ...prev,
         {
           id: Date.now() + 1,
-          text: "I apologize, but I encountered an error processing your request. Please try again.",
+          text: "Уучлаарай, таны хүсэлтийг боловсруулах явцад алдаа гарлаа. Дахин оролдоно уу.",
           sender: "bot",
           timestamp: new Date(),
           isError: true,
@@ -192,16 +196,37 @@ export default function useLawBridgeChat() {
   };
 
   const clearChat = async () => {
-    if (isLoading || !user) return;
+    if (isLoading || isClearing || !user) return;
+
+    console.log("Clearing chat for user:", user.id);
+    setIsClearing(true);
+
     try {
-      await clearChatHistoryMutation({ variables: { userId: user.id } });
+      // Clear local state first for immediate UI feedback
       setMessages([]);
       setShowWelcome(true);
       setStats({ messageCount: 0 });
       setConnectionError(null);
+
+      // Then clear from server
+      const result = await clearChatHistoryMutation({
+        variables: { userId: user.id },
+      });
+
+      console.log("Clear chat result:", result);
+
+      // Refetch to ensure data consistency
       await refetch();
-    } catch {
-      setConnectionError("Failed to clear chat history");
+
+      console.log("Chat cleared successfully");
+    } catch (error) {
+      console.error("Failed to clear chat history:", error);
+      setConnectionError("Чат түүхийг цэвэрлэх амжилтгүй");
+
+      // Even if server clear fails, keep local state cleared
+      // The user can continue with a fresh chat
+    } finally {
+      setIsClearing(false);
     }
   };
 
@@ -223,6 +248,7 @@ export default function useLawBridgeChat() {
     inputMessage,
     setInputMessage,
     isLoading,
+    isClearing,
     clearChat,
     sendMessage,
     handleKeyPress,

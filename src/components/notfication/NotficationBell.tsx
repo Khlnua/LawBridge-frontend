@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useQuery, useMutation, gql } from "@apollo/client";
-import { getSocket } from "@/lib/socket";
+import { useSocket } from "@/context/SocketContext";
 
 const GET_MY_NOTIFICATIONS = gql`
   query GetMyNotifications {
@@ -32,6 +32,7 @@ export function NotificationBell() {
     fetchPolicy: "network-only", // Шинэчлэгдсэн data авахын тулд
   });
   const [markAsRead] = useMutation(MARK_NOTIFICATION_AS_READ);
+  const { socket } = useSocket();
 
   const notifications = data?.myNotifications ?? [];
   interface Notification {
@@ -46,15 +47,18 @@ export function NotificationBell() {
 
   // Socket.IO realtime шинэ notification хүлээж авах
   useEffect(() => {
-    const socket = getSocket();
-    socket.on("new-notification", () => {
+    if (!socket) return;
+
+    const handleNewNotification = () => {
       refetch();
-    });
+    };
+
+    socket.on("new-notification", handleNewNotification);
 
     return () => {
-      socket.off("new-notification");
+      socket.off("new-notification", handleNewNotification);
     };
-  }, [refetch]);
+  }, [socket, refetch]);
 
   // Notification дээр дарвал уншсан төлөвт оруулах
   const onNotificationClick = async (id: string) => {
