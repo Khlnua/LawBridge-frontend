@@ -21,11 +21,7 @@ const ArticlesPage = () => {
   const isLawyer = role === "lawyer";
   const router = useRouter();
 
-  const {
-    data: specData,
-    loading: specLoading,
-    error: specError,
-  } = useGetAdminSpecializationsQuery();
+  const { data: specData, loading: specLoading, error: specError } = useGetAdminSpecializationsQuery();
   const {
     data: postData,
     loading: postLoading,
@@ -41,11 +37,7 @@ const ArticlesPage = () => {
 
   // Multi-select logic
   const handleFilter = (specId: string) => {
-    setSelectedSpecIds((prev) =>
-      prev.includes(specId)
-        ? prev.filter((id) => id !== specId)
-        : [...prev, specId]
-    );
+    setSelectedSpecIds((prev) => (prev.includes(specId) ? prev.filter((id) => id !== specId) : [...prev, specId]));
   };
   const clearFilters = () => {
     setSelectedSpecIds([]);
@@ -69,10 +61,7 @@ const ArticlesPage = () => {
       post.content?.text?.toLowerCase().includes(searchTerm.toLowerCase());
 
     const matchesSpec =
-      selectedSpecIds.length === 0 ||
-      post.specialization?.some((spec: any) =>
-        selectedSpecIds.includes(spec.id || spec._id)
-      );
+      selectedSpecIds.length === 0 || post.specialization?.some((spec: any) => selectedSpecIds.includes(spec.id || spec._id));
 
     return matchesSearch && matchesSpec;
   });
@@ -95,9 +84,7 @@ const ArticlesPage = () => {
             <X className="w-8 h-8 text-red-600" />
           </div>
           <h2 className="text-xl font-semibold text-gray-800">Алдаа гарлаа</h2>
-          <p className="text-gray-600">
-            {specError?.message || postError?.message}
-          </p>
+          <p className="text-gray-600">{specError?.message || postError?.message}</p>
           <Button onClick={() => window.location.reload()} className="mt-4">
             Дахин оролдох
           </Button>
@@ -107,6 +94,7 @@ const ArticlesPage = () => {
   }
 
   return (
+
     <div className="min-h-screen bg-gray-50 w-full">
       {/* Header */}
       <div className="bg-gradient-to-r from-[#003366] via-[#004080] to-[#003366] text-white py-8 sm:py-10 md:py-12 lg:py-16 relative overflow-hidden px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 z-30">
@@ -158,9 +146,11 @@ const ArticlesPage = () => {
                     showFilters ? "rotate-90" : ""
                   }`}
                 />
+
               </Button>
 
               {(selectedSpecIds.length > 0 || searchTerm) && (
+
                 <Button
                   variant="ghost"
                   onClick={clearFilters}
@@ -169,6 +159,7 @@ const ArticlesPage = () => {
                   <X className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                   <span className="hidden xs:inline">Цэвэрлэх</span>
                   <span className="xs:hidden">Цэвэрлэх</span>
+
                 </Button>
               )}
             </div>
@@ -190,6 +181,7 @@ const ArticlesPage = () => {
                       onClick={() => handleFilter(spec.id)}
                       className={`
                       px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-medium transition-all duration-200 transform hover:scale-105
+
                         ${
                           selectedSpecIds.includes(spec.id)
                             ? "bg-[#003365] text-white shadow-lg border-[#003365]"
@@ -204,6 +196,7 @@ const ArticlesPage = () => {
                     </Button>
                   )
                 )}
+
               </div>
             </div>
           )}
@@ -214,9 +207,11 @@ const ArticlesPage = () => {
               <span className="text-xs sm:text-sm text-gray-500 font-medium w-full text-center sm:w-auto">
                 Идэвхтэй шүүлтүүр:
               </span>
+
               {selectedSpecIds.map((specId) => {
                 const spec = specializations.find((s) => s.id === specId);
                 return (
+
                   <div
                     key={specId}
                     className="flex items-center bg-white border border-blue-300 text-blue-700 px-2 sm:px-4 py-1.5 sm:py-2.5 rounded-lg text-xs sm:text-sm shadow-sm hover:shadow-md hover:border-blue-400 transition-all duration-200 font-medium group"
@@ -241,11 +236,13 @@ const ArticlesPage = () => {
                   <span className="truncate max-w-[100px] sm:max-w-none">
                     &quot;{searchTerm}&quot;
                   </span>
+
                   <button
                     onClick={() => setSearchTerm("")}
                     className="ml-1.5 sm:ml-2 text-green-400 hover:text-green-600 hover:bg-green-100 p-0.5 rounded-full transition-all duration-200 group-hover:bg-green-200"
                   >
                     <X className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
+
                   </button>
                 </div>
               )}
@@ -267,6 +264,7 @@ const ArticlesPage = () => {
               : searchTerm
               ? `"${searchTerm}" хайлтын үр дүн`
               : "Бүх нийтлэлүүд"}
+
           </h2>
         </div>
 
@@ -293,6 +291,7 @@ const ArticlesPage = () => {
                   </Button>
                 )}
               </div>
+
             </div>
           ) : (
             <div className="space-y-4 sm:space-y-6">
@@ -310,31 +309,22 @@ const ArticlesPage = () => {
                       <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full overflow-hidden flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-[#003365] focus:ring-opacity-50 flex-shrink-0">
                         {(() => {
                           console.log("🔍 Post author data:", post.author);
-                          console.log(
-                            "🖼️ Profile picture URL:",
-                            post.author?.profilePicture
-                          );
+                          console.log("🖼️ Profile picture URL:", post.author?.profilePicture);
                           const profilePicUrl = post.author?.profilePicture
-                            ? `${process.env.NEXT_PUBLIC_R2_PUBLIC_DOMAIN}/${post.author.profilePicture}`
+                            ? `${process.env.NEXT_PUBLIC_NEXT_PUBLIC_R2_PUBLIC_DOMAIN}/${post.author.profilePicture}`
                             : null;
-                          console.log(
-                            "🔗 Full profile picture URL:",
-                            profilePicUrl
-                          );
+                          console.log("🔗 Full profile picture URL:", profilePicUrl);
                           return null;
                         })()}
                         {post.author?.profilePicture ? (
                           <img
-                            src={`${process.env.NEXT_PUBLIC_R2_PUBLIC_DOMAIN}/${post.author.profilePicture}`}
-                            alt={`${post.author?.firstName || ""} ${
-                              post.author?.lastName || ""
-                            }`}
+                            src={`${process.env.NEXT_PUBLIC_NEXT_PUBLIC_R2_PUBLIC_DOMAIN}/${post.author.profilePicture}`}
+                            alt={`${post.author?.firstName || ""} ${post.author?.lastName || ""}`}
                             className="w-full h-full object-cover"
                           />
                         ) : (
                           <div className="w-full h-full bg-gradient-to-br from-[#003365] to-[#002a52] rounded-full flex items-center justify-center text-white font-semibold text-sm">
-                            {(post.author?.firstName?.charAt(0) || "") +
-                              (post.author?.lastName?.charAt(0) || "") || "Ө"}
+                            {(post.author?.firstName?.charAt(0) || "") + (post.author?.lastName?.charAt(0) || "") || "Ө"}
                           </div>
                         )}
                       </div>
@@ -352,16 +342,13 @@ const ArticlesPage = () => {
                         </div>
                         <p className="text-xs text-gray-500 truncate">
                           {post.createdAt
-                            ? new Date(post.createdAt).toLocaleDateString(
-                                "mn-MN",
-                                {
-                                  year: "numeric",
-                                  month: "long",
-                                  day: "numeric",
-                                  hour: "2-digit",
-                                  minute: "2-digit",
-                                }
-                              )
+                            ? new Date(post.createdAt).toLocaleDateString("mn-MN", {
+                                year: "numeric",
+                                month: "long",
+                                day: "numeric",
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              })
                             : "Сүүлд шинэчлэгдсэн"}
                         </p>
                       </div>
@@ -382,6 +369,7 @@ const ArticlesPage = () => {
                       </div>
                     )}
 
+
                     {/* Display Image */}
                     {post.content?.image && (
                       <div className="mt-3 sm:mt-4">
@@ -390,10 +378,7 @@ const ArticlesPage = () => {
                           alt="Post image"
                           className="w-full max-h-64 sm:max-h-96 object-cover rounded-lg"
                           onError={(e) => {
-                            console.error(
-                              "Image failed to load:",
-                              cleanUrl(post.content.image)
-                            );
+                            console.error("Image failed to load:", cleanUrl(post.content.image));
                             e.currentTarget.style.display = "none";
                           }}
                         />
@@ -420,8 +405,10 @@ const ArticlesPage = () => {
                               }}
                             />
                           </div>
+
                         </div>
-                      )}
+                      </div>
+                    )}
 
                     {/* Display Audio */}
                     {post.content?.audio && (
@@ -432,10 +419,7 @@ const ArticlesPage = () => {
                             src={cleanUrl(post.content.audio)}
                             className="w-full"
                             onError={(e) => {
-                              console.error(
-                                "Audio failed to load:",
-                                cleanUrl(post.content.audio)
-                              );
+                              console.error("Audio failed to load:", cleanUrl(post.content.audio));
                               e.currentTarget.style.display = "none";
                             }}
                           >
