@@ -9,6 +9,16 @@ const nextConfig: NextConfig = {
     R2_PUBLIC_DOMAIN: process.env.R2_PUBLIC_DOMAIN,
     CLERK_SECRET_KEY: process.env.CLERK_SECRET_KEY,
   },
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "pub-c16a65dfb75c4bf1b7d1984fa8323c49.r2.dev",
+        port: "",
+        pathname: "/**",
+      },
+    ],
+  },
 };
 
 export default nextConfig;
