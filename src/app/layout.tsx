@@ -49,6 +49,7 @@ export default function RootLayout({
     pathname.startsWith("/pending-approval") ||
     pathname.startsWith("/chatroom") ||
     pathname.startsWith("/chatbot");
+
   const chatbotHide =
     pathname.startsWith("/chatbot") ||
     pathname.startsWith("/pending-approval") ||

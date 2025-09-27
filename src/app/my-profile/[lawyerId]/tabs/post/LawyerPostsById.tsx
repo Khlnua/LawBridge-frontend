@@ -14,15 +14,23 @@ type CommentType = {
 };
 
 type PostType = {
+  _id: string;
   id: string;
   lawyerId: string;
   title: string;
   content: {
-    text: string;
+    text?: string;
+    image?: string;
+    video?: string;
+    audio?: string;
   };
-  mediaUrl?: string;
-  mediaType?: "image" | "video";
+  specialization: Array<{
+    id: string;
+    categoryName: string;
+  }>;
+  type: "TEXT" | "IMAGE" | "VIDEO" | "AUDIO" | "FILE";
   createdAt: string;
+  updatedAt?: string;
   comments: CommentType[];
 };
 
@@ -70,7 +78,6 @@ export const PostCard = ({ post }: { post: PostType }) => {
   });
 
   const lawyerName = `${lawyerData?.getLawyerById.firstName || "Хуульч"} ${lawyerData?.getLawyerById.lastName || ""}`;
-  console.log("Lawyer Name:", lawyerData);
 
   const handleLike = () => {
     setIsLiked((liked) => !liked);
@@ -114,7 +121,7 @@ export const PostCard = ({ post }: { post: PostType }) => {
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
             <div
-              className="flex items-center gap-1 bg-blue-50 text-blue-700 px-2 py-1 rounded-full text-xs font-medium"
+              className="flex items-center gap-1 bg-gray-50 text-[#003365] px-2 py-1 rounded-full text-xs font-medium"
               onClick={handleClick}
             >
               <Tag className="w-3 h-3" />
@@ -127,22 +134,73 @@ export const PostCard = ({ post }: { post: PostType }) => {
           </div>
         </div>
         <h2 className="text-xl font-bold text-gray-900 mb-3 leading-tight">{post.title}</h2>
-        <p className="text-gray-700 leading-relaxed whitespace-pre-line">{post.content.text}</p>
+        {post.content.text && <p className="text-gray-700 leading-relaxed whitespace-pre-line">{post.content.text}</p>}
       </div>
 
-      {post.mediaType === "image" && post.mediaUrl && (
+      {/* Display Image */}
+      {post.content.image && (
         <div className="relative">
           <img
-            src={post.mediaUrl}
-            alt="Post attachment"
+            src={post.content.image}
+            alt="Post image"
             className="w-full max-h-96 object-cover cursor-pointer hover:opacity-95 transition-opacity"
+            onError={(e) => {
+              console.error("Image failed to load:", post.content.image);
+              e.currentTarget.style.display = "none";
+            }}
           />
         </div>
       )}
-      {post.mediaType === "video" && post.mediaUrl && (
+
+      {/* Display Video */}
+      {post.content.video && (
         <div className="px-4">
           <div className="aspect-video bg-gray-100 rounded-lg overflow-hidden">
-            <video controls src={post.mediaUrl} className="w-full h-full object-cover" preload="metadata" />
+            <video
+              controls
+              src={post.content.video}
+              className="w-full h-full object-cover"
+              preload="metadata"
+              onError={(e) => {
+                console.error("Video failed to load:", post.content.video);
+                e.currentTarget.style.display = "none";
+              }}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Display Audio */}
+      {post.content.audio && (
+        <div className="px-4">
+          <div className="bg-gray-100 rounded-lg p-4">
+            <audio
+              controls
+              src={post.content.audio}
+              className="w-full"
+              onError={(e) => {
+                console.error("Audio failed to load:", post.content.audio);
+                e.currentTarget.style.display = "none";
+              }}
+            >
+              Your browser does not support the audio element.
+            </audio>
+          </div>
+        </div>
+      )}
+
+      {/* Display Specializations */}
+      {post.specialization && post.specialization.length > 0 && (
+        <div className="px-4 py-2">
+          <div className="flex flex-wrap gap-2">
+            {post.specialization.map((spec) => (
+              <span
+                key={spec.id}
+                className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-[#003365]"
+              >
+                {spec.categoryName}
+              </span>
+            ))}
           </div>
         </div>
       )}
@@ -192,7 +250,7 @@ export const PostCard = ({ post }: { post: PostType }) => {
                   <button
                     onClick={handleAddComment}
                     disabled={creating || !commentText.trim()}
-                    className="absolute right-2 bottom-2 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all mb-2"
+                    className="absolute right-2 bottom-2 w-8 h-8 bg-[#003365] text-white rounded-full flex items-center justify-center hover:bg-[#002a52] disabled:opacity-50 disabled:cursor-not-allowed transition-all mb-2"
                   >
                     {creating ? (
                       <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -209,7 +267,7 @@ export const PostCard = ({ post }: { post: PostType }) => {
           <div className="p-4 space-y-4 max-h-96 overflow-y-auto">
             {loading && (
               <div className="flex items-center justify-center py-8">
-                <div className="w-6 h-6 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
+                <div className="w-6 h-6 border-2 border-[#003365] border-t-transparent rounded-full animate-spin" />
                 <span className="ml-2 text-gray-600">Коммент уншиж байна...</span>
               </div>
             )}
@@ -238,7 +296,7 @@ export const PostCard = ({ post }: { post: PostType }) => {
             {hasMoreComments && !showAllComments && (
               <button
                 onClick={() => setShowAllComments(true)}
-                className="w-full py-2 text-blue-600 hover:text-blue-700 font-medium text-sm transition-colors"
+                className="w-full py-2 text-[#003365] hover:text-[#002a52] font-medium text-sm transition-colors"
               >
                 Бүх коммент үзэх ({comments.length - 3} бусад)
               </button>

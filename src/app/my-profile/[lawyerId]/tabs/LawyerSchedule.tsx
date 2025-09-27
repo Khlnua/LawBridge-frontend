@@ -1,15 +1,20 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import {
-  Calendar,
-  Clock,
-  Edit3,
-  Save,
-  Trash2,
-  AlertCircle,
-} from "lucide-react";
-import { useMutation, gql } from "@apollo/client";
+import { useMutation, useQuery, gql } from "@apollo/client";
+
+const GET_AVAILABILITY = gql`
+  query GetAvailability($lawyerId: String!) {
+    getAvailability(lawyerId: $lawyerId) {
+      availableDays {
+        day
+        startTime
+        endTime
+        booked
+      }
+    }
+  }
+`;
 
 const SET_AVAILABILITY = gql`
   mutation SetAvailability($input: SetAvailabilityInput!) {
@@ -59,21 +64,20 @@ interface UpdateFormState {
 const generateHourlySlots = (startHour = 0, endHour = 24): string[] => {
   const slots: string[] = [];
   for (let hour = startHour; hour < endHour; hour++) {
-
     const timeString = `${hour.toString().padStart(2, "0")}:00`;
     slots.push(timeString);
   }
   return slots;
 };
 
-const formatDate = (date: Date) => {
-  return date.toLocaleDateString("mn-MN", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-    weekday: "long",
-  });
-};
+// const formatDate = (date: Date) => {
+//   return date.toLocaleDateString("mn-MN", {
+//     year: "numeric",
+//     month: "long",
+//     day: "numeric",
+//     weekday: "long",
+//   });
+// };
 
 const addMinutesToTime = (time: string, minutes: number): string => {
   const [h, m] = time.split(":").map(Number);
@@ -85,8 +89,26 @@ export default function LawyerSchedule({ lawyerId }: LawyerScheduleProps) {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [availability, setAvailability] = useState<Availability>({});
   const [isLoading, setSaving] = useState(false);
+  const [isDeleting, setDeleting] = useState(false);
   const [showUpdateForm, setShowUpdateForm] = useState(false);
   const [notification, setNotification] = useState("");
+
+  // Fetch existing availability
+  const { loading: loadingAvailability } = useQuery(GET_AVAILABILITY, {
+    variables: { lawyerId },
+    onCompleted: (data) => {
+      if (data?.getAvailability?.[0]?.availableDays) {
+        const savedAvailability: Availability = {};
+        data.getAvailability[0].availableDays.forEach((slot: any) => {
+          if (!savedAvailability[slot.day]) {
+            savedAvailability[slot.day] = [];
+          }
+          savedAvailability[slot.day].push(slot.startTime);
+        });
+        setAvailability(savedAvailability);
+      }
+    },
+  });
 
   const [updateForm, setUpdateForm] = useState<UpdateFormState>({
     oldDay: "",
@@ -97,8 +119,12 @@ export default function LawyerSchedule({ lawyerId }: LawyerScheduleProps) {
     newEnd: "",
   });
 
-  const [setAvailabilityMutation] = useMutation(SET_AVAILABILITY);
-  const [updateAvailabilityDate] = useMutation(UPDATE_AVAILABILITY);
+  const [setAvailabilityMutation] = useMutation(SET_AVAILABILITY, {
+    refetchQueries: [{ query: GET_AVAILABILITY, variables: { lawyerId } }],
+  });
+  const [updateAvailabilityDate] = useMutation(UPDATE_AVAILABILITY, {
+    refetchQueries: [{ query: GET_AVAILABILITY, variables: { lawyerId } }],
+  });
 
   const selectedDateKey = selectedDate.toISOString().split("T")[0];
   const selectedTimeSlots = availability[selectedDateKey] || [];
@@ -106,29 +132,19 @@ export default function LawyerSchedule({ lawyerId }: LawyerScheduleProps) {
 
   useEffect(() => {
     const now = new Date();
-    const cutoff = new Date(
-      now.getFullYear(),
-      now.getMonth(),
-      now.getDate() - 1
-    );
-    const weekLater = new Date(
-      now.getFullYear(),
-      now.getMonth(),
-      now.getDate() + 7
-    );
+    const cutoff = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
+    const weekLater = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 7);
 
-    const newAvailability = Object.entries(availability).reduce(
-      (acc: Availability, [dateKey, slots]) => {
+    setAvailability((currentAvailability) => {
+      const newAvailability = Object.entries(currentAvailability).reduce((acc: Availability, [dateKey, slots]) => {
         const dateObj = new Date(dateKey);
         if (dateObj >= cutoff && dateObj <= weekLater) {
           acc[dateKey] = slots;
         }
         return acc;
-      },
-      {}
-    );
-
-    setAvailability(newAvailability);
+      }, {});
+      return newAvailability;
+    });
   }, []);
 
   const showNotification = (message: string) => {
@@ -139,9 +155,7 @@ export default function LawyerSchedule({ lawyerId }: LawyerScheduleProps) {
   const toggleTimeSlot = (time: string) => {
     setAvailability((prev) => {
       const current = prev[selectedDateKey] || [];
-      const updated = current.includes(time)
-        ? current.filter((t) => t !== time)
-        : [...current, time].sort();
+      const updated = current.includes(time) ? current.filter((t) => t !== time) : [...current, time].sort();
       return {
         ...prev,
         [selectedDateKey]: updated,
@@ -149,25 +163,56 @@ export default function LawyerSchedule({ lawyerId }: LawyerScheduleProps) {
     });
   };
 
-  // const removeTimeSlot = (dateKey: string, time: string) => {
-  //   setAvailability((prev) => {
-  //     const filtered = prev[dateKey].filter((t) => t !== time);
-  //     const updated = { ...prev, [dateKey]: filtered };
-  //     if (filtered.length === 0) delete updated[dateKey];
-  //     return updated;
-  //   });
-  // };
+  const removeTimeSlot = async (dateKey: string, time: string) => {
+    try {
+      setDeleting(true);
+
+      // Remove the slot from local state first
+      const updatedAvailability = { ...availability };
+      if (updatedAvailability[dateKey]) {
+        updatedAvailability[dateKey] = updatedAvailability[dateKey].filter((t) => t !== time);
+        if (updatedAvailability[dateKey].length === 0) {
+          delete updatedAvailability[dateKey];
+        }
+      }
+
+      // Convert updated availability to the format expected by setAvailability
+      const availableDays = Object.entries(updatedAvailability).flatMap(([date, slots]) =>
+        slots.map((startTime) => ({
+          day: date,
+          startTime,
+          endTime: addMinutesToTime(startTime, 30),
+        }))
+      );
+
+      // Update database with new availability (without the deleted slot)
+      await setAvailabilityMutation({
+        variables: { input: { availableDays } },
+      });
+
+      // Update local state after successful database update
+      setAvailability(updatedAvailability);
+
+      showNotification("Цаг амжилттай устгагдлаа! ✅");
+    } catch (error) {
+      showNotification("Цаг устгахад алдаа гарлаа. Дахин оролдоно уу.");
+      if (error instanceof Error) {
+        console.error("Delete slot error:", error.message);
+      }
+    } finally {
+      setDeleting(false);
+    }
+  };
 
   const saveAvailability = async () => {
     setSaving(true);
     try {
-      const availableDays = Object.entries(availability).flatMap(
-        ([dateKey, slots]) =>
-          slots.map((startTime) => ({
-            day: dateKey,
-            startTime,
-            endTime: addMinutesToTime(startTime, 30),
-          }))
+      const availableDays = Object.entries(availability).flatMap(([dateKey, slots]) =>
+        slots.map((startTime) => ({
+          day: dateKey,
+          startTime,
+          endTime: addMinutesToTime(startTime, 30),
+        }))
       );
 
       if (availableDays.length === 0) {
@@ -245,9 +290,7 @@ export default function LawyerSchedule({ lawyerId }: LawyerScheduleProps) {
 
     setAvailability((prev) => ({
       ...prev,
-      [selectedDateKey]: [
-        ...new Set([...(prev[selectedDateKey] || []), ...slots]),
-      ].sort(),
+      [selectedDateKey]: [...new Set([...(prev[selectedDateKey] || []), ...slots])].sort(),
     }));
     showNotification(`${startHour}:00-${endHour}:00 цагууд нэмэгдлээ`);
   };
@@ -255,343 +298,300 @@ export default function LawyerSchedule({ lawyerId }: LawyerScheduleProps) {
   const now = new Date();
   // const maxDate = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
 
-  return (
-    <div className="max-w-9xl mx-auto  space-y-6">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-blue-600 to-blue-900 text-white p-6 rounded-2xl shadow-lg">
-        <div className="flex items-center gap-3 mb-2">
-          <Calendar className="w-8 h-8" />
-          <h1 className="text-2xl font-bold">Хуварийн удирдлага</h1>
+  if (loadingAvailability) {
+    return (
+      <div className="py-4 px-2 sm:p-6 lg:p-8 flex items-center justify-center min-h-[400px]">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#003366] mx-auto mb-4"></div>
+          <p className="text-gray-600 text-sm sm:text-base">Хуваарь ачааллаж байна...</p>
         </div>
-        <p className="text-blue-100">Та өөрийн боломжит цагийг тохируулна уу</p>
       </div>
+    );
+  }
 
-      {/* Notification */}
+  return (
+    <div className="py-4 px-2 sm:p-6 lg:p-8 space-y-6 sm:space-y-8">
       {notification && (
-        <div className="bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-lg flex items-center gap-2 animate-pulse">
-          <AlertCircle className="w-4 h-4" />
+        <div className="bg-emerald-50 border border-emerald-200 text-emerald-800 px-3 sm:px-4 py-2 sm:py-3 rounded-xl flex items-center justify-center gap-2 shadow-sm text-sm sm:text-base">
+          <span className="w-2 h-2 bg-emerald-500 rounded-full"></span>
           {notification}
         </div>
       )}
 
-      <div className="grid-cols-3 lg:grid-cols-3 gap-6">
-        {/* Calendar Section */}
-        <div className="lg:col-span-1">
-          <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
-            <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
-              <Calendar className="w-5 h-5 text-blue-600" />
-              Өдөр сонгох
-            </h2>
-
-            {/* Simple Calendar */}
-            <div className="space-y-4">
-             
-
-              <div className="grid grid-cols-7 gap-1">
-                {Array.from({ length: 7 }, (_, i) => {
-                  const date = new Date(now);
-                  date.setDate(now.getDate() + i);
-                  const dateKey = date.toISOString().split("T")[0];
-                  const isSelected = dateKey === selectedDateKey;
-                  const hasSlots = availability[dateKey]?.length > 0;
-
-                  return (
-                    <button
-                      key={i}
-                      onClick={() => setSelectedDate(date)}
-                      className={`
-                        p-3 rounded-xl text-sm font-medium transition-all duration-200 relative
-                        ${
-                          isSelected
-                            ? "bg-blue-600 text-white shadow-lg scale-105"
-                            : "bg-gray-50 hover:bg-gray-100 text-gray-700"
-                        }
-
-                      `}
-                    >
-                      {date.getDate()}
-                      {hasSlots && (
-                        <div
-                          className={`absolute -top-1 -right-1 w-3 h-3 rounded-full ${
-                            isSelected ? "bg-yellow-400" : "bg-green-500"
-                          }`}
-                        />
-                      )}
-                    </button>
-                  );
-                })}
-              </div>
+      <div>
+        <div className="bg-white rounded-none sm:rounded-2xl border-0 sm:border border-gray-100 shadow-none sm:shadow-sm p-0 sm:p-4 mb-4 sm:mb-6">
+          <div className="space-y-3 sm:space-y-0 sm:flex sm:items-center sm:justify-between">
+            <div>
+              <h2 className="text-base sm:text-lg font-semibold text-gray-900">Өдөр сонгох</h2>
+              <p className="text-xs sm:text-sm text-gray-500">7 хоногийн хуваарь</p>
             </div>
 
-            <div className="mt-6 p-4 bg-blue-50 rounded-xl">
-              <p className="text-sm text-blue-800">
-                <strong>Сонгосон өдөр:</strong>
-                <br />
-                {formatDate(selectedDate)}
-              </p>
+            <div className="grid grid-cols-7 gap-1 sm:gap-3">
+              {Array.from({ length: 7 }, (_, i) => {
+                const date = new Date(now);
+                date.setDate(now.getDate() + i);
+                const dateKey = date.toISOString().split("T")[0];
+                const isSelected = dateKey === selectedDateKey;
+                const hasSlots = availability[dateKey]?.length > 0;
+
+                return (
+                  <button
+                    key={i}
+                    onClick={() => setSelectedDate(date)}
+                    className={`relative p-2 sm:p-4 rounded-lg sm:rounded-xl text-center transition-all duration-200 border-2 hover:scale-105 ${
+                      isSelected
+                        ? "bg-slate-900 text-white border-slate-900 shadow-lg"
+                        : "bg-white hover:bg-gray-50 text-gray-700 border-gray-200 hover:border-gray-300"
+                    }`}
+                  >
+                    <div className="text-sm sm:text-lg font-bold">{date.getDate()}</div>
+                    <div className="text-xs opacity-70 hidden sm:block">{date.toLocaleDateString("mn-MN", { weekday: "short" })}</div>
+                    {hasSlots && (
+                      <div
+                        className={`absolute -top-1 -right-1 w-4 h-4 rounded-full border-2 border-white ${
+                          isSelected ? "bg-yellow-400" : "bg-emerald-500"
+                        }`}
+                      />
+                    )}
+                  </button>
+                );
+              })}
             </div>
           </div>
         </div>
 
-        {/* Time Slots Section */}
-        <div className="lg:col-span-2">
-          <div className="bg-white rounded-2xl shadow-lg border border-gray-100">
-            <div className="p-6 border-b border-gray-100">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-semibold flex items-center gap-2">
-                  <Clock className="w-5 h-5 text-purple-600" />
-                  Цаг сонгох
-                </h2>
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => addQuickSlots(9, 12)}
-                    className="px-3 py-1 text-xs bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-colors"
-                  >
-                    Өглөө (9-12)
-                  </button>
-                  <button
-                    onClick={() => addQuickSlots(13, 17)}
-                    className="px-3 py-1 text-xs bg-orange-100 text-orange-700 rounded-lg hover:bg-orange-200 transition-colors"
-                  >
-                    Үдээс хойш (13-17)
-                  </button>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-8 gap-2">
-                {timeSlots.map((time) => (
-                  <button
-                    key={time}
-                    onClick={() => toggleTimeSlot(time)}
-                    className={`
-                      p-3 rounded-lg text-sm font-medium transition-all duration-200 border-2
-                      ${
-                        selectedTimeSlots.includes(time)
-                          ? "bg-gradient-to-r from-purple-500 to-blue-500 text-white border-purple-300 shadow-lg scale-105"
-                          : "bg-gray-50 hover:bg-gray-100 text-gray-700 border-gray-200 hover:border-gray-300"
-                      }
-                    `}
-                  >
-                    {time} - {addMinutesToTime(time, 60)}
-                  </button>
-                ))}
-              </div>
+        <div className="bg-white rounded-none sm:rounded-2xl border-0 sm:border border-gray-100 shadow-none sm:shadow-sm p-0   sm:p-6">
+          <div className="flex flex-col sm:flex-row sm:justify-between gap-3 mb-4 sm:mb-6">
+            <div>
+              <h2 className="text-base sm:text-lg font-semibold text-gray-900">Цаг сонгох</h2>
+              <p className="text-xs sm:text-sm text-gray-500">Боломжит цагаа сонгоно уу</p>
             </div>
-
-            {/* Current Selection Summary */}
-            <div className="p-6">
-              <div className="bg-gradient-to-r from-gray-50 to-blue-50 rounded-xl p-4">
-                {selectedTimeSlots.length > 0 ? (
-                  <div>
-                    <p className="text-sm text-gray-600 mb-2">
-                      <strong>{formatDate(selectedDate)}</strong> өдөр сонгосон
-                      цагууд:
-                    </p>
-                    <div className="flex flex-wrap gap-2">
-                      {selectedTimeSlots.map((time) => (
-
-                        <span key={time} className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
-                          {time} - {addMinutesToTime(time, 60)}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                ) : (
-                  <p className="text-gray-500 text-center py-4">
-                    Цаг сонгоно уу
-                  </p>
-                )}
-              </div>
-
-              <div className="flex gap-3 mt-4">
-                <button
-                  onClick={saveAvailability}
-                  disabled={isLoading || selectedTimeSlots.length === 0}
-                  className="flex-1 bg-gradient-to-r from-green-500 to-emerald-600 text-white py-3 px-6 rounded-xl font-semibold hover:from-green-600 hover:to-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center gap-2"
-                >
-                  {isLoading ? (
-                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                  ) : (
-                    <>
-                      <Save className="w-5 h-5" />
-                      Хадгалах
-                    </>
-                  )}
-                </button>
-
-                <button
-                  onClick={() => setShowUpdateForm(!showUpdateForm)}
-                  className="px-6 py-3 bg-blue-100 text-blue-700 rounded-xl font-semibold hover:bg-blue-200 transition-colors flex items-center gap-2"
-                >
-                  <Edit3 className="w-4 h-4" />
-                  Засах
-                </button>
-
-                {Object.keys(availability).length > 0 && (
-                  <button
-                    onClick={clearAllSlots}
-                    className="px-6 py-3 bg-red-100 text-red-700 rounded-xl font-semibold hover:bg-red-200 transition-colors flex items-center gap-2"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                    Арилгах
-                  </button>
-                )}
-              </div>
+            <div className="flex flex-wrap gap-2">
+              <button
+                onClick={() => addQuickSlots(9, 12)}
+                className="px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm bg-blue-50 text-blue-700 rounded-lg sm:rounded-xl hover:bg-blue-100 transition-colors font-medium border border-blue-200"
+              >
+                Өглөө (9-12)
+              </button>
+              <button
+                onClick={() => addQuickSlots(13, 17)}
+                className="px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm bg-orange-50 text-orange-700 rounded-lg sm:rounded-xl hover:bg-orange-100 transition-colors font-medium border border-orange-200"
+              >
+                Үдээс хойш (13-17)
+              </button>
             </div>
+          </div>
+
+          <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 gap-2 sm:gap-3 mb-4 sm:mb-6">
+            {timeSlots.map((time) => (
+              <button
+                key={time}
+                onClick={() => toggleTimeSlot(time)}
+                className={`p-2 sm:p-3 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 border-2 hover:scale-105 text-center ${
+                  selectedTimeSlots.includes(time)
+                    ? "bg-[#003366] text-white border-[#003366] shadow-lg"
+                    : "bg-white hover:bg-gray-50 text-gray-700 border-gray-200 hover:border-gray-300"
+                }`}
+              >
+                <div className="font-bold">{time}</div>
+                <div className="text-xs opacity-70 hidden sm:block">{addMinutesToTime(time, 60)}</div>
+              </button>
+            ))}
+          </div>
+
+          <div>
+            {selectedTimeSlots.length > 0 ? (
+              <div></div>
+            ) : (
+              <div className="text-center bg-blue-50 border border-gray-100 rounded-xl p-3 sm:p-5 mb-4 sm:mb-6">
+                <p className="text-gray-500 font-medium text-sm sm:text-base">Цаг сонгоно уу</p>
+                <p className="text-gray-400 text-xs sm:text-sm">Дээрх цагнуудаас сонгож болно</p>
+              </div>
+            )}
+          </div>
+
+          <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
+            <button
+              onClick={saveAvailability}
+              disabled={isLoading || selectedTimeSlots.length === 0}
+              className="flex-1 bg-[#003366] text-white py-2.5 sm:py-3 px-4 sm:px-6 rounded-lg sm:rounded-xl text-sm sm:text-base font-semibold hover:bg-[#004080] disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center gap-2 sm:gap-3 shadow-sm"
+            >
+              {isLoading ? (
+                <>
+                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  Хадгалж байна...
+                </>
+              ) : (
+                <>Хадгалах ({selectedTimeSlots.length} цаг)</>
+              )}
+            </button>
+
+            <button
+              onClick={() => setShowUpdateForm(!showUpdateForm)}
+              className="px-4 sm:px-6 py-2.5 sm:py-3 bg-gray-100 text-gray-700 rounded-lg sm:rounded-xl text-sm sm:text-base font-semibold hover:bg-gray-200 transition-colors flex items-center justify-center gap-2"
+            >
+              Засах
+            </button>
+
+            {Object.keys(availability).length > 0 && (
+              <button
+                onClick={clearAllSlots}
+                className="px-4 sm:px-6 py-2.5 sm:py-4 bg-red-50 text-red-700 border border-red-200 rounded-lg sm:rounded-xl text-sm sm:text-base font-semibold hover:bg-red-100 transition-colors flex items-center justify-center gap-2"
+              >
+                Арилгах
+              </button>
+            )}
           </div>
         </div>
       </div>
 
-      {/* Update Form */}
       {showUpdateForm && (
-        <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
-          <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-            <Edit3 className="w-5 h-5 text-blue-600" />
-            Хуваарь шинэчлэх
-          </h3>
+        <div className="bg-white rounded-none sm:rounded-2xl border-0 sm:border border-gray-100 shadow-none sm:shadow-sm p-6">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-10 h-10 bg-[#003366] rounded-xl flex items-center justify-center">
+              <span className="text-white text-sm font-bold">EDIT</span>
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900">Хуваарь шинэчлэх</h3>
+              <p className="text-sm text-gray-500">Хуучин цагийг шинэ цагаар солино</p>
+            </div>
+          </div>
 
-          <div className="space-y-4">
-            <div className="grid md:grid-cols-2 gap-4">
-              <div className="space-y-4">
-                <h4 className="font-medium text-gray-700">Хуучин мэдээлэл</h4>
+          <div className="grid md:grid-cols-2 gap-6 mb-6">
+            <div className="space-y-4">
+              <h4 className="font-medium text-gray-700">Хуучин мэдээлэл</h4>
+              <input
+                type="date"
+                value={updateForm.oldDay}
+                onChange={(e) => setUpdateForm((prev) => ({ ...prev, oldDay: e.target.value }))}
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+              <div className="grid grid-cols-2 gap-2">
                 <input
-                  type="date"
-                  value={updateForm.oldDay}
+                  type="time"
+                  value={updateForm.oldStart}
                   onChange={(e) =>
                     setUpdateForm((prev) => ({
                       ...prev,
-                      oldDay: e.target.value,
+                      oldStart: e.target.value,
                     }))
                   }
                   className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
-                <div className="grid grid-cols-2 gap-2">
-                  <input
-                    type="time"
-                    value={updateForm.oldStart}
-                    onChange={(e) =>
-                      setUpdateForm((prev) => ({
-                        ...prev,
-                        oldStart: e.target.value,
-                      }))
-                    }
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
-                  <input
-                    type="time"
-                    value={updateForm.oldEnd}
-                    onChange={(e) =>
-                      setUpdateForm((prev) => ({
-                        ...prev,
-                        oldEnd: e.target.value,
-                      }))
-                    }
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-4">
-                <h4 className="font-medium text-gray-700">Шинэ мэдээлэл</h4>
                 <input
-                  type="date"
-                  value={updateForm.newDay}
+                  type="time"
+                  value={updateForm.oldEnd}
                   onChange={(e) =>
                     setUpdateForm((prev) => ({
                       ...prev,
-                      newDay: e.target.value,
+                      oldEnd: e.target.value,
                     }))
                   }
                   className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
-                <div className="grid grid-cols-2 gap-2">
-                  <input
-                    type="time"
-                    value={updateForm.newStart}
-                    onChange={(e) =>
-                      setUpdateForm((prev) => ({
-                        ...prev,
-                        newStart: e.target.value,
-                      }))
-                    }
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
-                  <input
-                    type="time"
-                    value={updateForm.newEnd}
-                    onChange={(e) =>
-                      setUpdateForm((prev) => ({
-                        ...prev,
-                        newEnd: e.target.value,
-                      }))
-                    }
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
-                </div>
               </div>
             </div>
 
-            <div className="flex gap-3">
-              <button
-                onClick={handleUpdateAvailability}
-                disabled={isLoading}
-                className="bg-gradient-to-r from-blue-500 to-purple-600 text-white py-3 px-6 rounded-xl font-semibold hover:from-blue-600 hover:to-purple-700 disabled:opacity-50 transition-all duration-200"
-              >
-                {isLoading ? "Шинэчилж байна..." : "Шинэчлэх"}
-              </button>
-              <button
-                onClick={() => setShowUpdateForm(false)}
-                className="py-3 px-6 bg-gray-100 text-gray-700 rounded-xl font-semibold hover:bg-gray-200 transition-colors"
-              >
-                Болих
-              </button>
+            <div className="space-y-4">
+              <h4 className="font-medium text-gray-700">Шинэ мэдээлэл</h4>
+              <input
+                type="date"
+                value={updateForm.newDay}
+                onChange={(e) => setUpdateForm((prev) => ({ ...prev, newDay: e.target.value }))}
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+              <div className="grid grid-cols-2 gap-2">
+                <input
+                  type="time"
+                  value={updateForm.newStart}
+                  onChange={(e) =>
+                    setUpdateForm((prev) => ({
+                      ...prev,
+                      newStart: e.target.value,
+                    }))
+                  }
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+                <input
+                  type="time"
+                  value={updateForm.newEnd}
+                  onChange={(e) =>
+                    setUpdateForm((prev) => ({
+                      ...prev,
+                      newEnd: e.target.value,
+                    }))
+                  }
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
             </div>
+          </div>
+
+          <div className="flex gap-3">
+            <button
+              onClick={handleUpdateAvailability}
+              disabled={isLoading}
+              className="bg-[#003366] text-white py-3 px-6 rounded-xl font-semibold hover:bg-[#004080] disabled:opacity-50 transition-all duration-200 flex items-center gap-2"
+            >
+              {isLoading ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  Шинэчилж байна...
+                </>
+              ) : (
+                "Шинэчлэх"
+              )}
+            </button>
+            <button
+              onClick={() => setShowUpdateForm(false)}
+              className="py-3 px-6 bg-gray-100 text-gray-700 rounded-xl font-semibold hover:bg-gray-200 transition-colors"
+            >
+              Болих
+            </button>
           </div>
         </div>
       )}
 
-      {/* All Selected Times Overview */}
       {Object.keys(availability).length > 0 && (
-        <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100 mt-8">
-          <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-            <Calendar className="w-5 h-5 text-green-600" />
-            Өмгөөлөгчийн бүх сонгосон хуваарь
-          </h3>
-          <div className="space-y-4">
-            {Object.entries(availability).map(([dateKey, slots]) => (
-              <div
-                key={dateKey}
-                className="bg-gradient-to-r from-gray-50 to-green-50 rounded-xl p-4 border border-gray-100"
-              >
-                <div className="flex items-center justify-between mb-3">
-                  <h4 className="font-semibold text-gray-800">
-                    📅 {new Date(dateKey).toLocaleDateString("mn-MN", {
-                      year: "numeric",
-                      month: "long",
-                      day: "numeric",
-                      weekday: "long",
-                    })}
-                  </h4>
-                  <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-medium">
-                    {slots.length} цаг
-                  </span>
+        <div className="grid gap-4">
+          {Object.entries(availability).map(([dateKey, slots]) => (
+            <div key={dateKey} className="bg-gray-100 border border-emerald-100 rounded-xl p-5">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <div>
+                    <h4 className="font-semibold text-gray-900">
+                      {new Date(dateKey).toLocaleDateString("mn-MN", {
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                        weekday: "long",
+                      })}
+                    </h4>
+                  </div>
                 </div>
-                <div className="flex flex-wrap gap-2">
-                  {slots.map((slot) => (
-                    <div
-                      key={slot}
-                      className="flex items-center gap-2 bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm"
-                    >
-                      <Clock className="w-3 h-3 text-gray-500" />
-                      <span className="font-medium">
-                        {slot} - {addMinutesToTime(slot, 60)}
-                      </span>
-                    </div>
-                  ))}
-                </div>
+                <span className="bg-emerald-100 text-emerald-800 px-3 py-1 rounded-full text-sm font-medium">{slots.length} цаг</span>
               </div>
-            ))}
-          </div>
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2">
+                {slots.map((slot) => (
+                  <div
+                    key={slot}
+                    className={`relative bg-white border border-emerald-200 rounded-lg px-3 py-2 text-center group hover:bg-red-50 hover:border-red-200 transition-colors cursor-pointer ${
+                      isDeleting ? "opacity-50 cursor-not-allowed" : ""
+                    }`}
+                    onClick={() => !isDeleting && removeTimeSlot(dateKey, slot)}
+                  >
+                    <div className="text-sm font-semibold text-gray-900 group-hover:text-red-700">{slot}</div>
+                    <div className="text-xs text-gray-500 group-hover:text-red-500">{addMinutesToTime(slot, 60)}</div>
+
+                    {/* X button that appears on hover */}
+                    <div className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-xs font-bold hover:bg-red-600">
+                      ×
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
         </div>
       )}
     </div>
