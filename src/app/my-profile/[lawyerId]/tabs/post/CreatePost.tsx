@@ -7,7 +7,6 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useState, useRef, useEffect } from "react";
 
@@ -58,22 +57,22 @@ const CreatePost = ({
 
   const { data: specData } = useGetAdminSpecializationsQuery();
 
-  // Konami Code sequence: ↑↑↓↓←→←→BA
-  const konamiSequence = [
-    "ArrowUp",
-    "ArrowUp",
-    "ArrowDown",
-    "ArrowDown",
-    "ArrowLeft",
-    "ArrowRight",
-    "ArrowLeft",
-    "ArrowRight",
-    "KeyB",
-    "KeyA",
-  ];
-
   // Easter egg: Konami code detection
   useEffect(() => {
+    // Konami Code sequence: ↑↑↓↓←→←→BA
+    const konamiSequence = [
+      "ArrowUp",
+      "ArrowUp",
+      "ArrowDown",
+      "ArrowDown",
+      "ArrowLeft",
+      "ArrowRight",
+      "ArrowLeft",
+      "ArrowRight",
+      "KeyB",
+      "KeyA",
+    ];
+
     const handleKeyDown = (e: globalThis.KeyboardEvent) => {
       const newSequence = [...konamiCode, e.code].slice(-10);
       setKonamiCode(newSequence);

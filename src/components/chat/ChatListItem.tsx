@@ -24,7 +24,7 @@ export default function ChatListItem({
 
   // Fallback values
   const name = userInfo?.name || "Хэрэглэгч";
-  const avatar = userInfo?.avatar || "/default-avatar.png";
+  const avatar = userInfo?.avatar || "/default-avatar.svg";
   const initial = userInfo?.initial || "?";
   const isOnlineStatus = userInfo?.isOnline || false;
   const userType = userInfo?.userType || "client";

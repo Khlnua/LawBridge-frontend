@@ -370,41 +370,39 @@ export default function MessengerLayout() {
         >
           <aside className="w-full h-full flex flex-col shadow-lg bg-white border-r border-gray-200">
             {/* Header */}
-            <div className="flex flex-col items-center justify-center px-6 py-5 border-b border-gray-200 relative bg-gradient-to-r from-white to-gray-50 shadow-sm">
-              <div className="flex items-center justify-between w-full mb-2">
-                {/* Back button */}
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => window.history.back()}
-                  className="p-2.5 hover:bg-primary-custom/10 rounded-full transition-all duration-200"
-                  aria-label="Буцах"
-                >
-                  <ArrowLeft className="w-5 h-5 text-primary-custom" />
-                </Button>
+            <div className="flex items-center justify-between px-6 py-5 border-b border-gray-200 relative bg-gradient-to-r from-white to-gray-50 shadow-sm">
+              {/* Left side - Back button */}
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => window.history.back()}
+                className="p-2.5 hover:bg-primary-custom/10 rounded-full transition-all duration-200"
+                aria-label="Буцах"
+              >
+                <ArrowLeft className="w-5 h-5 text-primary-custom" />
+              </Button>
 
-                {/* Title and refresh indicator */}
-                <div className="flex items-center gap-3">
-                  <div className="p-2 bg-primary-custom/10 rounded-full">
-                    <MessageCircle className="w-6 h-6 text-primary-custom" />
-                  </div>
-                  <h2 className="text-xl font-bold text-gray-800">Чатууд</h2>
-                  {isRefreshing && (
-                    <Loader2 className="w-4 h-4 animate-spin text-primary-custom" />
-                  )}
+              {/* Center - Title and refresh indicator */}
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-primary-custom/10 rounded-full">
+                  <MessageCircle className="w-6 h-6 text-primary-custom" />
                 </div>
-
-                {/* Close button */}
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={toggleSidebar}
-                  className="p-2.5 hover:bg-primary-custom/10 rounded-full transition-all duration-200"
-                  aria-label="Sidebar хаах (Ctrl+B)"
-                >
-                  <X className="w-5 h-5 text-gray-600" />
-                </Button>
+                <h2 className="text-xl font-bold text-gray-800">Чатууд</h2>
+                {isRefreshing && (
+                  <Loader2 className="w-4 h-4 animate-spin text-primary-custom" />
+                )}
               </div>
+
+              {/* Right side - Close button (mobile only) */}
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={toggleSidebar}
+                className="md:hidden p-2.5 hover:bg-primary-custom/10 rounded-full transition-all duration-200"
+                aria-label="Sidebar хаах (Ctrl+B)"
+              >
+                <X className="w-5 h-5 text-gray-600" />
+              </Button>
             </div>
 
             {/* Search */}

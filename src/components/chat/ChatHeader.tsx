@@ -38,9 +38,8 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
         <div className="flex items-center space-x-3 sm:space-x-4 md:space-x-6">
           <div className="relative flex-shrink-0">
             {user.avatar &&
-            user.avatar !== "/default-avatar.png" &&
-            user.avatar !==
-              `${process.env.NEXT_PUBLIC_R2_PUBLIC_DOMAIN}/uploads/default-avatar.png` ? (
+            user.avatar !== "/default-avatar.svg" &&
+            user.avatar !== "/default-avatar.svg" ? (
               <img
                 src={user.avatar}
                 alt={user.name}
@@ -64,9 +63,8 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
             <div
               className={`w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 rounded-full bg-primary-custom flex items-center justify-center text-white font-bold border-2 sm:border-3 border-white shadow-lg ${
                 user.avatar &&
-                user.avatar !== "/default-avatar.png" &&
-                user.avatar !==
-                  `${process.env.NEXT_PUBLIC_R2_PUBLIC_DOMAIN}/uploads/default-avatar.png`
+                user.avatar !== "/default-avatar.svg" &&
+                user.avatar !== "/default-avatar.svg"
                   ? "hidden"
                   : ""
               }`}

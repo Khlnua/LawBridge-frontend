@@ -6,7 +6,8 @@ import {
   generateMockEmailFromUserId,
 } from "./useClerkUserEmail";
 
-import { useGetLawyerByIdQuery } from "@/generated";
+import { useQuery } from "@apollo/client";
+import { GET_ALL_LAWYERS } from "@/graphql/lawyer";
 
 // Note: GET_LAWYER_BY_CLERK_USER_ID query removed as it's not supported by the backend
 
@@ -24,31 +25,54 @@ interface UserInfo {
 // Cache to store fetched user data
 const userInfoCache = new Map<string, UserInfo>();
 
+// Helper function to extract Clerk user ID from JWT token
+function extractUserIdFromToken(token: string): string | null {
+  try {
+    // JWT tokens have 3 parts separated by dots
+    const parts = token.split(".");
+    if (parts.length !== 3) return null;
+
+    // Decode the payload (second part)
+    const payload = JSON.parse(atob(parts[1]));
+    return payload.sub || null; // 'sub' field contains the user ID
+  } catch (error) {
+    console.warn("Failed to extract user ID from token:", error);
+    return null;
+  }
+}
+
 export function useUserInfo(userId: string): UserInfo | null {
   const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
-
-  // Try to get lawyer data
-  const {
-    data: lawyerData,
-    loading: lawyerLoading,
-  } = useGetLawyerByIdQuery({
-    variables: { lawyerId: userId },
-    skip: !userId,
-    errorPolicy: "all",
-  });
-
-  const finalLawyerData = lawyerData?.getLawyerById;
-
-  // If not a lawyer, try to get client email
   const [clientEmail, setClientEmail] = useState<string | null>(null);
   const [clientLoading, setClientLoading] = useState(false);
 
+  // Extract actual user ID if a JWT token was passed
+  const actualUserId = userId.startsWith("user_")
+    ? userId
+    : extractUserIdFromToken(userId);
+
+  // Try to get lawyer data by clerkUserId first
+  const { data: lawyersData, loading: lawyerLoading } = useQuery(
+    GET_ALL_LAWYERS,
+    {
+      skip: !actualUserId,
+      errorPolicy: "all",
+    }
+  );
+
+  // Find lawyer by clerkUserId
+  const lawyerData = lawyersData?.getLawyers?.find(
+    (lawyer: any) => lawyer.clerkUserId === actualUserId
+  );
+
+  const finalLawyerData = lawyerData;
+
   useEffect(() => {
-    if (!userId) return;
+    if (!actualUserId) return;
 
     // Check cache first
-    if (userInfoCache.has(userId)) {
-      setUserInfo(userInfoCache.get(userId)!);
+    if (userInfoCache.has(actualUserId)) {
+      setUserInfo(userInfoCache.get(actualUserId)!);
       return;
     }
 
@@ -59,10 +83,10 @@ export function useUserInfo(userId: string): UserInfo | null {
         ? lawyer.profilePicture.startsWith("http")
           ? lawyer.profilePicture
           : `${process.env.NEXT_PUBLIC_R2_PUBLIC_DOMAIN}/${lawyer.profilePicture}`
-        : `${process.env.NEXT_PUBLIC_R2_PUBLIC_DOMAIN}/uploads/default-avatar.png`;
+        : "/default-avatar.svg";
 
       const info: UserInfo = {
-        id: userId,
+        id: actualUserId,
         name:
           `${lawyer.firstName || ""} ${lawyer.lastName || ""}`.trim() ||
           "Өмгөөлөгч",
@@ -76,7 +100,7 @@ export function useUserInfo(userId: string): UserInfo | null {
           "Өмгөөлөгч", // Full name for lawyers
       };
 
-      userInfoCache.set(userId, info);
+      userInfoCache.set(actualUserId, info);
       setUserInfo(info);
       return;
     }
@@ -86,21 +110,19 @@ export function useUserInfo(userId: string): UserInfo | null {
       setClientLoading(true);
 
       // Try to get client data from Clerk API
-      fetch(`/api/users/${userId}/email`)
+      fetch(`/api/users/${actualUserId}/email`)
         .then((response) => response.json())
         .then((data) => {
           if (data.email) {
             setClientEmail(data.email);
             // Store client data including profile picture
             const clientInfo: UserInfo = {
-              id: userId,
+              id: actualUserId,
               name:
                 data.firstName && data.lastName
                   ? `${data.firstName} ${data.lastName}`.trim()
                   : getUsernameFromEmail(data.email),
-              avatar:
-                data.profilePicture ||
-                `${process.env.NEXT_PUBLIC_R2_PUBLIC_DOMAIN}/uploads/default-avatar.png`,
+              avatar: data.profilePicture || "/default-avatar.svg",
               initial:
                 data.firstName?.charAt(0) ||
                 getUsernameFromEmail(data.email).charAt(0).toUpperCase(),
@@ -108,30 +130,30 @@ export function useUserInfo(userId: string): UserInfo | null {
               email: data.email,
               displayName: getUsernameFromEmail(data.email), // Show username without @gmail.com
             };
-            userInfoCache.set(userId, clientInfo);
+            userInfoCache.set(actualUserId, clientInfo);
             setUserInfo(clientInfo);
           } else {
             // Fallback: generate mock email
-            const mockEmail = generateMockEmailFromUserId(userId);
+            const mockEmail = generateMockEmailFromUserId(actualUserId);
             setClientEmail(mockEmail);
           }
         })
         .catch((error) => {
           console.error("Error fetching client data:", error);
           // Fallback: generate mock email and create client info with default avatar
-          const mockEmail = generateMockEmailFromUserId(userId);
+          const mockEmail = generateMockEmailFromUserId(actualUserId);
           setClientEmail(mockEmail);
 
           const fallbackInfo: UserInfo = {
-            id: userId,
+            id: actualUserId,
             name: getUsernameFromEmail(mockEmail),
-            avatar: `${process.env.NEXT_PUBLIC_R2_PUBLIC_DOMAIN}/uploads/default-avatar.png`,
+            avatar: "/default-avatar.svg",
             initial: getUsernameFromEmail(mockEmail).charAt(0).toUpperCase(),
             userType: "client",
             email: mockEmail,
             displayName: getUsernameFromEmail(mockEmail), // Show username without @gmail.com
           };
-          userInfoCache.set(userId, fallbackInfo);
+          userInfoCache.set(actualUserId, fallbackInfo);
           setUserInfo(fallbackInfo);
         })
         .finally(() => {
@@ -140,7 +162,19 @@ export function useUserInfo(userId: string): UserInfo | null {
     }
 
     // Client info is now created in the fetch callback above
-  }, [userId, finalLawyerData, clientEmail, clientLoading, lawyerLoading]);
+  }, [
+    actualUserId,
+    finalLawyerData,
+    clientEmail,
+    clientLoading,
+    lawyerLoading,
+  ]);
+
+  // If we can't extract a valid user ID, return null
+  if (!actualUserId) {
+    console.warn("Invalid user ID format:", userId);
+    return null;
+  }
 
   return userInfo;
 }

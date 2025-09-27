@@ -84,7 +84,10 @@ export default function LawyersManagementDashboard() {
   const [sortBy, setSortBy] = useState("name");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
 
-  const lawyers: Lawyer[] = data?.getLawyers || [];
+  const lawyers: Lawyer[] = useMemo(
+    () => data?.getLawyers || [],
+    [data?.getLawyers]
+  );
 
   // Filter and sort logic
   const filteredAndSortedLawyers = useMemo(() => {

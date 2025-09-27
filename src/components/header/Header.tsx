@@ -84,11 +84,17 @@ export default function Header() {
             </SignedIn>
           </div>
 
-          <button className="md:hidden text-gray-600">
+          <div className="md:hidden flex items-center gap-2">
             {isOpen ? (
-              <X className="w-6 h-6" onClick={() => setIsOpen(!isOpen)} />
+              <button
+                className="text-gray-600 p-1"
+                onClick={() => setIsOpen(!isOpen)}
+                aria-label="Close menu"
+              >
+                <X className="w-6 h-6" />
+              </button>
             ) : (
-              <div className="flex gap-2 justify-center items-center">
+              <>
                 <SignedIn>
                   {role === "lawyer" ? (
                     <CustomUserButton
@@ -101,10 +107,16 @@ export default function Header() {
                   )}
                 </SignedIn>
 
-                <Menu className="w-6 h-6" onClick={() => setIsOpen(!isOpen)} />
-              </div>
+                <button
+                  className="text-gray-600 p-1"
+                  onClick={() => setIsOpen(!isOpen)}
+                  aria-label="Open menu"
+                >
+                  <Menu className="w-6 h-6" />
+                </button>
+              </>
             )}
-          </button>
+          </div>
         </div>
       </div>
 

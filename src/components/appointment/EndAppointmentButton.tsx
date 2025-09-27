@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Clock, Star, CheckCircle, X } from "lucide-react";
 import ReviewModal from "./ReviewModal";
@@ -72,7 +72,7 @@ export default function EndAppointmentButton({
   const [createReview] = useMutation(CREATE_REVIEW);
 
   // Check if appointment time has passed
-  const isAppointmentTimePassed = () => {
+  const isAppointmentTimePassed = useCallback(() => {
     const now = new Date();
     const appointmentDate = new Date(appointment.slot.day);
     const [hours, minutes] = appointment.slot.endTime.split(":").map(Number);
@@ -82,14 +82,19 @@ export default function EndAppointmentButton({
     appointmentEndTime.setHours(hours, minutes, 0, 0);
 
     return now > appointmentEndTime;
-  };
+  }, [appointment.slot.day, appointment.slot.endTime]);
 
   // Auto-trigger review modal when appointment time passes
   useEffect(() => {
     if (appointment.status === "PENDING" && isAppointmentTimePassed()) {
       setShowReviewModal(true);
     }
-  }, [appointment.status, appointment.slot.day, appointment.slot.endTime]);
+  }, [
+    appointment.status,
+    appointment.slot.day,
+    appointment.slot.endTime,
+    isAppointmentTimePassed,
+  ]);
 
   const handleEndAppointment = () => {
     setShowReviewModal(true);
