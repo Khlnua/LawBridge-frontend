@@ -29,8 +29,6 @@ export const LawyerReviews = () => {
     skip: !mongoLawyerId,
   });
 
-  console.log("Reviews data:", lawyerData);
-
   const reviews = data?.getReviewsByLawyer || [];
   const totalClients = reviews.length;
   const loading = lawyerLoading || reviewsLoading;
@@ -60,6 +58,27 @@ export const LawyerReviews = () => {
   }
 
   const progressPercent = Math.min((current / max) * 100, 100);
+
+  // Helper functions for display name and initial
+  const getDisplayName = (review: any) => {
+    // If we have an email, use the part before @
+    if (review.clientInfo?.email) {
+      return review.clientInfo.email.split("@")[0];
+    }
+
+    // Use the name from clientInfo if available and it's not the same as clientId
+    if (review.clientInfo?.name && review.clientInfo.name !== review.clientId) {
+      return review.clientInfo.name;
+    }
+
+    // Fallback to client ID
+    return review.clientId;
+  };
+
+  const getDisplayInitial = (review: any) => {
+    const displayName = getDisplayName(review);
+    return displayName.charAt(0).toUpperCase();
+  };
 
   return (
     <div className="sm:p-6 lg:p-8 space-y-6 sm:space-y-8 pt-4">
@@ -111,10 +130,10 @@ export const LawyerReviews = () => {
                 <div className="flex flex-col sm:flex-row sm:items-start justify-between mb-3 sm:mb-4 gap-3 sm:gap-0">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 sm:w-10 sm:h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                      <span className="text-[#003366] font-medium text-sm sm:text-base">{review.clientId?.charAt(0) || "?"}</span>
+                      <span className="text-[#003366] font-medium text-sm sm:text-base">{getDisplayInitial(review)}</span>
                     </div>
                     <div>
-                      <h4 className="font-medium text-gray-900 text-sm sm:text-base">Client ID: {review.clientId}</h4>
+                      <h4 className="font-medium text-gray-900 text-sm sm:text-base">{getDisplayName(review)}</h4>
                       <p className="text-xs sm:text-sm text-gray-500">{new Date(review.createdAt).toLocaleDateString()}</p>
                     </div>
                   </div>
