@@ -1,15 +1,10 @@
-"use client";
-
 import "./globals.css";
-import { usePathname, useRouter } from "next/navigation";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Geist, Geist_Mono } from "next/font/google";
 import { ApolloWrapper } from "@/providers/ApolloWrapper";
-import Header from "@/components/header/Header";
 import { SocketProvider } from "@/context/SocketContext";
-// import { AuthRedirectGuard } from "@/components";
 import { Toaster } from "sonner";
-import FloatingChatbotButton from "@/components/FloatingChatbotButton";
+import ClientLayoutWrapper from "@/components/ClientLayoutWrapper";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -26,29 +21,16 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const pathname = usePathname();
-  const hideHeader = pathname.startsWith("/admin") || pathname.startsWith("/pending-approval");
-  const chatbotHide =
-    pathname.startsWith("/chatbot") ||
-    pathname.startsWith("/pending-approval") ||
-    pathname.startsWith("/chatroom") ||
-    pathname.startsWith("/sign-in") ||
-    pathname.startsWith("/sign-up");
-  const { push } = useRouter();
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
-      <body className={`min-h-screen bg-background font-sans antialiased ${geistSans.variable} ${geistMono.variable}`}>
+      <body
+        className={`min-h-screen bg-background font-sans antialiased ${geistSans.variable} ${geistMono.variable}`}
+      >
         <ClerkProvider signInUrl="/sign-in" signUpUrl="/sign-up">
           <ApolloWrapper>
-            {!hideHeader && <Header />}
             <SocketProvider>
               <Toaster richColors position="top-right" />
-
-              {!chatbotHide && <FloatingChatbotButton href="/chatbot" />}
-              <main className="flex justify-center items-start min-h-[calc(100vh-8rem)]">
-                {/* <AuthRedirectGuard /> */}
-                {children}
-              </main>
+              <ClientLayoutWrapper>{children}</ClientLayoutWrapper>
             </SocketProvider>
           </ApolloWrapper>
         </ClerkProvider>

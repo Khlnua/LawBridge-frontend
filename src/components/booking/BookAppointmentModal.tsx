@@ -17,10 +17,28 @@ const GET_AVAILABILITY = gql`
 const CREATE_APPOINTMENT = gql`
   mutation CreateAppointment($input: CreateAppointmentInput!) {
     createAppointment(input: $input) {
+      id
       lawyerId
-      schedule
+      clientId
       status
       chatRoomId
+      subscription
+      slot {
+        day
+        startTime
+        endTime
+        booked
+      }
+      specialization {
+        _id
+        lawyerId
+        specializationId
+        categoryName
+        subscription
+        pricePerHour
+      }
+      notes
+      specializationId
     }
   }
 `;

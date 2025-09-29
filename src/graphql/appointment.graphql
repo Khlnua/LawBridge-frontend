@@ -1,3 +1,112 @@
+query GetAppointments {
+  getAppointments {
+    id
+    clientId
+    lawyerId
+    status
+    specializationId
+    slot {
+      day
+      startTime
+      endTime
+      booked
+    }
+    notes
+    createdAt
+    chatRoomId
+  }
+}
+
+query GetAppointmentsByLawyer($lawyerId: String!) {
+  getAppointmentsByLawyer(lawyerId: $lawyerId) {
+    id
+    clientId
+    lawyerId
+    status
+    chatRoomId
+    price
+    subscription
+    specializationId
+    slot {
+      day
+      startTime
+      endTime
+      booked
+    }
+    specialization {
+      _id
+      lawyerId
+      specializationId
+      categoryName
+      subscription
+      pricePerHour
+    }
+    createdAt
+    endedAt
+    notes
+  }
+}
+
+query GetAppointmentsByUser($clientId: String!) {
+  getAppointmentsByUser(clientId: $clientId) {
+    id
+    clientId
+    lawyerId
+    status
+    chatRoomId
+    price
+    subscription
+    specializationId
+    slot {
+      day
+      startTime
+      endTime
+      booked
+    }
+    specialization {
+      _id
+      lawyerId
+      specializationId
+      categoryName
+      subscription
+      pricePerHour
+    }
+    createdAt
+    endedAt
+    notes
+  }
+}
+
+query GetAppointmentById($getAppointmentByIdId: String!) {
+  getAppointmentById(id: $getAppointmentByIdId) {
+    id
+    clientId
+    lawyerId
+    status
+    chatRoomId
+    price
+    subscription
+    specializationId
+    slot {
+      day
+      startTime
+      endTime
+      booked
+    }
+    specialization {
+      _id
+      lawyerId
+      specializationId
+      categoryName
+      subscription
+      pricePerHour
+    }
+    createdAt
+    endedAt
+    notes
+  }
+}
+
 mutation CreateAppointment($input: CreateAppointmentInput!) {
   createAppointment(input: $input) {
     id
@@ -22,5 +131,35 @@ mutation CreateAppointment($input: CreateAppointmentInput!) {
     }
     notes
     specializationId
+  }
+}
+
+query GetAppointmentsByLawyer($lawyerId: String!) {
+  getAppointmentsByLawyer(lawyerId: $lawyerId) {
+    id
+    clientId
+    lawyerId
+    status
+    chatRoomId
+    price
+    subscription
+    specializationId
+    slot {
+      day
+      startTime
+      endTime
+      booked
+    }
+    specialization {
+      _id
+      lawyerId
+      specializationId
+      categoryName
+      subscription
+      pricePerHour
+    }
+    createdAt
+    endedAt
+    notes
   }
 }
