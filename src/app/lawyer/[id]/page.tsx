@@ -394,7 +394,7 @@ const LawyerProfile = ({ params }: Props) => {
                   <div className="w-24 h-24 sm:w-28 sm:h-28 lg:w-32 lg:h-32 border-4 border-white shadow-lg rounded-full overflow-hidden bg-gray-100">
                     <Image
                       src={
-                        `${process.env.NEXT_PUBLIC_R2_PUBLIC_DOMAIN}/${lawyer.profilePicture}` ||
+                        `${process.env.NEXT_PUBLIC_R2_PUBLIC_DOMAIN}/${lawyer.profilePicture}`.trim() ||
                         "/api/placeholder/120/120"
                       }
                       alt={`${lawyer.firstName} ${lawyer.lastName}`}
