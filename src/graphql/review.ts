@@ -5,6 +5,11 @@ export const GET_REVIEWS_BY_LAWYER = gql`
     getReviewsByLawyer(lawyerId: $lawyerId) {
       id
       clientId
+      clientInfo {
+        id
+        name
+        email
+      }
       lawyerId
       rating
       comment
