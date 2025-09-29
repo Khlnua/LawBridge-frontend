@@ -62,7 +62,7 @@ export default function useLawBridgeChat() {
   const { data, loading, error, refetch } = useQuery(GET_CHAT_HISTORY_BY_USER, {
     variables: { userId: user?.id || "" },
     skip: !user?.id,
-    fetchPolicy: "cache-and-network",
+    fetchPolicy: "cache-first", // Changed from cache-and-network to prevent excessive refetches
   });
 
   useEffect(() => {
@@ -133,7 +133,10 @@ export default function useLawBridgeChat() {
         options: chatOptions,
       };
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || "https://lawbridge-server.onrender.com"}/api/chat`,
+        `${
+          process.env.NEXT_PUBLIC_API_URL ||
+          "https://lawbridge-server.onrender.com"
+        }/api/chat`,
         {
           method: "POST",
           headers: {

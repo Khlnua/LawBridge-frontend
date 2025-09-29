@@ -64,46 +64,53 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
           return;
         }
 
-        const newSocket = io(
-          process.env.NEXT_PUBLIC_SERVER_URL ||
-            "https://lawbridge-server.onrender.com",
-          {
-            path: "/socket.io",
-            auth: {
-              token: token,
-            },
-            transports: ["websocket", "polling"],
-          }
-        );
+        // Only create new socket if we don't have one or it's disconnected
+        if (!socket || !socket.connected) {
+          const newSocket = io(
+            process.env.NEXT_PUBLIC_SERVER_URL ||
+              "https://lawbridge-server.onrender.com",
+            {
+              path: "/socket.io",
+              auth: {
+                token: token,
+              },
+              transports: ["websocket", "polling"],
+              autoConnect: true,
+              reconnection: true,
+              reconnectionDelay: 1000,
+              reconnectionAttempts: 5,
+            }
+          );
 
-        // Connection events
-        newSocket.on("connect", () => {
-          console.log("✅ Socket connected:", newSocket.id);
-          setIsConnected(true);
-        });
+          // Connection events
+          newSocket.on("connect", () => {
+            console.log("✅ Socket connected:", newSocket.id);
+            setIsConnected(true);
+          });
 
-        newSocket.on("disconnect", (reason) => {
-          console.log("❌ Socket disconnected:", reason);
-          setIsConnected(false);
-        });
+          newSocket.on("disconnect", (reason) => {
+            console.log("❌ Socket disconnected:", reason);
+            setIsConnected(false);
+          });
 
-        newSocket.on("connect_error", (error) => {
-          console.error("❌ Socket connection error:", error);
-          setIsConnected(false);
-        });
+          newSocket.on("connect_error", (error) => {
+            console.error("❌ Socket connection error:", error);
+            setIsConnected(false);
+          });
 
-        // Online users
-        newSocket.on("onlineUsers", (users: User[]) => {
-          console.log("👥 Online users updated:", users);
-          setOnlineUsers(users);
-        });
+          // Online users
+          newSocket.on("onlineUsers", (users: User[]) => {
+            console.log("👥 Online users updated:", users);
+            setOnlineUsers(users);
+          });
 
-        // Error handling
-        newSocket.on("message-error", (error) => {
-          console.error("❌ Message error:", error);
-        });
+          // Error handling
+          newSocket.on("message-error", (error) => {
+            console.error("❌ Message error:", error);
+          });
 
-        setSocket(newSocket);
+          setSocket(newSocket);
+        }
       } catch (error) {
         console.error("Failed to connect socket:", error);
       }
@@ -112,12 +119,13 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
     connectSocket();
 
     return () => {
-      if (socket) {
+      // Only disconnect on unmount, not on every dependency change
+      if (socket && !isLoaded) {
         console.log("🔌 Disconnecting socket...");
         socket.disconnect();
       }
     };
-  }, [isLoaded, user, getToken]);
+  }, [isLoaded, user]); // Removed getToken from dependencies to prevent reconnections
 
   // Socket utility functions
   const sendMessage = (data: {

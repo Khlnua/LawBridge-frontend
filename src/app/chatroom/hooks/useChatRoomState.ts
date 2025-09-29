@@ -129,7 +129,7 @@ export default function useChatRoomState(chatRoomId: string): UseChatRoomState {
   } = useQuery(GET_MESSAGES, {
     variables: { chatRoomId },
     skip: !chatRoomId,
-    fetchPolicy: "cache-and-network",
+    fetchPolicy: "cache-first", // Changed from cache-and-network to prevent excessive refetches
     onCompleted: () => setIsLoading(false),
     onError: (err) => setError(err.message),
   });
@@ -164,7 +164,9 @@ export default function useChatRoomState(chatRoomId: string): UseChatRoomState {
   });
 
   // Find the other participant's userId
-  const otherUserId = chatRoomData?.getChatRoomById?.participants?.find((id: string) => id !== user?.id);
+  const otherUserId = chatRoomData?.getChatRoomById?.participants?.find(
+    (id: string) => id !== user?.id
+  );
 
   // Fetch lawyer info if the other participant is a lawyer
   const { data: lawyerData } = useQuery(GET_LAWYER_BY_ID, {
@@ -177,7 +179,8 @@ export default function useChatRoomState(chatRoomId: string): UseChatRoomState {
       setOtherUser({
         id: lawyerData.getLawyerById.clerkUserId,
         name: `${lawyerData.getLawyerById.firstName} ${lawyerData.getLawyerById.lastName}`.trim(),
-        avatar: lawyerData.getLawyerById.profilePicture || "/default-avatar.png",
+        avatar:
+          lawyerData.getLawyerById.profilePicture || "/default-avatar.png",
         isLawyer: true,
       });
     }
@@ -264,7 +267,7 @@ export default function useChatRoomState(chatRoomId: string): UseChatRoomState {
           );
           setMessages((prev) => [...prev, ...mapped]);
         }
-        await refetch();
+        // Removed automatic refetch to prevent unnecessary reloads
         setError(null);
       } catch (err) {
         setError(err instanceof Error ? err.message : String(err));

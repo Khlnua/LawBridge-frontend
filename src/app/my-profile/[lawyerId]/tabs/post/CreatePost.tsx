@@ -10,6 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useState, useRef, useEffect } from "react";
+import { useUser } from "@clerk/nextjs";
 
 import {
   Loader2,
@@ -38,6 +39,7 @@ const CreatePost = ({
   onPostStart,
   isModal = false,
 }: CreatePostProps) => {
+  const { user } = useUser();
   const [title, setTitle] = useState("");
   const [postContent, setPostContent] = useState("");
   const [specialization, setSpecialization] = useState<string[]>([]);
@@ -117,6 +119,11 @@ const CreatePost = ({
         onPostCreated();
       }
     },
+    // Refetch queries to show new data immediately
+    refetchQueries: [
+      "GetLawyerPosts", // Refetch lawyer posts
+      "GetPosts", // Refetch all posts
+    ],
     onError: (error) => {
       console.error("❌ Post creation failed:", error);
       console.error("❌ Error details:", error.message);
@@ -275,6 +282,17 @@ const CreatePost = ({
     }
 
     console.log("✅ Validation passed, proceeding with post creation");
+    console.log("🔍 Current URL path:", window.location.pathname);
+    console.log(
+      "🔍 Lawyer ID from URL:",
+      window.location.pathname.split("/").pop()
+    );
+    console.log("👤 User info:", {
+      id: user?.id,
+      role: user?.publicMetadata?.role,
+      firstName: user?.firstName,
+      lastName: user?.lastName,
+    });
 
     // Call onPostStart if provided
     if (onPostStart) {
@@ -337,6 +355,7 @@ const CreatePost = ({
           video: finalVideoUrl || undefined,
           audio: finalAudioUrl || undefined,
         },
+        lawyerId: user?.id || "default-lawyer-id", // Include lawyerId in the input
       };
 
       console.log("📝 Creating post with data:", postData);

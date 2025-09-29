@@ -81,9 +81,11 @@ export default function Header() {
             </SignedIn>
           </div>
 
-          <button className="md:hidden text-gray-600">
+          <div className="md:hidden text-gray-600">
             {isOpen ? (
-              <X className="w-6 h-6" onClick={() => setIsOpen(!isOpen)} />
+              <button onClick={() => setIsOpen(!isOpen)} className="p-2">
+                <X className="w-6 h-6" />
+              </button>
             ) : (
               <div className="flex gap-2 justify-center items-center">
                 <SignedIn>
@@ -98,10 +100,12 @@ export default function Header() {
                   )}
                 </SignedIn>
 
-                <Menu className="w-6 h-6" onClick={() => setIsOpen(!isOpen)} />
+                <button onClick={() => setIsOpen(!isOpen)} className="p-2">
+                  <Menu className="w-6 h-6" />
+                </button>
               </div>
             )}
-          </button>
+          </div>
         </div>
       </div>
 

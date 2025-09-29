@@ -162,7 +162,7 @@ export default function MessengerLayout() {
   // Debounced search query
   const debouncedSetSearch = useCallback(
     debounce((query: string) => setDebouncedSearchQuery(query), 300),
-    []
+    [] // Empty dependency array is correct for debounce
   );
 
   useEffect(() => {
@@ -179,20 +179,17 @@ export default function MessengerLayout() {
   }, [isMobile, selectedRoomId]);
 
   // Enhanced query with error handling and retry logic
-  const { data, loading, error, refetch } = useQuery(
-    GET_CHAT_ROOMS,
-    {
-      variables: { userId },
-      skip: !userId || !userLoaded,
-      fetchPolicy: "cache-and-network",
-      errorPolicy: "all",
-      pollInterval: isOnline ? 30000 : 0, // Stop polling when offline
-      notifyOnNetworkStatusChange: true,
-      onError: (err) => {
-        console.error("Chat rooms query error:", err);
-      },
-    }
-  );
+  const { data, loading, error, refetch } = useQuery(GET_CHAT_ROOMS, {
+    variables: { userId },
+    skip: !userId || !userLoaded,
+    fetchPolicy: "cache-first", // Changed from cache-and-network to prevent excessive refetches
+    errorPolicy: "all",
+    // Removed pollInterval to prevent automatic reloading
+    notifyOnNetworkStatusChange: false, // Disabled to prevent unnecessary re-renders
+    onError: (err) => {
+      console.error("Chat rooms query error:", err);
+    },
+  });
 
   // Get selected room and other participant
   const selectedRoomObj = useMemo(
@@ -207,14 +204,11 @@ export default function MessengerLayout() {
   );
 
   // Fetch lawyer info for the selected chat with error handling
-  const { data: selectedLawyerData } = useQuery(
-    GET_LAWYER_BY_ID,
-    {
-      variables: { lawyerId: selectedOtherId },
-      skip: !selectedOtherId,
-      errorPolicy: "all",
-    }
-  );
+  const { data: selectedLawyerData } = useQuery(GET_LAWYER_BY_ID, {
+    variables: { lawyerId: selectedOtherId },
+    skip: !selectedOtherId,
+    errorPolicy: "all",
+  });
 
   // Enhanced profile getter with fallback handling
   const getProfile = useCallback(
@@ -288,14 +282,11 @@ export default function MessengerLayout() {
   }, [filteredRooms, userId]);
 
   // Batch fetch all lawyers' info with error handling
-  const { data: lawyersData } = useQuery(
-    GET_LAWYERS_BY_IDS,
-    {
-      variables: { ids: lawyerIds },
-      skip: lawyerIds.length === 0,
-      errorPolicy: "all",
-    }
-  );
+  const { data: lawyersData } = useQuery(GET_LAWYERS_BY_IDS, {
+    variables: { ids: lawyerIds },
+    skip: lawyerIds.length === 0,
+    errorPolicy: "all",
+  });
 
   // Enhanced lawyer map with better indexing
   const lawyerMap = useMemo(() => {
@@ -635,9 +626,7 @@ export default function MessengerLayout() {
                           className={`text-sm text-gray-600 truncate ${
                             hasUnread ? "font-medium" : ""
                           }`}
-                        >
-                         
-                        </p>
+                        ></p>
                       </div>
                     </div>
                   );

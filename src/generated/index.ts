@@ -204,6 +204,7 @@ export type CreateNotificationInput = {
 
 export type CreatePostInput = {
   content: PostContentInput;
+  lawyerId?: InputMaybe<Scalars['ID']['input']>;
   specialization: Array<Scalars['ID']['input']>;
   title: Scalars['String']['input'];
 };
