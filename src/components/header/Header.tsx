@@ -12,6 +12,7 @@ import CustomUserButton from "./CustomUserButton";
 const navLinks = [
   { label: "Өмгөөлөгчид", href: "/find-lawyers" },
   { label: "Нийтлэл унших", href: "/legal-articles" },
+  { label: "Уулзалтууд", href: "/appointments" },
 ];
 
 export default function Header() {

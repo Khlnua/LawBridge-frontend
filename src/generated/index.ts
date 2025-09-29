@@ -131,6 +131,13 @@ export type ChatRoomsMessages = {
   userId: Scalars['String']['output'];
 };
 
+export type ClientInfo = {
+  __typename?: 'ClientInfo';
+  email?: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  name?: Maybe<Scalars['String']['output']>;
+};
+
 export type Comment = {
   __typename?: 'Comment';
   _id: Scalars['ID']['output'];
@@ -179,7 +186,7 @@ export type CreateDocumentInput = {
   content?: InputMaybe<Scalars['String']['input']>;
   images: Array<Scalars['String']['input']>;
   title: Scalars['String']['input'];
-  type?: InputMaybe<MediaType>;
+  type?: InputMaybe<DocumentMediaType>;
 };
 
 export type CreateLawyerInput = {
@@ -204,6 +211,7 @@ export type CreateNotificationInput = {
 
 export type CreatePostInput = {
   content: PostContentInput;
+  lawyerId?: InputMaybe<Scalars['ID']['input']>;
   specialization: Array<Scalars['ID']['input']>;
   title: Scalars['String']['input'];
 };
@@ -320,6 +328,7 @@ export type Mutation = {
   createReview: Review;
   createSpecialization: Array<Maybe<Specialization>>;
   deleteAchievement: Scalars['Boolean']['output'];
+  deleteAllMessages?: Maybe<Scalars['Boolean']['output']>;
   deleteComment: Scalars['Boolean']['output'];
   deleteLawyer: Scalars['Boolean']['output'];
   deletePost: Scalars['Boolean']['output'];
@@ -419,6 +428,11 @@ export type MutationCreateSpecializationArgs = {
 
 export type MutationDeleteAchievementArgs = {
   id: Scalars['ID']['input'];
+};
+
+
+export type MutationDeleteAllMessagesArgs = {
+  chatRoomId: Scalars['ID']['input'];
 };
 
 
@@ -749,6 +763,7 @@ export type QuerySearchPostsArgs = {
 export type Review = {
   __typename?: 'Review';
   clientId: Scalars['ID']['output'];
+  clientInfo?: Maybe<ClientInfo>;
   comment?: Maybe<Scalars['String']['output']>;
   createdAt: Scalars['Date']['output'];
   id: Scalars['ID']['output'];
@@ -852,6 +867,32 @@ export type GetAdminSpecializationsQueryVariables = Exact<{ [key: string]: never
 
 export type GetAdminSpecializationsQuery = { __typename?: 'Query', getAdminSpecializations: Array<{ __typename?: 'AdminSpecialization', id: string, categoryName: string }> };
 
+export type GetAppointmentsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetAppointmentsQuery = { __typename?: 'Query', getAppointments?: Array<{ __typename?: 'Appointment', id: string, clientId: string, lawyerId: string, status: AppointmentStatus, specializationId: string, notes?: string | null, createdAt?: string | null, chatRoomId?: string | null, slot: { __typename?: 'AvailableDay', day: string, startTime: string, endTime: string, booked: boolean } } | null> | null };
+
+export type GetAppointmentsByLawyerQueryVariables = Exact<{
+  lawyerId: Scalars['String']['input'];
+}>;
+
+
+export type GetAppointmentsByLawyerQuery = { __typename?: 'Query', getAppointmentsByLawyer?: Array<{ __typename?: 'Appointment', id: string, clientId: string, lawyerId: string, status: AppointmentStatus, chatRoomId?: string | null, price?: number | null, subscription: boolean, specializationId: string, createdAt?: string | null, endedAt?: string | null, notes?: string | null, slot: { __typename?: 'AvailableDay', day: string, startTime: string, endTime: string, booked: boolean }, specialization?: { __typename?: 'Specialization', _id: string, lawyerId: string, specializationId: string, categoryName?: string | null, subscription: boolean, pricePerHour?: number | null } | null } | null> | null };
+
+export type GetAppointmentsByUserQueryVariables = Exact<{
+  clientId: Scalars['String']['input'];
+}>;
+
+
+export type GetAppointmentsByUserQuery = { __typename?: 'Query', getAppointmentsByUser?: Array<{ __typename?: 'Appointment', id: string, clientId: string, lawyerId: string, status: AppointmentStatus, chatRoomId?: string | null, price?: number | null, subscription: boolean, specializationId: string, createdAt?: string | null, endedAt?: string | null, notes?: string | null, slot: { __typename?: 'AvailableDay', day: string, startTime: string, endTime: string, booked: boolean }, specialization?: { __typename?: 'Specialization', _id: string, lawyerId: string, specializationId: string, categoryName?: string | null, subscription: boolean, pricePerHour?: number | null } | null } | null> | null };
+
+export type GetAppointmentByIdQueryVariables = Exact<{
+  getAppointmentByIdId: Scalars['String']['input'];
+}>;
+
+
+export type GetAppointmentByIdQuery = { __typename?: 'Query', getAppointmentById?: { __typename?: 'Appointment', id: string, clientId: string, lawyerId: string, status: AppointmentStatus, chatRoomId?: string | null, price?: number | null, subscription: boolean, specializationId: string, createdAt?: string | null, endedAt?: string | null, notes?: string | null, slot: { __typename?: 'AvailableDay', day: string, startTime: string, endTime: string, booked: boolean }, specialization?: { __typename?: 'Specialization', _id: string, lawyerId: string, specializationId: string, categoryName?: string | null, subscription: boolean, pricePerHour?: number | null } | null } | null };
+
 export type CreateAppointmentMutationVariables = Exact<{
   input: CreateAppointmentInput;
 }>;
@@ -872,6 +913,60 @@ export type GetChatHistoryByUserQueryVariables = Exact<{
 
 
 export type GetChatHistoryByUserQuery = { __typename?: 'Query', getChatHistoryByUser: Array<{ __typename?: 'ChatHistory', _id: string, userId: string, sessionId: string, userMessage: string, botResponse: any, createdAt: string }> };
+
+export type CreateMessageMutationVariables = Exact<{
+  chatRoomId: Scalars['ID']['input'];
+  userId: Scalars['String']['input'];
+  type: MediaType;
+  content?: InputMaybe<Scalars['String']['input']>;
+}>;
+
+
+export type CreateMessageMutation = { __typename?: 'Mutation', createMessage?: { __typename?: 'Message', chatRoomId: string, ChatRoomsMessages: Array<{ __typename?: 'ChatRoomsMessages', _id: string, userId: string, type: MediaType, content: string, createdAt: string }> } | null };
+
+export type DeleteAllMessagesMutationVariables = Exact<{
+  chatRoomId: Scalars['ID']['input'];
+}>;
+
+
+export type DeleteAllMessagesMutation = { __typename?: 'Mutation', deleteAllMessages?: boolean | null };
+
+export type GetMessagesQueryVariables = Exact<{
+  chatRoomId: Scalars['ID']['input'];
+}>;
+
+
+export type GetMessagesQuery = { __typename?: 'Query', getMessages: Array<{ __typename?: 'Message', chatRoomId: string, ChatRoomsMessages: Array<{ __typename?: 'ChatRoomsMessages', _id: string, userId: string, type: MediaType, content: string, createdAt: string }> }> };
+
+export type GetChatRoomByUserQueryVariables = Exact<{
+  userId: Scalars['String']['input'];
+}>;
+
+
+export type GetChatRoomByUserQuery = { __typename?: 'Query', getChatRoomByUser: Array<{ __typename?: 'ChatRoom', _id: string, participants: Array<string>, appointmentId: string, allowedMedia?: AllowedMediaEnum | null, lastMessage?: { __typename?: 'Message', chatRoomId: string, ChatRoomsMessages: Array<{ __typename?: 'ChatRoomsMessages', _id: string, userId: string, type: MediaType, content: string, createdAt: string }> } | null }> };
+
+export type GetChatRoomByIdQueryVariables = Exact<{
+  id: Scalars['String']['input'];
+}>;
+
+
+export type GetChatRoomByIdQuery = { __typename?: 'Query', getChatRoomById?: { __typename?: 'ChatRoom', _id: string, participants: Array<string>, appointmentId: string, allowedMedia?: AllowedMediaEnum | null } | null };
+
+export type GetLawyerByIdQueryVariables = Exact<{
+  lawyerId: Scalars['ID']['input'];
+}>;
+
+
+export type GetLawyerByIdQuery = { __typename?: 'Query', getLawyerById?: { __typename?: 'Lawyer', _id: string, lawyerId: string, clerkUserId?: string | null, clientId?: string | null, firstName: string, lastName: string, email: string, licenseNumber: string, bio?: string | null, university?: string | null, status?: LawyerRequestStatus | null, document?: string | null, rating?: number | null, profilePicture: string, createdAt: any, updatedAt?: any | null, specialization: Array<{ __typename?: 'Specialization', _id: string, lawyerId: string, specializationId: string, categoryName?: string | null, subscription: boolean, pricePerHour?: number | null }>, achievements: Array<{ __typename?: 'Achievement', _id: string, title: string, description: string, threshold: number, icon?: string | null }> } | null };
+
+export type CreateReviewMutationVariables = Exact<{
+  clientId: Scalars['ID']['input'];
+  lawyerId: Scalars['ID']['input'];
+  input: CreateReviewInput;
+}>;
+
+
+export type CreateReviewMutation = { __typename?: 'Mutation', createReview: { __typename?: 'Review', id: string, clientId: string, lawyerId: string, rating: number, comment?: string | null, createdAt: any, updatedAt: any } };
 
 export type CreateSpecializationMutationVariables = Exact<{
   input?: InputMaybe<SpecializationInput>;
@@ -921,6 +1016,250 @@ export type GetAdminSpecializationsQueryHookResult = ReturnType<typeof useGetAdm
 export type GetAdminSpecializationsLazyQueryHookResult = ReturnType<typeof useGetAdminSpecializationsLazyQuery>;
 export type GetAdminSpecializationsSuspenseQueryHookResult = ReturnType<typeof useGetAdminSpecializationsSuspenseQuery>;
 export type GetAdminSpecializationsQueryResult = Apollo.QueryResult<GetAdminSpecializationsQuery, GetAdminSpecializationsQueryVariables>;
+export const GetAppointmentsDocument = gql`
+    query GetAppointments {
+  getAppointments {
+    id
+    clientId
+    lawyerId
+    status
+    specializationId
+    slot {
+      day
+      startTime
+      endTime
+      booked
+    }
+    notes
+    createdAt
+    chatRoomId
+  }
+}
+    `;
+
+/**
+ * __useGetAppointmentsQuery__
+ *
+ * To run a query within a React component, call `useGetAppointmentsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetAppointmentsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetAppointmentsQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetAppointmentsQuery(baseOptions?: Apollo.QueryHookOptions<GetAppointmentsQuery, GetAppointmentsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetAppointmentsQuery, GetAppointmentsQueryVariables>(GetAppointmentsDocument, options);
+      }
+export function useGetAppointmentsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetAppointmentsQuery, GetAppointmentsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetAppointmentsQuery, GetAppointmentsQueryVariables>(GetAppointmentsDocument, options);
+        }
+export function useGetAppointmentsSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetAppointmentsQuery, GetAppointmentsQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetAppointmentsQuery, GetAppointmentsQueryVariables>(GetAppointmentsDocument, options);
+        }
+export type GetAppointmentsQueryHookResult = ReturnType<typeof useGetAppointmentsQuery>;
+export type GetAppointmentsLazyQueryHookResult = ReturnType<typeof useGetAppointmentsLazyQuery>;
+export type GetAppointmentsSuspenseQueryHookResult = ReturnType<typeof useGetAppointmentsSuspenseQuery>;
+export type GetAppointmentsQueryResult = Apollo.QueryResult<GetAppointmentsQuery, GetAppointmentsQueryVariables>;
+export const GetAppointmentsByLawyerDocument = gql`
+    query GetAppointmentsByLawyer($lawyerId: String!) {
+  getAppointmentsByLawyer(lawyerId: $lawyerId) {
+    id
+    clientId
+    lawyerId
+    status
+    chatRoomId
+    price
+    subscription
+    specializationId
+    slot {
+      day
+      startTime
+      endTime
+      booked
+    }
+    specialization {
+      _id
+      lawyerId
+      specializationId
+      categoryName
+      subscription
+      pricePerHour
+    }
+    createdAt
+    endedAt
+    notes
+  }
+}
+    `;
+
+/**
+ * __useGetAppointmentsByLawyerQuery__
+ *
+ * To run a query within a React component, call `useGetAppointmentsByLawyerQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetAppointmentsByLawyerQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetAppointmentsByLawyerQuery({
+ *   variables: {
+ *      lawyerId: // value for 'lawyerId'
+ *   },
+ * });
+ */
+export function useGetAppointmentsByLawyerQuery(baseOptions: Apollo.QueryHookOptions<GetAppointmentsByLawyerQuery, GetAppointmentsByLawyerQueryVariables> & ({ variables: GetAppointmentsByLawyerQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetAppointmentsByLawyerQuery, GetAppointmentsByLawyerQueryVariables>(GetAppointmentsByLawyerDocument, options);
+      }
+export function useGetAppointmentsByLawyerLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetAppointmentsByLawyerQuery, GetAppointmentsByLawyerQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetAppointmentsByLawyerQuery, GetAppointmentsByLawyerQueryVariables>(GetAppointmentsByLawyerDocument, options);
+        }
+export function useGetAppointmentsByLawyerSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetAppointmentsByLawyerQuery, GetAppointmentsByLawyerQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetAppointmentsByLawyerQuery, GetAppointmentsByLawyerQueryVariables>(GetAppointmentsByLawyerDocument, options);
+        }
+export type GetAppointmentsByLawyerQueryHookResult = ReturnType<typeof useGetAppointmentsByLawyerQuery>;
+export type GetAppointmentsByLawyerLazyQueryHookResult = ReturnType<typeof useGetAppointmentsByLawyerLazyQuery>;
+export type GetAppointmentsByLawyerSuspenseQueryHookResult = ReturnType<typeof useGetAppointmentsByLawyerSuspenseQuery>;
+export type GetAppointmentsByLawyerQueryResult = Apollo.QueryResult<GetAppointmentsByLawyerQuery, GetAppointmentsByLawyerQueryVariables>;
+export const GetAppointmentsByUserDocument = gql`
+    query GetAppointmentsByUser($clientId: String!) {
+  getAppointmentsByUser(clientId: $clientId) {
+    id
+    clientId
+    lawyerId
+    status
+    chatRoomId
+    price
+    subscription
+    specializationId
+    slot {
+      day
+      startTime
+      endTime
+      booked
+    }
+    specialization {
+      _id
+      lawyerId
+      specializationId
+      categoryName
+      subscription
+      pricePerHour
+    }
+    createdAt
+    endedAt
+    notes
+  }
+}
+    `;
+
+/**
+ * __useGetAppointmentsByUserQuery__
+ *
+ * To run a query within a React component, call `useGetAppointmentsByUserQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetAppointmentsByUserQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetAppointmentsByUserQuery({
+ *   variables: {
+ *      clientId: // value for 'clientId'
+ *   },
+ * });
+ */
+export function useGetAppointmentsByUserQuery(baseOptions: Apollo.QueryHookOptions<GetAppointmentsByUserQuery, GetAppointmentsByUserQueryVariables> & ({ variables: GetAppointmentsByUserQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetAppointmentsByUserQuery, GetAppointmentsByUserQueryVariables>(GetAppointmentsByUserDocument, options);
+      }
+export function useGetAppointmentsByUserLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetAppointmentsByUserQuery, GetAppointmentsByUserQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetAppointmentsByUserQuery, GetAppointmentsByUserQueryVariables>(GetAppointmentsByUserDocument, options);
+        }
+export function useGetAppointmentsByUserSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetAppointmentsByUserQuery, GetAppointmentsByUserQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetAppointmentsByUserQuery, GetAppointmentsByUserQueryVariables>(GetAppointmentsByUserDocument, options);
+        }
+export type GetAppointmentsByUserQueryHookResult = ReturnType<typeof useGetAppointmentsByUserQuery>;
+export type GetAppointmentsByUserLazyQueryHookResult = ReturnType<typeof useGetAppointmentsByUserLazyQuery>;
+export type GetAppointmentsByUserSuspenseQueryHookResult = ReturnType<typeof useGetAppointmentsByUserSuspenseQuery>;
+export type GetAppointmentsByUserQueryResult = Apollo.QueryResult<GetAppointmentsByUserQuery, GetAppointmentsByUserQueryVariables>;
+export const GetAppointmentByIdDocument = gql`
+    query GetAppointmentById($getAppointmentByIdId: String!) {
+  getAppointmentById(id: $getAppointmentByIdId) {
+    id
+    clientId
+    lawyerId
+    status
+    chatRoomId
+    price
+    subscription
+    specializationId
+    slot {
+      day
+      startTime
+      endTime
+      booked
+    }
+    specialization {
+      _id
+      lawyerId
+      specializationId
+      categoryName
+      subscription
+      pricePerHour
+    }
+    createdAt
+    endedAt
+    notes
+  }
+}
+    `;
+
+/**
+ * __useGetAppointmentByIdQuery__
+ *
+ * To run a query within a React component, call `useGetAppointmentByIdQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetAppointmentByIdQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetAppointmentByIdQuery({
+ *   variables: {
+ *      getAppointmentByIdId: // value for 'getAppointmentByIdId'
+ *   },
+ * });
+ */
+export function useGetAppointmentByIdQuery(baseOptions: Apollo.QueryHookOptions<GetAppointmentByIdQuery, GetAppointmentByIdQueryVariables> & ({ variables: GetAppointmentByIdQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetAppointmentByIdQuery, GetAppointmentByIdQueryVariables>(GetAppointmentByIdDocument, options);
+      }
+export function useGetAppointmentByIdLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetAppointmentByIdQuery, GetAppointmentByIdQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetAppointmentByIdQuery, GetAppointmentByIdQueryVariables>(GetAppointmentByIdDocument, options);
+        }
+export function useGetAppointmentByIdSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetAppointmentByIdQuery, GetAppointmentByIdQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetAppointmentByIdQuery, GetAppointmentByIdQueryVariables>(GetAppointmentByIdDocument, options);
+        }
+export type GetAppointmentByIdQueryHookResult = ReturnType<typeof useGetAppointmentByIdQuery>;
+export type GetAppointmentByIdLazyQueryHookResult = ReturnType<typeof useGetAppointmentByIdLazyQuery>;
+export type GetAppointmentByIdSuspenseQueryHookResult = ReturnType<typeof useGetAppointmentByIdSuspenseQuery>;
+export type GetAppointmentByIdQueryResult = Apollo.QueryResult<GetAppointmentByIdQuery, GetAppointmentByIdQueryVariables>;
 export const CreateAppointmentDocument = gql`
     mutation CreateAppointment($input: CreateAppointmentInput!) {
   createAppointment(input: $input) {
@@ -1058,6 +1397,339 @@ export type GetChatHistoryByUserQueryHookResult = ReturnType<typeof useGetChatHi
 export type GetChatHistoryByUserLazyQueryHookResult = ReturnType<typeof useGetChatHistoryByUserLazyQuery>;
 export type GetChatHistoryByUserSuspenseQueryHookResult = ReturnType<typeof useGetChatHistoryByUserSuspenseQuery>;
 export type GetChatHistoryByUserQueryResult = Apollo.QueryResult<GetChatHistoryByUserQuery, GetChatHistoryByUserQueryVariables>;
+export const CreateMessageDocument = gql`
+    mutation CreateMessage($chatRoomId: ID!, $userId: String!, $type: MediaType!, $content: String) {
+  createMessage(
+    chatRoomId: $chatRoomId
+    userId: $userId
+    type: $type
+    content: $content
+  ) {
+    chatRoomId
+    ChatRoomsMessages {
+      _id
+      userId
+      type
+      content
+      createdAt
+    }
+  }
+}
+    `;
+export type CreateMessageMutationFn = Apollo.MutationFunction<CreateMessageMutation, CreateMessageMutationVariables>;
+
+/**
+ * __useCreateMessageMutation__
+ *
+ * To run a mutation, you first call `useCreateMessageMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateMessageMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createMessageMutation, { data, loading, error }] = useCreateMessageMutation({
+ *   variables: {
+ *      chatRoomId: // value for 'chatRoomId'
+ *      userId: // value for 'userId'
+ *      type: // value for 'type'
+ *      content: // value for 'content'
+ *   },
+ * });
+ */
+export function useCreateMessageMutation(baseOptions?: Apollo.MutationHookOptions<CreateMessageMutation, CreateMessageMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateMessageMutation, CreateMessageMutationVariables>(CreateMessageDocument, options);
+      }
+export type CreateMessageMutationHookResult = ReturnType<typeof useCreateMessageMutation>;
+export type CreateMessageMutationResult = Apollo.MutationResult<CreateMessageMutation>;
+export type CreateMessageMutationOptions = Apollo.BaseMutationOptions<CreateMessageMutation, CreateMessageMutationVariables>;
+export const DeleteAllMessagesDocument = gql`
+    mutation DeleteAllMessages($chatRoomId: ID!) {
+  deleteAllMessages(chatRoomId: $chatRoomId)
+}
+    `;
+export type DeleteAllMessagesMutationFn = Apollo.MutationFunction<DeleteAllMessagesMutation, DeleteAllMessagesMutationVariables>;
+
+/**
+ * __useDeleteAllMessagesMutation__
+ *
+ * To run a mutation, you first call `useDeleteAllMessagesMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteAllMessagesMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteAllMessagesMutation, { data, loading, error }] = useDeleteAllMessagesMutation({
+ *   variables: {
+ *      chatRoomId: // value for 'chatRoomId'
+ *   },
+ * });
+ */
+export function useDeleteAllMessagesMutation(baseOptions?: Apollo.MutationHookOptions<DeleteAllMessagesMutation, DeleteAllMessagesMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DeleteAllMessagesMutation, DeleteAllMessagesMutationVariables>(DeleteAllMessagesDocument, options);
+      }
+export type DeleteAllMessagesMutationHookResult = ReturnType<typeof useDeleteAllMessagesMutation>;
+export type DeleteAllMessagesMutationResult = Apollo.MutationResult<DeleteAllMessagesMutation>;
+export type DeleteAllMessagesMutationOptions = Apollo.BaseMutationOptions<DeleteAllMessagesMutation, DeleteAllMessagesMutationVariables>;
+export const GetMessagesDocument = gql`
+    query GetMessages($chatRoomId: ID!) {
+  getMessages(chatRoomId: $chatRoomId) {
+    chatRoomId
+    ChatRoomsMessages {
+      _id
+      userId
+      type
+      content
+      createdAt
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetMessagesQuery__
+ *
+ * To run a query within a React component, call `useGetMessagesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetMessagesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetMessagesQuery({
+ *   variables: {
+ *      chatRoomId: // value for 'chatRoomId'
+ *   },
+ * });
+ */
+export function useGetMessagesQuery(baseOptions: Apollo.QueryHookOptions<GetMessagesQuery, GetMessagesQueryVariables> & ({ variables: GetMessagesQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetMessagesQuery, GetMessagesQueryVariables>(GetMessagesDocument, options);
+      }
+export function useGetMessagesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetMessagesQuery, GetMessagesQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetMessagesQuery, GetMessagesQueryVariables>(GetMessagesDocument, options);
+        }
+export function useGetMessagesSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetMessagesQuery, GetMessagesQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetMessagesQuery, GetMessagesQueryVariables>(GetMessagesDocument, options);
+        }
+export type GetMessagesQueryHookResult = ReturnType<typeof useGetMessagesQuery>;
+export type GetMessagesLazyQueryHookResult = ReturnType<typeof useGetMessagesLazyQuery>;
+export type GetMessagesSuspenseQueryHookResult = ReturnType<typeof useGetMessagesSuspenseQuery>;
+export type GetMessagesQueryResult = Apollo.QueryResult<GetMessagesQuery, GetMessagesQueryVariables>;
+export const GetChatRoomByUserDocument = gql`
+    query GetChatRoomByUser($userId: String!) {
+  getChatRoomByUser(userId: $userId) {
+    _id
+    participants
+    appointmentId
+    allowedMedia
+    lastMessage {
+      chatRoomId
+      ChatRoomsMessages {
+        _id
+        userId
+        type
+        content
+        createdAt
+      }
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetChatRoomByUserQuery__
+ *
+ * To run a query within a React component, call `useGetChatRoomByUserQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetChatRoomByUserQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetChatRoomByUserQuery({
+ *   variables: {
+ *      userId: // value for 'userId'
+ *   },
+ * });
+ */
+export function useGetChatRoomByUserQuery(baseOptions: Apollo.QueryHookOptions<GetChatRoomByUserQuery, GetChatRoomByUserQueryVariables> & ({ variables: GetChatRoomByUserQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetChatRoomByUserQuery, GetChatRoomByUserQueryVariables>(GetChatRoomByUserDocument, options);
+      }
+export function useGetChatRoomByUserLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetChatRoomByUserQuery, GetChatRoomByUserQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetChatRoomByUserQuery, GetChatRoomByUserQueryVariables>(GetChatRoomByUserDocument, options);
+        }
+export function useGetChatRoomByUserSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetChatRoomByUserQuery, GetChatRoomByUserQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetChatRoomByUserQuery, GetChatRoomByUserQueryVariables>(GetChatRoomByUserDocument, options);
+        }
+export type GetChatRoomByUserQueryHookResult = ReturnType<typeof useGetChatRoomByUserQuery>;
+export type GetChatRoomByUserLazyQueryHookResult = ReturnType<typeof useGetChatRoomByUserLazyQuery>;
+export type GetChatRoomByUserSuspenseQueryHookResult = ReturnType<typeof useGetChatRoomByUserSuspenseQuery>;
+export type GetChatRoomByUserQueryResult = Apollo.QueryResult<GetChatRoomByUserQuery, GetChatRoomByUserQueryVariables>;
+export const GetChatRoomByIdDocument = gql`
+    query GetChatRoomById($id: String!) {
+  getChatRoomById(_id: $id) {
+    _id
+    participants
+    appointmentId
+    allowedMedia
+  }
+}
+    `;
+
+/**
+ * __useGetChatRoomByIdQuery__
+ *
+ * To run a query within a React component, call `useGetChatRoomByIdQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetChatRoomByIdQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetChatRoomByIdQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useGetChatRoomByIdQuery(baseOptions: Apollo.QueryHookOptions<GetChatRoomByIdQuery, GetChatRoomByIdQueryVariables> & ({ variables: GetChatRoomByIdQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetChatRoomByIdQuery, GetChatRoomByIdQueryVariables>(GetChatRoomByIdDocument, options);
+      }
+export function useGetChatRoomByIdLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetChatRoomByIdQuery, GetChatRoomByIdQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetChatRoomByIdQuery, GetChatRoomByIdQueryVariables>(GetChatRoomByIdDocument, options);
+        }
+export function useGetChatRoomByIdSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetChatRoomByIdQuery, GetChatRoomByIdQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetChatRoomByIdQuery, GetChatRoomByIdQueryVariables>(GetChatRoomByIdDocument, options);
+        }
+export type GetChatRoomByIdQueryHookResult = ReturnType<typeof useGetChatRoomByIdQuery>;
+export type GetChatRoomByIdLazyQueryHookResult = ReturnType<typeof useGetChatRoomByIdLazyQuery>;
+export type GetChatRoomByIdSuspenseQueryHookResult = ReturnType<typeof useGetChatRoomByIdSuspenseQuery>;
+export type GetChatRoomByIdQueryResult = Apollo.QueryResult<GetChatRoomByIdQuery, GetChatRoomByIdQueryVariables>;
+export const GetLawyerByIdDocument = gql`
+    query GetLawyerById($lawyerId: ID!) {
+  getLawyerById(lawyerId: $lawyerId) {
+    _id
+    lawyerId
+    clerkUserId
+    clientId
+    firstName
+    lastName
+    email
+    licenseNumber
+    bio
+    university
+    specialization {
+      _id
+      lawyerId
+      specializationId
+      categoryName
+      subscription
+      pricePerHour
+    }
+    achievements {
+      _id
+      title
+      description
+      threshold
+      icon
+    }
+    status
+    document
+    rating
+    profilePicture
+    createdAt
+    updatedAt
+  }
+}
+    `;
+
+/**
+ * __useGetLawyerByIdQuery__
+ *
+ * To run a query within a React component, call `useGetLawyerByIdQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetLawyerByIdQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetLawyerByIdQuery({
+ *   variables: {
+ *      lawyerId: // value for 'lawyerId'
+ *   },
+ * });
+ */
+export function useGetLawyerByIdQuery(baseOptions: Apollo.QueryHookOptions<GetLawyerByIdQuery, GetLawyerByIdQueryVariables> & ({ variables: GetLawyerByIdQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetLawyerByIdQuery, GetLawyerByIdQueryVariables>(GetLawyerByIdDocument, options);
+      }
+export function useGetLawyerByIdLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetLawyerByIdQuery, GetLawyerByIdQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetLawyerByIdQuery, GetLawyerByIdQueryVariables>(GetLawyerByIdDocument, options);
+        }
+export function useGetLawyerByIdSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetLawyerByIdQuery, GetLawyerByIdQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetLawyerByIdQuery, GetLawyerByIdQueryVariables>(GetLawyerByIdDocument, options);
+        }
+export type GetLawyerByIdQueryHookResult = ReturnType<typeof useGetLawyerByIdQuery>;
+export type GetLawyerByIdLazyQueryHookResult = ReturnType<typeof useGetLawyerByIdLazyQuery>;
+export type GetLawyerByIdSuspenseQueryHookResult = ReturnType<typeof useGetLawyerByIdSuspenseQuery>;
+export type GetLawyerByIdQueryResult = Apollo.QueryResult<GetLawyerByIdQuery, GetLawyerByIdQueryVariables>;
+export const CreateReviewDocument = gql`
+    mutation CreateReview($clientId: ID!, $lawyerId: ID!, $input: CreateReviewInput!) {
+  createReview(clientId: $clientId, lawyerId: $lawyerId, input: $input) {
+    id
+    clientId
+    lawyerId
+    rating
+    comment
+    createdAt
+    updatedAt
+  }
+}
+    `;
+export type CreateReviewMutationFn = Apollo.MutationFunction<CreateReviewMutation, CreateReviewMutationVariables>;
+
+/**
+ * __useCreateReviewMutation__
+ *
+ * To run a mutation, you first call `useCreateReviewMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateReviewMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createReviewMutation, { data, loading, error }] = useCreateReviewMutation({
+ *   variables: {
+ *      clientId: // value for 'clientId'
+ *      lawyerId: // value for 'lawyerId'
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useCreateReviewMutation(baseOptions?: Apollo.MutationHookOptions<CreateReviewMutation, CreateReviewMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateReviewMutation, CreateReviewMutationVariables>(CreateReviewDocument, options);
+      }
+export type CreateReviewMutationHookResult = ReturnType<typeof useCreateReviewMutation>;
+export type CreateReviewMutationResult = Apollo.MutationResult<CreateReviewMutation>;
+export type CreateReviewMutationOptions = Apollo.BaseMutationOptions<CreateReviewMutation, CreateReviewMutationVariables>;
 export const CreateSpecializationDocument = gql`
     mutation CreateSpecialization($input: SpecializationInput) {
   createSpecialization(input: $input) {

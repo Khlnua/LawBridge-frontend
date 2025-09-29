@@ -1,0 +1,15 @@
+mutation CreateReview(
+  $clientId: ID!
+  $lawyerId: ID!
+  $input: CreateReviewInput!
+) {
+  createReview(clientId: $clientId, lawyerId: $lawyerId, input: $input) {
+    id
+    clientId
+    lawyerId
+    rating
+    comment
+    createdAt
+    updatedAt
+  }
+}

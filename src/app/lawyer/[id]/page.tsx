@@ -280,12 +280,20 @@ const LawyerProfile = ({ params }: Props) => {
       selectedSlot,
       "user:",
       currentUser,
+      "userId:",
+      currentUser?.id,
       "lawyerId:",
       lawyer._id,
       "specializationId:",
       selectedSpecializationId
     );
-    if (!selectedSlot || !currentUser) {
+    if (!selectedSlot || !currentUser || !currentUser.id) {
+      console.error("Missing required data for appointment:", {
+        selectedSlot: !!selectedSlot,
+        currentUser: !!currentUser,
+        userId: currentUser?.id,
+        userObject: currentUser,
+      });
       setAppointmentStatus({
         type: "error",
         message: "Нэвтэрч орохоос өмнө цаг захиалах боломжгүй.",
@@ -300,19 +308,23 @@ const LawyerProfile = ({ params }: Props) => {
       return;
     }
     try {
+      const appointmentInput = {
+        clientId: currentUser.id,
+        lawyerId: id,
+        specializationId: selectedSpecializationId,
+        slot: {
+          day: selectedSlot.day,
+          startTime: selectedSlot.startTime,
+          endTime: selectedSlot.endTime,
+        },
+        notes: appointmentNotes.trim(),
+      };
+
+      console.log("Sending appointment input:", appointmentInput);
+
       await createAppointment({
         variables: {
-          input: {
-            clientId: currentUser.id,
-            lawyerId: id,
-            specializationId: selectedSpecializationId,
-            slot: {
-              day: selectedSlot.day,
-              startTime: selectedSlot.startTime,
-              endTime: selectedSlot.endTime,
-            },
-            notes: appointmentNotes.trim(),
-          },
+          input: appointmentInput,
         },
       });
     } catch (error) {
