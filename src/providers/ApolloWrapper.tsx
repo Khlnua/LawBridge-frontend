@@ -13,7 +13,7 @@ import { ReactNode, useMemo } from "react";
 import { useAuth } from "@clerk/nextjs";
 
 const httpLink = createHttpLink({
-  uri: "https://lawbridge-server.onrender.com/graphql",
+  uri: "http://localhost:4000/graphql",
 });
 
 export const ApolloWrapper = ({ children }: { children: ReactNode }) => {

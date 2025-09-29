@@ -89,24 +89,47 @@ const ThirdCardForLawyer = ({
           let price = 0;
 
           if (sub) {
-            const raw = hourlyRates[specId].split(" ")[1].replace(/'/g, "");
-            price = parseInt(raw, 10);
+            try {
+              const hourlyRate = hourlyRates[specId];
+              if (hourlyRate) {
+                // Extract number from formatted string (e.g., "₮ 50,000" -> "50000")
+                const raw = hourlyRate.replace(/[^\d]/g, "");
+                price = parseInt(raw, 10) || 0;
+              }
+            } catch (error) {
+              console.error("Error parsing hourly rate:", error);
+              price = 0;
+            }
           }
 
-          await createSpecialization({
-            variables: {
-              input: {
-                specializations: [
-                  {
-                    lawyerId: lawyerId,
-                    specializationId: specId,
-                    subscription: sub,
-                    pricePerHour: price,
-                  },
-                ],
+          try {
+            console.log(`Creating specialization for ${specId}:`, {
+              lawyerId,
+              specializationId: specId,
+              subscription: sub,
+              pricePerHour: price,
+            });
+
+            await createSpecialization({
+              variables: {
+                input: {
+                  specializations: [
+                    {
+                      lawyerId: lawyerId,
+                      specializationId: specId,
+                      subscription: sub,
+                      pricePerHour: price,
+                    },
+                  ],
+                },
               },
-            },
-          });
+            });
+
+            console.log(`Successfully created specialization for ${specId}`);
+          } catch (error) {
+            console.error(`Failed to create specialization for ${specId}:`, error);
+            throw error; // Re-throw to be caught by the outer try-catch
+          }
         })
       );
 
