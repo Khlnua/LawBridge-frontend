@@ -554,44 +554,52 @@ export default function LawyerSchedule({ lawyerId }: LawyerScheduleProps) {
 
       {Object.keys(availability).length > 0 && (
         <div className="grid gap-4">
-          {Object.entries(availability).map(([dateKey, slots]) => (
-            <div key={dateKey} className="bg-gray-100 border border-emerald-100 rounded-xl p-5">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-3">
-                  <div>
-                    <h4 className="font-semibold text-gray-900">
-                      {new Date(dateKey).toLocaleDateString("mn-MN", {
-                        year: "numeric",
-                        month: "long",
-                        day: "numeric",
-                        weekday: "long",
-                      })}
-                    </h4>
-                  </div>
-                </div>
-                <span className="bg-emerald-100 text-emerald-800 px-3 py-1 rounded-full text-sm font-medium">{slots.length} цаг</span>
-              </div>
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2">
-                {slots.map((slot) => (
-                  <div
-                    key={slot}
-                    className={`relative bg-white border border-emerald-200 rounded-lg px-3 py-2 text-center group hover:bg-red-50 hover:border-red-200 transition-colors cursor-pointer ${
-                      isDeleting ? "opacity-50 cursor-not-allowed" : ""
-                    }`}
-                    onClick={() => !isDeleting && removeTimeSlot(dateKey, slot)}
-                  >
-                    <div className="text-sm font-semibold text-gray-900 group-hover:text-red-700">{slot}</div>
-                    <div className="text-xs text-gray-500 group-hover:text-red-500">{addMinutesToTime(slot, 60)}</div>
-
-                    {/* X button that appears on hover */}
-                    <div className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-xs font-bold hover:bg-red-600">
-                      ×
+          {Object.entries(availability)
+            .filter(([dateKey]) => {
+              const today = new Date();
+              today.setHours(0, 0, 0, 0);
+              const dateObj = new Date(dateKey);
+              dateObj.setHours(0, 0, 0, 0);
+              return dateObj >= today;
+            })
+            .map(([dateKey, slots]) => (
+              <div key={dateKey} className="bg-gray-100 border border-emerald-100 rounded-xl p-5">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-3">
+                    <div>
+                      <h4 className="font-semibold text-gray-900">
+                        {new Date(dateKey).toLocaleDateString("mn-MN", {
+                          year: "numeric",
+                          month: "long",
+                          day: "numeric",
+                          weekday: "long",
+                        })}
+                      </h4>
                     </div>
                   </div>
-                ))}
+                  <span className="bg-emerald-100 text-emerald-800 px-3 py-1 rounded-full text-sm font-medium">{slots.length} цаг</span>
+                </div>
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2">
+                  {slots.map((slot) => (
+                    <div
+                      key={slot}
+                      className={`relative bg-white border border-emerald-200 rounded-lg px-3 py-2 text-center group hover:bg-red-50 hover:border-red-200 transition-colors cursor-pointer ${
+                        isDeleting ? "opacity-50 cursor-not-allowed" : ""
+                      }`}
+                      onClick={() => !isDeleting && removeTimeSlot(dateKey, slot)}
+                    >
+                      <div className="text-sm font-semibold text-gray-900 group-hover:text-red-700">{slot}</div>
+                      <div className="text-xs text-gray-500 group-hover:text-red-500">{addMinutesToTime(slot, 60)}</div>
+
+                      {/* X button that appears on hover */}
+                      <div className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-xs font-bold hover:bg-red-600">
+                        ×
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
         </div>
       )}
     </div>
