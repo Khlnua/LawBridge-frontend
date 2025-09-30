@@ -45,6 +45,11 @@ const ChatMessageBubble: React.FC<ChatMessageBubbleProps> = ({
         <ReactMarkdown
           remarkPlugins={[remarkGfm]}
           components={{
+            p: ({ children, ...props }) => (
+              <div {...props} className="mb-2 last:mb-0">
+                {children}
+              </div>
+            ),
             code: ({
               inline,
               className,

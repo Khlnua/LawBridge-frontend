@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Badge } from "@/components/ui";
+import { Badge } from "@/components/ui";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { GET_SPECIALIZATION_BY_LAWYER_ID } from "@/graphql/specializationsbylawyer";
@@ -16,14 +16,7 @@ type LawyerCardProps = {
   reviewCount?: number;
 };
 
-const LawyerCard = ({
-  id,
-  name,
-  status,
-  avatarImage,
-  rating,
-  reviewCount,
-}: LawyerCardProps) => {
+const LawyerCard = ({ id, name, status, avatarImage }: LawyerCardProps) => {
   const [activeSpecialtyIndex, setActiveSpecialtyIndex] = useState<
     number | null
   >(null);

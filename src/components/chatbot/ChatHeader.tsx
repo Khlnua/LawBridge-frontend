@@ -5,7 +5,6 @@ import {
   AlertCircle,
   ArrowLeft,
   Trash2,
-  MoreVertical,
   RotateCcw,
 } from "lucide-react";
 import { useRouter } from "next/navigation";

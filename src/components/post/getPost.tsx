@@ -14,7 +14,7 @@ interface PostType {
 }
 
 export const GetPost = () => {
-  const [posts, setPosts] = useState<PostType[]>([
+  const [posts] = useState<PostType[]>([
     {
       id: 1,
       content: "Хэрэг шийдвэрлээд баяртай байна!",

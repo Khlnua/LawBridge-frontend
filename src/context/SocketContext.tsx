@@ -22,6 +22,7 @@ interface SocketContextType {
   socket: Socket | null;
   isConnected: boolean;
   onlineUsers: User[];
+  socketError: string | null;
   sendMessage: (data: {
     chatRoomId: string;
     content: string;
@@ -57,6 +58,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
   const [socket, setSocket] = useState<Socket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
   const [onlineUsers, setOnlineUsers] = useState<User[]>([]);
+  const [socketError, setSocketError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!isLoaded || !user) return;
@@ -71,32 +73,66 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 
         // Only create new socket if we don't have one or it's disconnected
         if (!socket || !socket.connected) {
-          const newSocket = io(
-            process.env.NEXT_PUBLIC_SERVER_URL || "http://localhost:4000",
-            {
-              path: "/socket.io",
-              auth: {
-                token: token,
-              },
-              transports: ["websocket", "polling"],
-              autoConnect: true,
-              reconnection: true,
-              reconnectionDelay: 1000,
-              reconnectionAttempts: 5,
-            }
+          const serverUrl =
+            process.env.NEXT_PUBLIC_SERVER_URL || "http://localhost:4000";
+          console.log(
+            "🔌 Attempting to connect to Socket.IO server:",
+            serverUrl
           );
+
+          const newSocket = io(serverUrl, {
+            path: "/socket.io",
+            auth: {
+              token: token,
+            },
+            transports: ["websocket", "polling"],
+            autoConnect: true,
+            reconnection: true,
+            reconnectionDelay: 2000,
+            reconnectionAttempts: 3,
+            timeout: 10000,
+          });
 
           // Connection events
           newSocket.on("connect", () => {
+            console.log("✅ Socket.IO connected successfully");
             setIsConnected(true);
           });
 
           newSocket.on("disconnect", (reason) => {
+            console.log("🔌 Socket.IO disconnected:", reason);
             setIsConnected(false);
           });
 
           newSocket.on("connect_error", (error) => {
-            console.error("❌ Socket connection error:", error);
+            console.error("❌ Socket.IO connection error:", error);
+            console.error(
+              "❌ This usually means the Socket.IO server is not running at:",
+              serverUrl
+            );
+            setSocketError(
+              `Cannot connect to Socket.IO server at ${serverUrl}. Please ensure the server is running.`
+            );
+            setIsConnected(false);
+          });
+
+          newSocket.on("reconnect", (attemptNumber) => {
+            console.log(
+              "🔄 Socket.IO reconnected after",
+              attemptNumber,
+              "attempts"
+            );
+            setIsConnected(true);
+          });
+
+          newSocket.on("reconnect_error", (error) => {
+            console.error("❌ Socket.IO reconnection error:", error);
+          });
+
+          newSocket.on("reconnect_failed", () => {
+            console.error(
+              "❌ Socket.IO reconnection failed after all attempts"
+            );
             setIsConnected(false);
           });
 
@@ -153,6 +189,8 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
           },
         };
         socket.emit("sendMessage", messageData);
+      } else {
+        console.warn("⚠️ Cannot send message: Socket not connected");
       }
     },
     [socket, isConnected]
@@ -162,6 +200,8 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
     (chatRoomId: string) => {
       if (socket && isConnected) {
         socket.emit("joinRoom", chatRoomId);
+      } else {
+        console.warn("⚠️ Cannot join room: Socket not connected");
       }
     },
     [socket, isConnected]
@@ -171,6 +211,8 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
     (chatRoomId: string) => {
       if (socket && isConnected) {
         socket.emit("leaveRoom", chatRoomId);
+      } else {
+        console.warn("⚠️ Cannot leave room: Socket not connected");
       }
     },
     [socket, isConnected]
@@ -180,6 +222,8 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
     (data: { chatRoomId: string; isTyping: boolean }) => {
       if (socket && isConnected) {
         socket.emit("typing", data);
+      } else {
+        console.warn("⚠️ Cannot emit typing: Socket not connected");
       }
     },
     [socket, isConnected]
@@ -226,6 +270,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
     socket,
     isConnected,
     onlineUsers,
+    socketError,
     sendMessage,
     joinRoom,
     leaveRoom,
