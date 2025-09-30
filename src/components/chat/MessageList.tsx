@@ -29,13 +29,7 @@ interface MessageListProps {
 }
 
 const MessageList: React.FC<MessageListProps> = React.memo(
-  ({
-    messages,
-    setMessages,
-    currentUserId,
-    isLoading = false,
-    otherUserAvatar,
-  }) => {
+  ({ messages, currentUserId, isLoading = false, otherUserAvatar }) => {
     const { user, isLoaded } = useUser();
 
     if (!isLoaded) {
